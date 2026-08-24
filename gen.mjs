@@ -1,9 +1,32 @@
-import { mkdirSync, writeFileSync } from 'fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { shell, pageHero, ctaSection, SITE, IC } from './src/layout.mjs';
 
 const OUT = '.';
 const canon = path => 'https://balilead.co.il/' + (path ? encodeURI(path) + '/' : '');
+const GH = 'https://tzahilevi1.github.io/balilead-site/';
+
+/* ---------- SEO structured data helpers ---------- */
+const crumbsLd = crumbs => ({
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: crumbs.map((c, i) => ({
+    '@type': 'ListItem', position: i + 1, name: c.t.replace(/<[^>]+>/g, ''),
+    ...(c.href !== undefined ? { item: canon(c.href.replace(/\/$/, '')) } : {}),
+  })),
+});
+const faqLd = items => ({
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: items.map(([q, a]) => ({
+    '@type': 'Question', name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+const serviceLd = (name, desc, path) => ({
+  '@context': 'https://schema.org', '@type': 'Service',
+  name, description: desc, url: canon(path),
+  provider: { '@type': 'Organization', name: 'BaliLeads', telephone: '+972-58-470-0706' },
+  areaServed: 'IL',
+});
 
 function write(path, html) {
   const dir = path ? join(OUT, path) : OUT;
@@ -13,9 +36,11 @@ function write(path, html) {
   console.log('built', (path || '(home)') + '  depth=' + depth);
 }
 
+const BUILT = [];
 function page(path, opts) {
   const depth = path ? path.split('/').length : 0;
   const root = '../'.repeat(depth);
+  BUILT.push(path);
   write(path, shell({ root, canonical: canon(path), ...opts, body: opts.body(root) }));
 }
 
@@ -50,6 +75,80 @@ const relatedBlock = (root, links) => `
     <div class="related reveal" style="--d:.08s">
       ${links.map(([h, t]) => `<a href="${root}${h}">${t}</a>`).join('')}
     </div>
+  </div>
+</section>`;
+
+/* =================================================================
+   Magazine articles: full in-site pages (content migrated from WP)
+================================================================= */
+const RAW_ARTICLES = JSON.parse(readFileSync('data/articles.json', 'utf8'));
+
+const ART_META = {
+  'מה-זה-שיווק-דיגיטלי': { cat: 'שיווק דיגיטלי', cover: 'cover-marketing.webp', teaser: 'כל מה שבעל עסק צריך לדעת על שיווק דיגיטלי: ערוצים, תקציבים ואיך מתחילים נכון.', services: [['שיווק-דיגיטלי/', 'שיווק דיגיטלי'], ['קידום-בגוגל/', 'קידום ממומן בגוגל']] },
+  'מה-זה-לידים': { cat: 'לידים', cover: 'cover-leads.webp', teaser: 'המדריך המלא ללידים: מה זה בכלל ליד, איך מגייסים אותו נכון ומה הופך אותו ללקוח.', services: [['קניית-לידים/', 'קניית לידים'], ['חברת-לידים/', 'חברת לידים במודל CPL']] },
+  'what-are-quality-leads': { cat: 'לידים', cover: 'cover-leads.webp', teaser: '82% מבעלי העסקים מתמודדים עם אותה בעיה: המון לידים, מעט מכירות. ככה מזהים ליד איכותי.', services: [['קניית-לידים/', 'קניית לידים'], ['מחירון-לידים/', 'מחירון 2026']] },
+  'quality-mortgage-leads': { cat: 'משכנתאות', cover: 'cover-mortgage.webp', teaser: 'הסודות למציאת לידים טובים למשכנתאות: מקורות, סינון ותזמון שסוגר עסקאות.', services: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות']] },
+  'hot-mortgage-leads': { cat: 'משכנתאות', cover: 'cover-mortgage.webp', teaser: 'איך לידים חמים ואיכותיים מקפיצים את אחוזי הסגירה בעסקאות משכנתא.', services: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות']] },
+  'cold-to-hot-leads': { cat: 'לידים', cover: 'cover-leads.webp', teaser: 'התהליך הפשוט שהופך ליד קר לליד חם שמחכה לשיחה שלכם.', services: [['קניית-לידים/', 'קניית לידים'], ['חברת-לידים/', 'חברת לידים במודל CPL']] },
+  'reduce-mortgage-lead-cost': { cat: 'משכנתאות', cover: 'cover-mortgage.webp', teaser: 'איך מוזילים את עלות הליד בתחום המשכנתאות בלי לפגוע באיכות.', services: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'], ['מחירון-לידים/', 'מחירון 2026']] },
+  'mortgage-closing-rates-tech': { cat: 'משכנתאות', cover: 'cover-mortgage.webp', teaser: 'טכנולוגיות חדשות שמשפרות אחוזי סגירה בענף המשכנתאות.', services: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות']] },
+  'hot-insurance-leads': { cat: 'ביטוח', cover: 'cover-insurance.webp', teaser: 'הסוד ללידים חמים בביטוח: כך מוצאים את הלקוחות שמחכים לשמוע מכם.', services: [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']] },
+  'quality-loan-leads': { cat: 'הלוואות', cover: 'cover-loans.webp', teaser: 'ניתוח נתונים חכם שמשפר את איכות הלידים להלוואות ואת התשואה על כל שקל.', services: [['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות']] },
+  'insurance-hot-leads-detection': { cat: 'ביטוח', cover: 'cover-insurance.webp', teaser: 'איך מזהים מראש ליד חם לביטוח שמבטיח אחוז סגירה גבוה.', services: [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']] },
+  'insurance-leads-closing-rates': { cat: 'ביטוח', cover: 'cover-insurance.webp', teaser: 'הקפיצה הגדולה: מהליד הראשון ועד אחוזי סגירה גבוהים מאי פעם בענף הביטוח.', services: [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']] },
+};
+
+function cleanArticleBlocks(blocks) {
+  let start = blocks.findIndex(b => b[0] === 'h2' || (b[0] === 'p' && b[1].length > 90));
+  if (start < 0) start = 0;
+  const bs = blocks.slice(start);
+  const out = [];
+  let skipToc = false;
+  const junk = /השאירו פרטים|ומיד מתקשרים|שיחה ייעוץ והצעת מחיר|^שליחה|^שם מלא$|^טלפון נייד$|אולי יעניין|גלה עוד סודות|סקרנתם אותי|צור קשר עם|למידע נוסף$|קניית לידים למידע|Article created using|Outrank|^קישורים נוספים/;
+  for (const [t, txt] of bs) {
+    if (/תוכן עניינים/.test(txt)) { skipToc = true; continue; }
+    if (skipToc) { if (t === 'li') continue; skipToc = false; }
+    if (junk.test(txt)) continue;
+    if (t === 'li' && txt.length < 3) continue;
+    out.push([t, txt]);
+  }
+  const cutAt = out.findIndex(([t, txt]) => (t === 'h2' || t === 'h3') && /^(יצירת קשר|לידים חמים$|שיווק דיגיטלי$|ליצירת קשר)/.test(txt));
+  if (cutAt > 3) out.length = cutAt;
+  while (out.length && out[out.length - 1][0] !== 'p' && out[out.length - 1][1].length < 60) out.pop();
+  let html = '', inList = false;
+  for (const [t, txt] of out) {
+    if (t === 'li') { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${txt}</li>`; continue; }
+    if (inList) { html += '</ul>'; inList = false; }
+    if (t === 'h2') html += `<h2>${txt}</h2>`;
+    else if (t === 'h3') html += `<h3 style="font-size:20px;margin:30px 0 10px">${txt}</h3>`;
+    else html += `<p>${txt}</p>`;
+  }
+  if (inList) html += '</ul>';
+  return html;
+}
+
+const readMinutes = blocks => Math.max(2, Math.round(blocks.map(b => b[1]).join(' ').split(/\s+/).length / 180));
+
+const artCard = (root, slug, i = 0) => {
+  const a = RAW_ARTICLES.find(x => x.slug === slug); const m = ART_META[slug];
+  return `
+  <a class="art-card reveal" style="--d:${(i % 3) * 0.08}s" href="${root}${slug}/">
+    <div class="art-in">
+      <div class="a-img"><img src="${root}assets/${m.cover}" alt="${a.h1}" loading="lazy"></div>
+      <div class="a-txt">
+        <span class="a-tag">${m.cat} · ${readMinutes(a.blocks)} דקות קריאה</span>
+        <h3>${a.h1}</h3>
+        <span class="a-read">לקריאת המאמר ${IC.crumb}</span>
+      </div>
+    </div>
+  </a>`;
+};
+
+const articlesStrip = (root, slugs, title) => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal" style="margin-bottom:26px"><h2 style="font-size:clamp(22px,2.6vw,32px)">${title}</h2></div>
+    <div class="art-grid">${slugs.map((s, i) => artCard(root, s, i)).join('')}</div>
   </div>
 </section>`;
 
@@ -140,12 +239,15 @@ page('', {
       <p class="reveal" style="--d:.18s">ליד אצלנו הוא לא מספר טלפון אקראי. זה לקוח שהתעניין בשירות שלכם, עבר סינון לפי דרישות התחום, ומגיע לאנשי המכירות שלכם <b>כשהוא עדיין חם</b>.</p>
       <p class="reveal" style="--d:.26s">הצוות שלנו מורכב מאנשי שיווק, כותבי תוכן ומומחי פרסום שחיים את עולם ההמרות. שיחת המכירה עליכם, האיכות עלינו.</p>
     </div>
-    <div class="quote-shell reveal" style="--d:.2s">
-      <div class="quote-in">
-        <p class="quote-txt">"העסק שלכם הוא לא משחק. המטרה שלנו אחת: להביא לכם לקוחות משלמים ולהגדיל את אחוזי הסגירה."</p>
-        <div class="quote-who">
-          <div class="quote-avatar">צ</div>
-          <div><div class="quote-name">צחי לוי</div><div class="quote-role">מנכ"ל ומייסד, באלי ליד</div></div>
+    <div>
+      <div class="side-img reveal" style="--d:.14s"><img src="${root}assets/img-office.webp" alt="המשרד של באלי ליד, חברת לידים לסקטור הפיננסי" loading="lazy"></div>
+      <div class="quote-shell reveal" style="--d:.2s">
+        <div class="quote-in">
+          <p class="quote-txt">"העסק שלכם הוא לא משחק. המטרה שלנו אחת: להביא לכם לקוחות משלמים ולהגדיל את אחוזי הסגירה."</p>
+          <div class="quote-who">
+            <div class="quote-avatar">צ</div>
+            <div><div class="quote-name">צחי לוי</div><div class="quote-role">מנכ"ל ומייסד, באלי ליד</div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -253,6 +355,21 @@ page('', {
   </div>
 </section>
 
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="sec-head reveal">
+      <h2>המגזין: <span class="gw">ידע שסוגר עסקאות</span></h2>
+      <p>מדריכים מהשטח על לידים, המרות ושיווק. בלי סיסמאות ריקות.</p>
+    </div>
+    <div class="art-grid">
+      ${artCard(root, 'מה-זה-לידים', 0)}
+      ${artCard(root, 'hot-insurance-leads', 1)}
+      ${artCard(root, 'quality-mortgage-leads', 2)}
+    </div>
+    <p class="price-note reveal" style="--d:.1s">${IC.info} <a href="${root}עדכונים-חמים/" style="color:var(--gold2);font-weight:700">לכל המאמרים במגזין</a></p>
+  </div>
+</section>
+
 ${ctaSection(root)}`,
 });
 
@@ -334,6 +451,20 @@ ${pageHero(root, {
   </div>
 </section>
 
+<section class="sec" style="padding-top:0">
+  <div class="container about-grid">
+    <div class="about-copy">
+      <div class="sec-head reveal"><h2>מודל CPL: <span class="gw">משלמים על תוצאה, לא על חשיפה</span></h2></div>
+      <p class="reveal" style="--d:.08s">בניגוד לקמפיינים שבהם משלמים על צפיות או קליקים, אצלנו משלמים <b>רק על ליד מאומת שהתעניין בשירות שלכם</b>. זה כל ההבדל בין הוצאה שיווקית להשקעה שמחזירה את עצמה.</p>
+      <p class="reveal" style="--d:.16s">כל ליד עובר מסע מלא: נחשף לתוכן שלנו בפלטפורמות המובילות, מילא שאלון, אומת, והועבר אליכם בבלעדיות. <b>אין ידיים שניות.</b></p>
+      <div class="hero-ctas reveal" style="--d:.24s">
+        <a class="btn btn-ghost" href="${root}חברת-לידים/"><span class="btn-ic">${IC.arrowL}</span>איך עובד מודל CPL</a>
+      </div>
+    </div>
+    <div class="side-img reveal" style="--d:.18s"><img src="${root}assets/img-magnet.webp" alt="מודל CPL, מגנט לקוחות של חברת לידים" loading="lazy"></div>
+  </div>
+</section>
+
 ${ctaSection(root)}`,
 });
 
@@ -341,15 +472,15 @@ ${ctaSection(root)}`,
    Lead vertical pages
 ================================================================= */
 function leadPage(path, o) {
+  const crumbs = [{ href: '', t: 'ראשי' }, { href: 'קניית-לידים/', t: 'קניית לידים' }, { t: o.crumb }];
   page(path, {
     title: o.title, desc: o.desc, active: 'leads',
+    extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path), ...(o.faq ? [faqLd(o.faq)] : [])],
     body: root => `
-${pageHero(root, {
-      crumbs: [{ href: '', t: 'ראשי' }, { href: 'קניית-לידים/', t: 'קניית לידים' }, { t: o.crumb }],
-      h1: o.h1, sub: o.sub, price: o.price,
-    })}
+${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price })}
 ${o.sections(root)}
 ${o.faq ? faqBlock(o.faq) : ''}
+${o.articles ? articlesStrip(root, o.articles, 'מאמרים שיעשו לכם סדר') : ''}
 ${relatedBlock(root, o.related)}
 ${ctaSection(root, { title: o.ctaTitle })}`,
   });
@@ -391,6 +522,7 @@ leadPage('קניית-לידים/לידים-לביטוח', {
   </div>
 </section>`,
   faq: [FAQ_COMMON.exclusive, FAQ_COMMON.when, FAQ_COMMON.invalid, FAQ_COMMON.pilot],
+  articles: ['hot-insurance-leads', 'insurance-hot-leads-detection', 'insurance-leads-closing-rates'],
   related: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'], ['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'], ['מחירון-לידים/', 'מחירון 2026']],
 });
 
@@ -457,6 +589,7 @@ leadPage('קניית-לידים/לידים-להלוואות', {
   </div>
 </section>`,
   faq: [FAQ_COMMON.exclusive, ['על מה בדיוק אני משלם?', 'רק על לידים שעומדים בתנאי הזכאות שהגדרנו יחד. ליד שלא זכאי להלוואה לא נספר, וכך עלות הליד שלכם נשארת רווחית.'], FAQ_COMMON.when, FAQ_COMMON.stop],
+  articles: ['quality-loan-leads', 'cold-to-hot-leads', 'what-are-quality-leads'],
   related: [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'], ['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח'], ['מחירון-לידים/', 'מחירון 2026']],
 });
 
@@ -509,6 +642,7 @@ leadPage('קניית-לידים/לידים-למשכנתאות', {
   </div>
 </section>`,
   faq: [FAQ_COMMON.exclusive, FAQ_COMMON.when, FAQ_COMMON.invalid, FAQ_COMMON.pilot],
+  articles: ['quality-mortgage-leads', 'hot-mortgage-leads', 'reduce-mortgage-lead-cost'],
   related: [['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'], ['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח'], ['מחירון-לידים/', 'מחירון 2026']],
 });
 
@@ -678,13 +812,12 @@ ${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמבי
 });
 
 function digitalPage(path, o) {
+  const crumbs = [{ href: '', t: 'ראשי' }, { href: 'שיווק-דיגיטלי/', t: 'שיווק דיגיטלי' }, { t: o.crumb }];
   page(path, {
     title: o.title, desc: o.desc, active: 'digital',
+    extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path)],
     body: root => `
-${pageHero(root, {
-      crumbs: [{ href: '', t: 'ראשי' }, { href: 'שיווק-דיגיטלי/', t: 'שיווק דיגיטלי' }, { t: o.crumb }],
-      h1: o.h1, sub: o.sub,
-    })}
+${pageHero(root, { crumbs, h1: o.h1, sub: o.sub })}
 ${o.sections(root)}
 ${relatedBlock(root, o.related)}
 ${ctaSection(root, { title: o.ctaTitle, sub: 'השאירו פרטים ונחזור אליכם עם תוכנית פעולה מותאמת לעסק שלכם.' })}`,
@@ -934,52 +1067,164 @@ ${ctaSection(root, { title: 'רוצים הצעת מחיר <span class="gw">מד�
 });
 
 /* =================================================================
-   מגזין
+   חברת לידים (מודל CPL) - עמוד SEO חדש
 ================================================================= */
-const ARTICLES = [
-  ['https://balilead.co.il/%d7%9e%d7%94-%d7%96%d7%94-%d7%a9%d7%99%d7%95%d7%95%d7%a7-%d7%93%d7%99%d7%92%d7%99%d7%98%d7%9c%d7%99/', 'מה זה שיווק דיגיטלי? מדריך מקיף למתחילים', 'שיווק'],
-  ['https://balilead.co.il/%d7%9e%d7%94-%d7%96%d7%94-%d7%9c%d7%99%d7%93%d7%99%d7%9d/', 'מה זה לידים ואיך מגייסים אותם נכון', 'לידים'],
-  ['https://balilead.co.il/what-are-quality-leads/', 'מה זה לידים איכותיים', 'לידים'],
-  ['https://balilead.co.il/quality-mortgage-leads/', 'הסודות מאחורי מציאת לידים טובים למשכנתאות שכל מתווך חייב לדעת', 'משכנתאות'],
-  ['https://balilead.co.il/hot-mortgage-leads/', 'שיפור אחוזי סגירה בעסקאות משכנתא בעזרת לידים חמים ואיכותיים', 'משכנתאות'],
-  ['https://balilead.co.il/cold-to-hot-leads/', 'כיצד להפוך לידים קרים ללידים חמים בהליך פשוט וממוקד', 'לידים'],
-  ['https://balilead.co.il/reduce-mortgage-lead-cost/', 'כיצד להוזיל את עלות הלידים בתחום המשכנתאות בלי לפגוע באיכותם', 'משכנתאות'],
-  ['https://balilead.co.il/mortgage-closing-rates-tech/', 'איך לשפר אחוזי סגירה בענף המשכנתאות בעזרת טכנולוגיות חדשות', 'משכנתאות'],
-  ['https://balilead.co.il/hot-insurance-leads/', 'הסוד ללידים חמים בביטוח: כך תמצאו את הלקוחות שמחכים לכם', 'ביטוח'],
-  ['https://balilead.co.il/quality-loan-leads/', 'לידים להלוואות: איך לשפר את איכות הלידים עם ניתוח נתונים חכם', 'הלוואות'],
-  ['https://balilead.co.il/insurance-hot-leads-detection/', 'איך לזהות לידים חמים לביטוח שמבטיחים אחוזי סגירה גבוהים', 'ביטוח'],
-  ['https://balilead.co.il/insurance-leads-closing-rates/', 'הקפיצה הגדולה: איך להפוך לידים לביטוח לאחוזי סגירה גבוהים מאי פעם', 'ביטוח'],
+const CPL_FAQ = [
+  ['מה זה מודל CPL?', 'Cost Per Lead: תשלום עבור ליד מאומת שהתעניין בשירות שלכם, במקום תשלום על חשיפות (CPM), על זמן פרסום (CPT) או על קליקים (CPC). משלמים על תוצאה בלבד.'],
+  ['במה CPL עדיף על קמפיין ממומן רגיל?', 'בקמפיין רגיל אתם משלמים גם על גולשים שלא השאירו פרטים. במודל CPL כל שקל קונה ליד אמיתי עם פרטי קשר, כך שקל מאוד למדוד את ההחזר על ההשקעה: כמות סגירות מול הוצאה על לידים.'],
+  ['איך אני יודע שהליד אמיתי?', 'כל ליד עובר סינון ואימות לפני ההעברה, כולל בדיקת תקינות מספר הטלפון והתאמה לתנאי הסף שהגדרתם. ליד פסול מזוכה לפי מנגנון שנקבע מראש.'],
+  ['האם הלידים בלעדיים לי?', 'כן. כל ליד נמכר לעסק אחד בלבד. אין "ידיים שניות" ואין תחרות עם עסקים נוספים על אותו לקוח.'],
+  ['כמה עולה ליד?', 'תלוי בתחום וברמת התחרות: מ-10 ₪ לליד בתחומים רחבים ועד 250 ₪ בתחומים תחרותיים במיוחד. המחירון המלא לשנת 2026 מפורסם באתר, שקוף לגמרי.'],
 ];
 
-page('עדכונים-חמים', {
-  title: 'עדכונים חמים - המגזין של עולם הלידים | BaliLead',
-  desc: 'המגזין של BaliLead: מדריכים, מגמות שוק וטיפים מעולם הלידים והשיווק הדיגיטלי. ידע שהופך קמפיינים ללקוחות.',
-  active: 'magazine',
+page('חברת-לידים', {
+  title: 'חברת לידים במודל CPL - משלמים רק על לקוחות מתעניינים | BaliLead',
+  desc: 'מחפשים חברת לידים? באלי ליד עובדת במודל CPL: לידים בלעדיים ומאומתים מהפלטפורמות המובילות בישראל, תשלום פר ליד בלבד. כך זה עובד.',
+  active: 'leads',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'חברת לידים' }]), faqLd(CPL_FAQ), serviceLd('חברת לידים במודל CPL', 'אספקת לידים בלעדיים ומאומתים במודל תשלום פר ליד', 'חברת-לידים')],
   body: root => `
 ${pageHero(root, {
-    crumbs: [{ href: '', t: 'ראשי' }, { t: 'המגזין' }],
-    h1: 'המגזין: <span class="gw">ידע זה כוח</span>',
-    sub: '"ידע הוא הכוח המרכזי היחיד בעולם שאף אחד לא יכול לקחת ממך." מדריכים, מגמות וטיפים מהשטח, <b>בלי סיסמאות ריקות</b>.',
-    ctas: false,
+    crumbs: [{ href: '', t: 'ראשי' }, { t: 'חברת לידים' }],
+    h1: 'חברת לידים במודל CPL: <span class="gw">משלמים רק על תוצאה</span>',
+    sub: 'מבול של לידים זה נחמד. אבל האם הם איכותיים? אנחנו עובדים במודל אחד בלבד: <b>תשלום עבור ליד מאומת שהתעניין בכם</b>. לא חשיפות, לא קליקים, לא הבטחות.',
   })}
 
-<section class="sec-tight" style="padding-bottom:clamp(70px,9vw,120px)">
+<section class="sec-tight">
   <div class="container">
-    <div class="art-grid">
-      ${ARTICLES.map(([url, t, tag], i) => `
-      <a class="art-card reveal" style="--d:${(i % 3) * 0.08}s" href="${url}" target="_blank" rel="noopener">
-        <div class="art-in">
-          <span class="a-tag">${tag}</span>
-          <h3>${t}</h3>
-          <span class="a-read">לקריאת המאמר ${IC.crumb}</span>
-        </div>
-      </a>`).join('')}
+    <div class="sec-head reveal"><h2>ארבעה מודלים בשוק, <span class="gw">רק אחד עובד בשבילכם</span></h2></div>
+    <div class="check-grid">
+      ${checkCard(IC.users, 'CPM: תשלום על חשיפות', 'משלמים על כמות הצגות של המודעה, בלי שום קשר לשאלה אם מישהו התעניין. טוב למיתוג, רע ללידים.')}
+      ${checkCard(IC.clock, 'CPT: תשלום על זמן', 'משלמים על משך חשיפת הפרסום, גם אם אף אחד לא הרים טלפון. הסיכון כולו עליכם.')}
+      ${checkCard(IC.target, 'CPC: תשלום על קליקים', 'משלמים על כל לחיצה, כולל סקרנים ומתחרים. מצוין לקמפיינים בגוגל, אבל קליק הוא עדיין לא לקוח.')}
+      ${checkCard(IC.bolt, 'CPL: תשלום על ליד מאומת', 'המודל שלנו. משלמים אך ורק על לקוח פוטנציאלי שהשאיר פרטים, עבר אימות ורוצה לשמוע מכם. תוצאה, לא הבטחה.')}
     </div>
   </div>
 </section>
 
-${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw">בשבילכם?</span>' })}`,
+<section class="sec">
+  <div class="container">
+    <div class="sec-head reveal">
+      <h2>מסע הליד: <span class="gw">מהכתבה ועד השיחה שלכם</span></h2>
+      <p>כל ליד שמגיע אליכם עבר את המסלול המלא הזה.</p>
+    </div>
+    <div class="process-grid">
+      <div class="step reveal"><h3>חשיפה לתוכן</h3><p>הליד נחשף לכתבה או קמפיין שלנו בפלטפורמות המובילות: אתרי החדשות הגדולים, גוגל, פייסבוק ואינסטגרם.</p></div>
+      <div class="step reveal" style="--d:.1s"><h3>בדיקת התאמה</h3><p>הוא מוזמן לבדוק זכאות או התאמה לשירות, ועונה על שאלון עם שאלות מסננות אמיתיות.</p></div>
+      <div class="step reveal" style="--d:.2s"><h3>אימות פרטים</h3><p>המספר והפרטים מאומתים, כך שאתם יודעים שמדובר באדם אמיתי עם כוונה אמיתית.</p></div>
+      <div class="step reveal" style="--d:.3s"><h3>העברה בלעדית</h3><p>הליד נוחת אצלכם בזמן אמת: מייל, SMS ו-CRM. בלעדי לכם בלבד, בלי ידיים שניות.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="prose">
+      <h2>איך בוחרים <span class="gw">ספק לידים?</span></h2>
+      <p>שוק הלידים בישראל מלא בהבטחות. לפני שסוגרים עם חברת לידים, ודאו שאתם מקבלים תשובות ברורות לשאלות האלה:</p>
+      <ul>
+        <li><b>האם המודל הוא CPL אמיתי?</b> תשלום פר ליד מאומת, לא פר חשיפה ולא פר קליק.</li>
+        <li><b>האם הלידים בלעדיים?</b> ליד שנמכר לחמישה עסקים שווה קרוב לאפס.</li>
+        <li><b>האם המחירון שקוף?</b> אנחנו מהיחידים בענף שמפרסמים מחירון מלא לכל 29 התחומים.</li>
+        <li><b>מה קורה עם ליד פסול?</b> מנגנון זיכוי מסודר שנקבע מראש, לא ויכוחים בדיעבד.</li>
+        <li><b>האם אפשר להתחיל בקטן?</b> פיילוט ניסיון לפני התחייבות הוא הדרך הנכונה לבדוק ספק.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+${faqBlock(CPL_FAQ)}
+${articlesStrip(root, ['מה-זה-לידים', 'what-are-quality-leads', 'cold-to-hot-leads'], 'מאמרים שיעשו לכם סדר')}
+${relatedBlock(root, [['קניית-לידים/', 'קניית לידים, כל התחומים'], ['מחירון-לידים/', 'מחירון 2026'], ['יצירת-קשר/', 'דברו איתנו']])}
+${ctaSection(root, { title: 'רוצים לראות את המודל <span class="gw">עובד בשבילכם?</span>' })}`,
 });
+
+/* =================================================================
+   מגזין + עמודי מאמרים מלאים
+================================================================= */
+page('עדכונים-חמים', {
+  title: 'עדכונים חמים - המגזין של עולם הלידים | BaliLead',
+  desc: 'המגזין של BaliLead: מדריכים, מגמות שוק וטיפים מעולם הלידים והשיווק הדיגיטלי. ידע שהופך קמפיינים ללקוחות.',
+  active: 'magazine',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'המגזין' }])],
+  body: root => {
+    const featured = 'מה-זה-לידים';
+    const fa = RAW_ARTICLES.find(x => x.slug === featured); const fm = ART_META[featured];
+    const rest = RAW_ARTICLES.map(a => a.slug).filter(s => s !== featured);
+    return `
+${pageHero(root, {
+      crumbs: [{ href: '', t: 'ראשי' }, { t: 'המגזין' }],
+      h1: 'המגזין: <span class="gw">ידע זה כוח</span>',
+      sub: '"ידע הוא הכוח המרכזי היחיד בעולם שאף אחד לא יכול לקחת ממך." מדריכים, מגמות וטיפים מהשטח, <b>בלי סיסמאות ריקות</b>.',
+      ctas: false,
+    })}
+
+<section class="sec-tight" style="padding-bottom:clamp(70px,9vw,120px)">
+  <div class="container">
+    <a class="art-featured reveal" href="${root}${featured}/">
+      <div class="af-in">
+        <div class="af-txt">
+          <span class="a-tag">המדריך המרכזי · ${fm.cat} · ${readMinutes(fa.blocks)} דקות קריאה</span>
+          <h3>${fa.h1}</h3>
+          <p>${fm.teaser}</p>
+          <span class="a-read">לקריאת המאמר ${IC.crumb}</span>
+        </div>
+        <div class="af-img"><img src="${root}assets/${fm.cover}" alt="${fa.h1}" loading="lazy"></div>
+      </div>
+    </a>
+    <div class="art-grid">
+      ${rest.map((s, i) => artCard(root, s, i)).join('')}
+    </div>
+  </div>
+</section>
+
+${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw">בשבילכם?</span>' })}`;
+  },
+});
+
+/* Article pages */
+for (const art of RAW_ARTICLES) {
+  const m = ART_META[art.slug];
+  const crumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: m.cat }];
+  const mins = readMinutes(art.blocks);
+  page(art.slug, {
+    title: art.title || art.h1 + ' | BaliLead',
+    desc: art.desc || m.teaser,
+    active: 'magazine',
+    ogImage: GH + 'assets/' + m.cover,
+    extraLd: [
+      crumbsLd(crumbs),
+      {
+        '@context': 'https://schema.org', '@type': 'Article',
+        headline: art.h1, description: art.desc || m.teaser,
+        image: GH + 'assets/' + m.cover,
+        author: { '@type': 'Organization', name: 'BaliLeads' },
+        publisher: { '@type': 'Organization', name: 'BaliLeads', logo: { '@type': 'ImageObject', url: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png' } },
+        mainEntityOfPage: canon(art.slug),
+      },
+    ],
+    body: root => `
+${pageHero(root, {
+      crumbs,
+      metaLine: `<span class="am-cat">${m.cat}</span><span>${mins} דקות קריאה</span>`,
+      h1: art.h1,
+      sub: m.teaser,
+      ctas: false,
+    })}
+
+<section class="sec-tight">
+  <div class="container">
+    <div class="art-cover reveal"><img src="${root}assets/${m.cover}" alt="${art.h1}"></div>
+    <div class="prose art-body reveal" style="--d:.08s">
+      ${cleanArticleBlocks(art.blocks)}
+    </div>
+  </div>
+</section>
+
+${articlesStrip(root, RAW_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && ART_META[s].cat === m.cat).slice(0, 3).concat(RAW_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && ART_META[s].cat !== m.cat)).slice(0, 3), 'עוד מהמגזין')}
+${relatedBlock(root, m.services.concat([['מחירון-לידים/', 'מחירון 2026']]))}
+${ctaSection(root, { title: 'רוצים שהלידים יגיעו <span class="gw">אליכם מעכשיו?</span>' })}`,
+  });
+}
 
 /* =================================================================
    יצירת קשר
@@ -1060,4 +1305,15 @@ ${pageHero(root, {
 </section>`,
 });
 
+/* =================================================================
+   sitemap.xml + robots.txt (canonical domain, ready for the move)
+================================================================= */
+const today = '2026-08-24';
+writeFileSync(join(OUT, 'sitemap.xml'),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  BUILT.map(p => `  <url><loc>${canon(p)}</loc><lastmod>${today}</lastmod><changefreq>${p === '' || p === 'מחירון-לידים' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
+  `\n</urlset>`);
+writeFileSync(join(OUT, 'robots.txt'),
+  `User-agent: *\nAllow: /\n\nSitemap: https://balilead.co.il/sitemap.xml\n`);
+console.log('sitemap.xml + robots.txt written,', BUILT.length, 'pages');
 console.log('ALL PAGES BUILT');

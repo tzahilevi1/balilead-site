@@ -34,6 +34,10 @@ const PAGES = [
   ['עדכונים-חמים/', 'magazine'],
   ['יצירת-קשר/', 'contact'],
   ['הצהרת-נגישות/', 'a11y'],
+  ['חברת-לידים/', 'cpl'],
+  ['מה-זה-לידים/', 'art-leads'],
+  ['hot-insurance-leads/', 'art-insurance'],
+  ['quality-mortgage-leads/', 'art-mortgage'],
 ];
 
 mkdirSync('shots', { recursive: true });
@@ -80,16 +84,24 @@ async function shot(path, name, w, h, full = false) {
   await page.goto(base + encodeURI(path), { waitUntil: 'networkidle0', timeout: 60000 });
   await new Promise(r => setTimeout(r, 1200));
   await page.evaluate(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
+  if (full) {
+    await page.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 90)); }
+      window.scrollTo(0, 0);
+    });
+    await new Promise(r => setTimeout(r, 900));
+  }
   await new Promise(r => setTimeout(r, 900));
   await page.screenshot({ path: `shots/${tag}-${name}.png`, fullPage: full });
   await page.close();
 }
 await shot('', 'home-desktop', 1440, 900);
 await shot('', 'home-mobile', 390, 844);
-await shot('קניית-לידים/לידים-לביטוח/', 'bituach-full', 1440, 900, true);
-await shot('מחירון-לידים/', 'pricing-full', 1440, 900, true);
-await shot('יצירת-קשר/', 'contact-full', 1440, 900, true);
-await shot('עדכונים-חמים/', 'magazine-desktop', 1440, 900);
+await shot('', 'home-full', 1440, 900, true);
+await shot('עדכונים-חמים/', 'magazine-full', 1440, 900, true);
+await shot('חברת-לידים/', 'cpl-full', 1440, 900, true);
+await shot('מה-זה-לידים/', 'article-full', 1440, 900, true);
+await shot('קניית-לידים/', 'hub-full', 1440, 900, true);
 
 // dropdown menu open shot
 const page = await browser.newPage();

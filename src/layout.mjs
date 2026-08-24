@@ -13,6 +13,7 @@ export const SITE = {
 
 export const NAV_LEADS = [
   ['קניית-לידים/', 'קניית לידים, כל התחומים'],
+  ['חברת-לידים/', 'חברת לידים, מודל CPL'],
   ['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח'],
   ['קניית-לידים/לידים-להחזרי-מס/', 'לידים להחזרי מס'],
   ['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'],
@@ -324,9 +325,9 @@ section{position:relative}
   background:linear-gradient(160deg,#130e08 0%,#0b0906 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
 .art-in .a-tag{font-size:12px;font-weight:800;letter-spacing:.12em;color:var(--gold)}
 .art-in h3{font-size:18.5px;line-height:1.4;flex:1}
-.art-in .a-read{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;color:var(--gold2)}
-.art-in .a-read svg{width:14px;height:14px;transform:scaleX(-1);transition:transform .4s var(--ease)}
-.art-card:hover .a-read svg{transform:scaleX(-1) translateX(3px)}
+.a-read{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;color:var(--gold2)}
+.a-read svg{width:14px;height:14px;flex:0 0 auto;transform:scaleX(-1);transition:transform .4s var(--ease)}
+.art-card:hover .a-read svg,.art-featured:hover .a-read svg{transform:scaleX(-1) translateX(3px)}
 
 /* Pricing groups */
 .price-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
@@ -517,6 +518,55 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 .quote-role{font-size:14.5px;color:var(--muted)}
 .dig{background:linear-gradient(180deg,transparent,rgba(217,164,91,.04) 40%,transparent)}
 
+/* ===== Article pages ===== */
+.art-meta{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--dim);font-weight:600;margin-bottom:14px}
+.art-meta .am-cat{color:var(--gold2);border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;font-size:12.5px;letter-spacing:.06em}
+.art-cover{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);margin-bottom:clamp(32px,5vw,54px)}
+.art-cover img{width:100%;height:auto;aspect-ratio:21/9;object-fit:cover}
+.art-body{max-width:780px}
+.art-body h2{scroll-margin-top:120px}
+
+/* Magazine cards with covers */
+.art-in{padding:0;overflow:hidden}
+.art-in .a-img{aspect-ratio:16/9;overflow:hidden;background:#0b0906}
+.art-in .a-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease);opacity:.9}
+.art-card:hover .a-img img{transform:scale(1.06);opacity:1}
+.art-in .a-txt{display:flex;flex-direction:column;gap:12px;padding:20px 22px 22px;flex:1}
+.art-featured{border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.05);border:1px solid var(--line-strong);
+  margin-bottom:26px;transition:transform .6s var(--ease),border-color .5s var(--ease);display:block}
+.art-featured:hover{transform:translateY(-4px);border-color:rgba(217,164,91,.4)}
+.art-featured .af-in{border-radius:var(--r-inner);overflow:hidden;display:grid;grid-template-columns:1.2fr 1fr;
+  background:linear-gradient(160deg,#150f08 0%,#0b0906 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
+.art-featured .af-img{min-height:280px}
+.art-featured .af-img img{width:100%;height:100%;object-fit:cover}
+.art-featured .af-txt{padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:14px;justify-content:center}
+.art-featured h3{font-size:clamp(21px,2.2vw,28px);line-height:1.35}
+.art-featured p{color:var(--muted);font-size:15.5px}
+
+/* Side image */
+.side-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.85);margin-bottom:18px}
+.side-img img{width:100%;display:block}
+
+/* Sticky mobile CTA bar */
+.mcta{display:none}
+@media (max-width:860px){
+  .mcta{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:fixed;bottom:0;inset-inline:0;z-index:52;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(10,8,5,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--line-strong)}
+  .mcta a{display:flex;align-items:center;justify-content:center;gap:9px;border-radius:999px;padding:13px 10px;
+    font-weight:800;font-size:15px}
+  .mcta a svg{width:17px;height:17px}
+  .mcta .m-call{background:var(--grad-gold);color:#1c1206;box-shadow:0 10px 26px -10px rgba(217,164,91,.5)}
+  .mcta .m-wa{background:#1ebe5d;color:#fff}
+  .wa-float{display:none}
+  footer{padding-bottom:110px}
+  .art-featured .af-in{grid-template-columns:1fr}
+  .art-featured .af-img{min-height:190px}
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
   .reveal{opacity:1;transform:none;filter:none}
@@ -623,6 +673,7 @@ export function footer(root) {
         <a href="${root}קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>
         <a href="${root}קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>
         <a href="${root}לידים-לרואי-חשבון/">לידים לרואי חשבון</a>
+        <a href="${root}חברת-לידים/">חברת לידים, מודל CPL</a>
         <a href="${root}מחירון-לידים/">מחירון לידים 2026</a>
       </div>
       <div class="f-col">
@@ -652,7 +703,12 @@ export function footer(root) {
   </div>
 </footer>
 
-<a class="wa-float" href="${SITE.waText}" target="_blank" rel="noopener" aria-label="שיחת וואטסאפ">${IC.wa}</a>`;
+<a class="wa-float" href="${SITE.waText}" target="_blank" rel="noopener" aria-label="שיחת וואטסאפ">${IC.wa}</a>
+
+<div class="mcta">
+  <a class="m-call" href="${SITE.phoneHref}">${IC.phone}חייגו עכשיו</a>
+  <a class="m-wa" href="${SITE.waText}" target="_blank" rel="noopener">${IC.wa}וואטסאפ</a>
+</div>`;
 }
 
 export function ctaSection(root, { title, sub } = {}) {
@@ -790,7 +846,7 @@ export const js = `
   }
 })();`;
 
-export function shell({ root, title, desc, canonical, active, body, ldjson }) {
+export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage }) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
@@ -803,13 +859,14 @@ ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <meta property="og:type" content="website">
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
-<meta property="og:image" content="https://balilead.co.il/wp-content/uploads/2021/10/cropped-%D7%9C%D7%95%D7%92%D7%95-%D7%A9%D7%A7%D7%95%D7%A3.png">
+<meta property="og:image" content="${ogImage || 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-%D7%9C%D7%95%D7%92%D7%95-%D7%A9%D7%A7%D7%95%D7%A3.png'}">
 <meta name="theme-color" content="#080606">
 <link rel="icon" type="image/png" href="${root}assets/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 ${ldjson ? `<script type="application/ld+json">${ldjson}</script>` : ''}
+${extraLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}
 <style>${css.replaceAll("url('assets/hero-poster.jpg')", `url('${root}assets/hero-poster.jpg')`)}</style>
 </head>
 <body>
@@ -824,7 +881,7 @@ ${footer(root)}
 </html>`;
 }
 
-export function pageHero(root, { crumbs, h1, sub, price, ctas = true }) {
+export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine }) {
   const crumbHtml = crumbs
     ? `<nav class="crumbs reveal" aria-label="פירורי לחם">${crumbs.map((c, i) =>
         (i ? IC.crumb : '') + (c.href !== undefined ? `<a href="${root}${c.href}">${c.t}</a>` : `<span>${c.t}</span>`)
@@ -844,6 +901,7 @@ export function pageHero(root, { crumbs, h1, sub, price, ctas = true }) {
   <div class="hero-halo" aria-hidden="true"></div>
   <div class="container">
     ${crumbHtml}
+    ${metaLine ? `<div class="art-meta reveal">${metaLine}</div>` : ''}
     <h1 class="reveal" style="--d:.08s">${h1}</h1>
     <p class="p-sub reveal" style="--d:.16s">${sub}</p>
     ${priceHtml}
