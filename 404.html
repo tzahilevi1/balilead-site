@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>העמוד לא נמצא - BaliLead</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#080606;color:#f4eee3;font-family:'Assistant',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+h1{font-family:'Secular One';font-size:clamp(60px,12vw,120px);margin:0;background:linear-gradient(115deg,#a96d2b,#f6d9a0,#a96d2b);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-family:'Secular One';font-weight:400;font-size:clamp(20px,3vw,28px);margin:8px 0 12px}
+p{color:#a89d8d;max-width:46ch;margin:0 auto 26px}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+a{display:inline-block;border-radius:999px;padding:13px 26px;font-weight:700;text-decoration:none;color:#f4eee3;border:1px solid rgba(244,238,227,.2)}
+a.g{background:linear-gradient(115deg,#a96d2b,#d9a45b,#f6d9a0,#d9a45b,#a96d2b);color:#1c1206;border:none}
+</style></head><body><div>
+<h1>404</h1><h2>הליד הזה התקרר...</h2>
+<p>העמוד שחיפשתם עבר, הוחלף או שלא היה קיים. הכל עדיין כאן, רק כתובת אחת אחורה.</p>
+<div class="row"><a class="g" id="l-home" href="/">לעמוד הבית</a><a id="l-mag" href="/">למגזין</a><a id="l-price" href="/">למחירון 2026</a></div>
+</div><script>
+var base = location.pathname.indexOf('/balilead-site/') === 0 ? '/balilead-site/' : '/';
+document.getElementById('l-home').href = base;
+document.getElementById('l-mag').href = base + encodeURIComponent('עדכונים-חמים') + '/';
+document.getElementById('l-price').href = base + encodeURIComponent('מחירון-לידים') + '/';
+</script></body></html>

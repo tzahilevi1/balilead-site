@@ -85,12 +85,12 @@ section{position:relative}
 .nav-item:hover .menu,.nav-item:focus-within .menu{opacity:1;visibility:visible;transform:translateY(0)}
 .menu-in{border-radius:20px;padding:10px;background:rgba(16,12,8,.94);
   backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
-  border:1px solid var(--line-strong);
+  border:1px solid var(--line-strong);display:grid;grid-template-columns:1fr 1fr;gap:0 6px;min-width:470px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 34px 80px -24px rgba(0,0,0,.95)}
 .menu-in a{display:block;padding:10px 14px;border-radius:12px;font-size:15px;font-weight:600;color:var(--muted);
   transition:color .35s var(--ease),background .35s var(--ease)}
 .menu-in a:hover{color:var(--gold2);background:rgba(217,164,91,.08)}
-.menu-in a:first-child{color:var(--ink);border-bottom:1px solid var(--line);border-radius:12px 12px 0 0;margin-bottom:4px}
+.menu-in a:first-child{grid-column:1/-1;color:var(--ink);border-bottom:1px solid var(--line);border-radius:12px 12px 0 0;margin-bottom:4px}
 .header-cta{margin-inline-start:auto;flex:0 0 auto}
 .nav + .header-cta{margin-inline-start:0}
 
@@ -413,6 +413,8 @@ section{position:relative}
 .field input,.field select{width:100%;border-radius:14px;border:1px solid var(--line-strong);
   background:rgba(244,238,227,.05);color:var(--ink);font-family:'Assistant';font-size:16px;font-weight:500;
   padding:14px 16px;outline:none;transition:border-color .4s var(--ease),box-shadow .4s var(--ease);appearance:none}
+.field input[type="tel"]{direction:ltr;text-align:right}
+.field input[type="tel"]::placeholder{direction:ltr;text-align:right}
 .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23d9a45b' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:left 16px center}
 .field select option{background:#141008;color:#f4eee3;font-size:16px}
@@ -561,9 +563,140 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   .hero-media video{display:none}
   .hero-media{background:url('../assets/hero-poster.jpg') center/cover}
 }
+
+/* ===== Skip link ===== */
+.skip-link{position:fixed;top:-60px;inset-inline-start:16px;z-index:200;background:var(--grad-gold);color:#1c1206;
+  font-weight:800;padding:10px 22px;border-radius:999px;transition:top .3s var(--ease)}
+.skip-link:focus{top:14px}
+
+/* ===== Accessibility widget ===== */
+.acc-btn{position:fixed;top:44%;inset-inline-end:0;z-index:90;width:46px;height:46px;
+  border-radius:12px 0 0 12px;border:none;cursor:pointer;background:#1a56db;color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
+.acc-btn svg{width:26px;height:26px}
+.acc-panel{position:fixed;top:20%;inset-inline-end:14px;z-index:95;width:280px;max-height:64vh;overflow-y:auto;
+  border-radius:20px;padding:18px;background:rgba(16,12,8,.97);backdrop-filter:blur(26px);
+  border:1px solid var(--line-strong);box-shadow:0 40px 90px -20px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),visibility .4s}
+.acc-panel.open{opacity:1;visibility:visible;transform:translateX(0)}
+.acc-panel h3{font-size:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.acc-panel h3 button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}
+.acc-panel .acc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  border:1px solid var(--line);background:rgba(244,238,227,.04);border-radius:12px;padding:10px 14px;margin-bottom:8px;
+  color:var(--ink);font-family:'Assistant';font-size:14.5px;font-weight:600;cursor:pointer;text-align:start}
+.acc-row .dot{width:16px;height:16px;border-radius:999px;border:1.5px solid var(--line-strong);flex:0 0 auto}
+.acc-row[aria-pressed="true"]{border-color:rgba(217,164,91,.5);background:rgba(217,164,91,.1)}
+.acc-row[aria-pressed="true"] .dot{background:var(--gold);border-color:var(--gold)}
+.acc-panel .acc-link{display:block;text-align:center;font-size:13.5px;color:var(--gold2);margin-top:8px;text-decoration:underline}
+/* modes */
+html.acc-f1{font-size:112%}
+html.acc-f2{font-size:126%}
+html.acc-contrast body{background:#000 !important}
+html.acc-contrast body *{color:#ffe700 !important;border-color:#ffe700 !important}
+html.acc-contrast .btn-gold,html.acc-contrast .mcta .m-call{background:#ffe700 !important;color:#000 !important}
+html.acc-contrast img,html.acc-contrast video{filter:grayscale(1) contrast(1.2)}
+html.acc-gray{filter:grayscale(1)}
+html.acc-links a{text-decoration:underline !important}
+html.acc-font body,html.acc-font h1,html.acc-font h2,html.acc-font h3,html.acc-font .btn{font-family:Arial,Helvetica,sans-serif !important}
+html.acc-noanim *,html.acc-noanim *::before,html.acc-noanim *::after{animation:none !important;transition:none !important}
+html.acc-noanim .reveal{opacity:1 !important;transform:none !important;filter:none !important}
+html.acc-noanim .hero-media video{display:none}
+
+/* ===== Chat widget ===== */
+.chat-btn{position:fixed;bottom:92px;inset-inline-start:24px;z-index:50;width:56px;height:56px;border-radius:999px;
+  border:none;cursor:pointer;background:var(--grad-gold);color:#1c1206;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 16px 40px -12px rgba(217,164,91,.65);transition:transform .5s var(--ease)}
+.chat-btn:hover{transform:translateY(-4px) scale(1.05)}
+.chat-btn svg{width:26px;height:26px}
+.chat-box{position:fixed;bottom:160px;inset-inline-start:24px;z-index:94;width:min(370px,calc(100vw - 32px));
+  height:min(520px,70vh);display:flex;flex-direction:column;border-radius:24px;overflow:hidden;
+  background:rgba(14,11,7,.98);backdrop-filter:blur(28px);border:1px solid var(--line-strong);
+  box-shadow:0 50px 120px -30px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .45s var(--ease),transform .45s var(--ease),visibility .45s}
+.chat-box.open{opacity:1;visibility:visible;transform:translateY(0)}
+.chat-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(160deg,#1a1207,#0d0a07);
+  border-bottom:1px solid var(--line)}
+.chat-head .cav{width:40px;height:40px;border-radius:999px;background:var(--grad-gold);display:flex;align-items:center;justify-content:center;
+  font-family:'Secular One';font-size:17px;color:#1c1206}
+.chat-head .cname{font-weight:800;font-size:15.5px}
+.chat-head .cstat{font-size:12.5px;color:#7ddc9a}
+.chat-head button{margin-inline-start:auto;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.cmsg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14.5px;line-height:1.55;white-space:pre-line}
+.cmsg.bot{align-self:flex-start;background:rgba(244,238,227,.07);border:1px solid var(--line);border-start-start-radius:4px}
+.cmsg.user{align-self:flex-end;background:rgba(217,164,91,.16);border:1px solid rgba(217,164,91,.3);border-start-end-radius:4px}
+.cmsg a{color:var(--gold2);text-decoration:underline}
+.chat-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 10px}
+.chat-chips button{border-radius:999px;border:1px solid rgba(217,164,91,.35);background:rgba(217,164,91,.07);
+  color:var(--gold2);font-family:'Assistant';font-size:13px;font-weight:700;padding:7px 14px;cursor:pointer;
+  transition:background .3s var(--ease)}
+.chat-chips button:hover{background:rgba(217,164,91,.16)}
+.chat-in{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
+  color:var(--ink);font-family:'Assistant';font-size:14.5px;padding:11px 16px;outline:none}
+.chat-in input:focus{border-color:var(--gold)}
+.chat-in button{width:42px;height:42px;border-radius:999px;border:none;background:var(--grad-gold);color:#1c1206;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.chat-in button svg{width:17px;height:17px}
+.ctyping{display:inline-flex;gap:4px;padding:12px 16px}
+.ctyping span{width:7px;height:7px;border-radius:999px;background:var(--gold);opacity:.4;animation:cty 1s infinite}
+.ctyping span:nth-child(2){animation-delay:.18s}.ctyping span:nth-child(3){animation-delay:.36s}
+@keyframes cty{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+@media (max-width:860px){
+  .chat-btn{bottom:150px}
+  .chat-box{bottom:150px;inset-inline-start:16px}
+}
+
+/* ===== Popups ===== */
+.pop-ov{position:fixed;inset:0;z-index:120;background:rgba(5,4,2,.7);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
+.pop-ov.open{opacity:1;visibility:visible}
+.pop{position:relative;width:min(520px,94vw);border-radius:2rem;padding:.5rem;background:rgba(244,238,227,.06);
+  border:1px solid var(--line-strong);box-shadow:0 60px 140px -40px rgba(0,0,0,.95);
+  transform:translateY(20px) scale(.97);transition:transform .5s var(--ease)}
+.pop-ov.open .pop{transform:translateY(0) scale(1)}
+.pop-in{border-radius:calc(2rem - .5rem);padding:clamp(26px,5vw,40px);overflow:hidden;position:relative;
+  background:linear-gradient(160deg,rgba(26,17,8,.98),rgba(10,8,5,.99));box-shadow:inset 0 1px 1px rgba(255,255,255,.1)}
+.pop-x{position:absolute;top:14px;inset-inline-start:14px;z-index:2;width:34px;height:34px;border-radius:999px;
+  border:1px solid var(--line-strong);background:rgba(244,238,227,.06);color:var(--muted);font-size:17px;cursor:pointer}
+.pop-eyebrow{display:inline-block;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:800;letter-spacing:.1em;
+  color:var(--gold2);border:1px solid rgba(217,164,91,.35);background:rgba(217,164,91,.08);margin-bottom:14px}
+.pop h3{font-family:'Secular One';font-size:clamp(22px,3vw,30px);margin-bottom:10px}
+.pop h3 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pop p{color:var(--muted);font-size:15.5px;margin-bottom:18px}
+.pop .pop-form{display:flex;gap:10px}
+.pop .pop-form input{flex:1;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
+  color:var(--ink);font-family:'Assistant';font-size:15px;padding:12px 18px;outline:none;direction:ltr;text-align:right}
+.pop .pop-form input:focus{border-color:var(--gold)}
+.pop .consent{margin-top:12px}
+/* toast */
+.toast{position:fixed;bottom:24px;inset-inline-end:24px;z-index:110;width:min(340px,calc(100vw - 32px));
+  border-radius:20px;padding:18px 20px;background:rgba(16,12,8,.97);backdrop-filter:blur(24px);
+  border:1px solid rgba(217,164,91,.3);box-shadow:0 30px 80px -20px rgba(0,0,0,.9);
+  opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
+.toast.open{opacity:1;visibility:visible;transform:translateY(0)}
+.toast h4{font-size:16px;margin-bottom:6px}
+.toast p{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+.toast .t-row{display:flex;gap:8px}
+.toast .t-row a,.toast .t-row button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:999px;padding:9px 10px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;border:none}
+.toast .t-gold{background:var(--grad-gold);color:#1c1206}
+.toast .t-ghost{background:rgba(244,238,227,.07);color:var(--ink);border:1px solid var(--line-strong)}
+.toast .t-x{position:absolute;top:8px;inset-inline-start:10px;background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer}
+@media (max-width:860px){.toast{bottom:86px}}
+
+/* Consent checkbox */
+.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+  border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
+.consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
+.consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
+.consent a{color:var(--gold2);text-decoration:underline}
 </style>
 </head>
 <body>
+<a class="skip-link" href="#top">דילוג לתוכן המרכזי</a>
 <div class="grain" aria-hidden="true"></div>
 
 <header class="header" id="header">
@@ -573,11 +706,11 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
       <div class="nav-item"><a href="../">ראשי</a></div>
       <div class="nav-item">
         <a href="../קניית-לידים/" class="active">לידים חמים <svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a>
-        <div class="menu"><div class="menu-in"><a href="../קניית-לידים/">קניית לידים, כל התחומים</a><a href="../חברת-לידים/">חברת לידים, מודל CPL</a><a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a href="../קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a href="../לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a href="../פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a href="../מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a></div></div>
+        <div class="menu"><div class="menu-in"><a href="../קניית-לידים/">קניית לידים, כל התחומים</a><a href="../חברת-לידים/">חברת לידים, מודל CPL</a><a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a href="../קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a href="../לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a href="../קניית-לידים/לידים-לבניית-אתרים/">לידים לבניית אתרים</a><a href="../פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a href="../מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a><a href="../מחשבון-roi-ללידים/">מחשבון ROI ללידים</a></div></div>
       </div>
       <div class="nav-item">
         <a href="../שיווק-דיגיטלי/">שיווק דיגיטלי <svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a>
-        <div class="menu"><div class="menu-in"><a href="../שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a href="../קידום-בגוגל/">קידום ממומן בגוגל</a><a href="../קידום-אתרים-seo/">קידום אתרים SEO</a><a href="../קידום-בפייסבוק/">קידום בפייסבוק</a><a href="../פרסום-באינסטגרם/">פרסום באינסטגרם</a><a href="../קידום-בלינקדאין/">קידום בלינקדאין</a><a href="../פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a></div></div>
+        <div class="menu"><div class="menu-in"><a href="../שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a href="../קידום-בגוגל/">קידום ממומן בגוגל</a><a href="../קידום-אתרים-seo/">קידום אתרים SEO</a><a href="../קידום-בפייסבוק/">קידום בפייסבוק</a><a href="../פרסום-באינסטגרם/">פרסום באינסטגרם</a><a href="../קידום-בלינקדאין/">קידום בלינקדאין</a><a href="../פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a><a href="../בניית-אתרים/">בניית אתרים</a><a href="../דפי-נחיתה/">דפי נחיתה ממירים</a><a href="../פיתוח-אפליקציות/">פיתוח אפליקציות</a><a href="../מערכת-ניהול-לידים/">מערכות CRM וניהול לידים</a><a href="../סוכני-ai/">סוכני AI חכמים</a><a href="../אוטומציות-שיווק/">אוטומציות שיווק</a></div></div>
       </div>
       <div class="nav-item"><a href="../מחירון-לידים/">מחירון 2026</a></div>
       <div class="nav-item"><a href="../עדכונים-חמים/">מגזין</a></div>
@@ -601,9 +734,9 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   <a class="m-main" href="../עדכונים-חמים/">מגזין</a>
   <a class="m-main" href="../יצירת-קשר/">צור קשר</a>
   <div class="m-group">לידים חמים</div>
-  <div><a class="m-sub" href="../קניית-לידים/">קניית לידים, כל התחומים</a><a class="m-sub" href="../חברת-לידים/">חברת לידים, מודל CPL</a><a class="m-sub" href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a class="m-sub" href="../קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a class="m-sub" href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a class="m-sub" href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a class="m-sub" href="../לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a class="m-sub" href="../פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a class="m-sub" href="../מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a></div>
+  <div><a class="m-sub" href="../קניית-לידים/">קניית לידים, כל התחומים</a><a class="m-sub" href="../חברת-לידים/">חברת לידים, מודל CPL</a><a class="m-sub" href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a class="m-sub" href="../קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a class="m-sub" href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a class="m-sub" href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a class="m-sub" href="../לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a class="m-sub" href="../קניית-לידים/לידים-לבניית-אתרים/">לידים לבניית אתרים</a><a class="m-sub" href="../פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a class="m-sub" href="../מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a><a class="m-sub" href="../מחשבון-roi-ללידים/">מחשבון ROI ללידים</a></div>
   <div class="m-group">שיווק דיגיטלי</div>
-  <div><a class="m-sub" href="../שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a class="m-sub" href="../קידום-בגוגל/">קידום ממומן בגוגל</a><a class="m-sub" href="../קידום-אתרים-seo/">קידום אתרים SEO</a><a class="m-sub" href="../קידום-בפייסבוק/">קידום בפייסבוק</a><a class="m-sub" href="../פרסום-באינסטגרם/">פרסום באינסטגרם</a><a class="m-sub" href="../קידום-בלינקדאין/">קידום בלינקדאין</a><a class="m-sub" href="../פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a></div>
+  <div><a class="m-sub" href="../שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a class="m-sub" href="../קידום-בגוגל/">קידום ממומן בגוגל</a><a class="m-sub" href="../קידום-אתרים-seo/">קידום אתרים SEO</a><a class="m-sub" href="../קידום-בפייסבוק/">קידום בפייסבוק</a><a class="m-sub" href="../פרסום-באינסטגרם/">פרסום באינסטגרם</a><a class="m-sub" href="../קידום-בלינקדאין/">קידום בלינקדאין</a><a class="m-sub" href="../פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a><a class="m-sub" href="../בניית-אתרים/">בניית אתרים</a><a class="m-sub" href="../דפי-נחיתה/">דפי נחיתה ממירים</a><a class="m-sub" href="../פיתוח-אפליקציות/">פיתוח אפליקציות</a><a class="m-sub" href="../מערכת-ניהול-לידים/">מערכות CRM וניהול לידים</a><a class="m-sub" href="../סוכני-ai/">סוכני AI חכמים</a><a class="m-sub" href="../אוטומציות-שיווק/">אוטומציות שיווק</a></div>
   <div class="mnav-contact">058-4700706 · info@balilead.co.il</div>
 </div>
 <main id="top">
@@ -693,17 +826,17 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   <div class="container">
     <div class="sec-head reveal" style="margin-bottom:26px"><h2 style="font-size:clamp(22px,2.6vw,32px)">מאמרים שיעשו לכם סדר</h2></div>
     <div class="art-grid">
-  <a class="art-card reveal" style="--d:0s" href="../מה-זה-לידים/">
+  <a class="art-card reveal" style="--d:0s" href="../מה-זה-לידים/" data-cat="לידים">
     <div class="art-in">
       <div class="a-img"><img src="../assets/cover-leads.webp" alt="מה זה לידים ואיך מגייסים אותם נכון" loading="lazy"></div>
       <div class="a-txt">
-        <span class="a-tag">לידים · 16 דקות קריאה</span>
+        <span class="a-tag">לידים · 23 דקות קריאה</span>
         <h3>מה זה לידים ואיך מגייסים אותם נכון</h3>
         <span class="a-read">לקריאת המאמר <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
       </div>
     </div>
   </a>
-  <a class="art-card reveal" style="--d:0.08s" href="../what-are-quality-leads/">
+  <a class="art-card reveal" style="--d:0.08s" href="../what-are-quality-leads/" data-cat="לידים">
     <div class="art-in">
       <div class="a-img"><img src="../assets/cover-leads.webp" alt="מה זה לידים איכותיים" loading="lazy"></div>
       <div class="a-txt">
@@ -713,11 +846,11 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
       </div>
     </div>
   </a>
-  <a class="art-card reveal" style="--d:0.16s" href="../cold-to-hot-leads/">
+  <a class="art-card reveal" style="--d:0.16s" href="../cold-to-hot-leads/" data-cat="לידים">
     <div class="art-in">
       <div class="a-img"><img src="../assets/cover-leads.webp" alt="כיצד להפוך לידים קרים ללידים חמים בהליך פשוט וממוקד" loading="lazy"></div>
       <div class="a-txt">
-        <span class="a-tag">לידים · 2 דקות קריאה</span>
+        <span class="a-tag">לידים · 9 דקות קריאה</span>
         <h3>כיצד להפוך לידים קרים ללידים חמים בהליך פשוט וממוקד</h3>
         <span class="a-read">לקריאת המאמר <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
       </div>
@@ -774,6 +907,7 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
               <option>תחום אחר</option>
             </select>
           </div>
+          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -805,12 +939,14 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
         <a href="../מחירון-לידים/">מחירון לידים 2026</a>
       </div>
       <div class="f-col">
-        <h4>שיווק דיגיטלי</h4>
+        <h4>פתרונות דיגיטל</h4>
         <a href="../קידום-בגוגל/">קידום ממומן בגוגל</a>
         <a href="../קידום-אתרים-seo/">קידום אתרים SEO</a>
-        <a href="../קידום-בפייסבוק/">קידום בפייסבוק</a>
-        <a href="../פרסום-באינסטגרם/">פרסום באינסטגרם</a>
-        <a href="../קידום-בלינקדאין/">קידום בלינקדאין</a>
+        <a href="../בניית-אתרים/">בניית אתרים</a>
+        <a href="../דפי-נחיתה/">דפי נחיתה ממירים</a>
+        <a href="../מערכת-ניהול-לידים/">מערכות CRM וניהול לידים</a>
+        <a href="../סוכני-ai/">סוכני AI חכמים</a>
+        <a href="../אוטומציות-שיווק/">אוטומציות שיווק</a>
         <a href="../עדכונים-חמים/">המגזין שלנו</a>
       </div>
       <div class="f-col">
@@ -818,6 +954,8 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
         <a href="tel:0584700706">058-4700706</a>
         <a href="mailto:info@balilead.co.il">info@balilead.co.il</a>
         <a href="https://maps.google.com/?q=אצל 34 רמת גן" target="_blank" rel="noopener">אצ"ל 34, רמת גן</a>
+        <a href="../מחשבון-roi-ללידים/">מחשבון ROI ללידים</a>
+        <a href="../מדיניות-פרטיות/">מדיניות פרטיות ותנאי שימוש</a>
         <a href="../הצהרת-נגישות/">הצהרת נגישות</a>
       </div>
     </div>
@@ -836,6 +974,59 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 <div class="mcta">
   <a class="m-call" href="tel:0584700706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>חייגו עכשיו</a>
   <a class="m-wa" href="https://wa.me/972584700706?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%91%D7%9C%D7%99%D7%93%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>וואטסאפ</a>
+</div>
+
+<button class="acc-btn" id="accBtn" aria-label="פתיחת תפריט נגישות" aria-expanded="false" title="נגישות">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+</button>
+<div class="acc-panel" id="accPanel" role="dialog" aria-label="הגדרות נגישות">
+  <h3>הגדרות נגישות <button id="accClose" aria-label="סגירה">✕</button></h3>
+  <button class="acc-row" data-acc="f1">הגדלת טקסט<span class="dot"></span></button>
+  <button class="acc-row" data-acc="f2">טקסט גדול מאוד<span class="dot"></span></button>
+  <button class="acc-row" data-acc="contrast">ניגודיות גבוהה<span class="dot"></span></button>
+  <button class="acc-row" data-acc="gray">גווני אפור<span class="dot"></span></button>
+  <button class="acc-row" data-acc="links">הדגשת קישורים<span class="dot"></span></button>
+  <button class="acc-row" data-acc="font">פונט קריא<span class="dot"></span></button>
+  <button class="acc-row" data-acc="noanim">עצירת אנימציות<span class="dot"></span></button>
+  <button class="acc-row" id="accReset">איפוס הגדרות<span class="dot"></span></button>
+  <a class="acc-link" href="../הצהרת-נגישות/">להצהרת הנגישות המלאה</a>
+</div>
+
+<button class="chat-btn" id="chatBtn" aria-label="פתיחת צ'אט עם העוזר הדיגיטלי" aria-expanded="false">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div class="chat-box" id="chatBox" data-root="../" role="dialog" aria-label="צ'אט עם העוזר הדיגיטלי של באלי ליד">
+  <div class="chat-head">
+    <div class="cav">ב</div>
+    <div><div class="cname">בַּאלִי · העוזר הדיגיטלי</div><div class="cstat">● זמין עכשיו</div></div>
+    <button id="chatClose" aria-label="סגירת הצ'אט">✕</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-chips" id="chatChips"></div>
+  <div class="chat-in">
+    <input id="chatInput" type="text" placeholder="כתבו כאן שאלה..." aria-label="הודעה לצ'אט">
+    <button id="chatSend" aria-label="שליחה"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/></svg></button>
+  </div>
+</div>
+
+<div class="pop-ov" id="popOv" role="dialog" aria-modal="true" aria-label="הצעה מיוחדת">
+  <div class="pop"><div class="pop-in">
+    <button class="pop-x" id="popX" aria-label="סגירה">✕</button>
+    <span class="pop-eyebrow" id="popEyebrow"></span>
+    <h3 id="popTitle"></h3>
+    <p id="popText"></p>
+    <form class="pop-form" id="popForm">
+      <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
+      <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
+    </form>
+    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+  </div></div>
+</div>
+<div class="toast" id="toast">
+  <button class="t-x" id="toastX" aria-label="סגירה">✕</button>
+  <h4 id="toastTitle"></h4>
+  <p id="toastText"></p>
+  <div class="t-row" id="toastRow"></div>
 </div>
 <script>
 (function(){
@@ -885,8 +1076,9 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
     new IntersectionObserver(function(entries){
       if(!entries[0].isIntersecting || counted) return;
       counted = true;
-      document.querySelectorAll('.stat-num').forEach(function(el){
+      document.querySelectorAll('.stat-num[data-count]').forEach(function(el){
         var target = parseInt(el.getAttribute('data-count'),10);
+        if(isNaN(target)) return;
         if(reduce || target > 999){ el.textContent = target; return; }
         el.textContent = '0';
         var start = null;
@@ -910,11 +1102,274 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
       var name = form.name.value.trim();
       var phone = form.phone.value.replace(/[^0-9+]/g,'');
       var topic = form.topic.value;
-      if(!name || phone.length < 9 || !topic){ err.classList.add('show'); return; }
+      if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
       err.classList.remove('show');
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
     });
+  }
+})();
+
+(function(){
+  "use strict";
+  var ROOT = (document.getElementById('chatBox')||{dataset:{}}).dataset.root || '';
+  var WA = 'https://wa.me/972584700706';
+  var PHONE = '058-4700706';
+
+  /* ============ Accessibility widget ============ */
+  var accBtn = document.getElementById('accBtn'), accPanel = document.getElementById('accPanel');
+  var ACC_KEYS = ['f1','f2','contrast','gray','links','font','noanim'];
+  function accLoad(){ try { return JSON.parse(localStorage.getItem('bl_acc')||'{}'); } catch(e){ return {}; } }
+  function accApply(){
+    var st = accLoad();
+    ACC_KEYS.forEach(function(k){
+      document.documentElement.classList.toggle('acc-'+k, !!st[k]);
+      var row = accPanel.querySelector('[data-acc="'+k+'"]');
+      if(row) row.setAttribute('aria-pressed', String(!!st[k]));
+    });
+  }
+  accApply();
+  accBtn.addEventListener('click', function(){
+    var open = !accPanel.classList.contains('open');
+    accPanel.classList.toggle('open', open);
+    accBtn.setAttribute('aria-expanded', String(open));
+  });
+  document.getElementById('accClose').addEventListener('click', function(){ accPanel.classList.remove('open'); });
+  accPanel.querySelectorAll('[data-acc]').forEach(function(row){
+    row.addEventListener('click', function(){
+      var st = accLoad(); var k = row.getAttribute('data-acc');
+      if(k==='f1' && !st.f1) st.f2 = false;
+      if(k==='f2' && !st.f2) st.f1 = false;
+      st[k] = !st[k];
+      localStorage.setItem('bl_acc', JSON.stringify(st)); accApply();
+    });
+  });
+  document.getElementById('accReset').addEventListener('click', function(){
+    localStorage.removeItem('bl_acc'); accApply();
+  });
+
+  /* ============ Chat assistant ============ */
+  var PRICES = [["ביטוח","₪10 עד ₪100"],["ביטוח רכב","₪40 עד ₪80"],["משכנתאות","₪50 עד ₪150"],["פיננסים","₪60 עד ₪180"],["השקעות","₪60 עד ₪140"],["החזרי מס","₪15 עד ₪45"],["הלוואה לכל מטרה","₪10 עד ₪45"],["הלוואות לעסקים","₪50 עד ₪90"],["הלוואות כנגד קופה או פנסיה","₪40 עד ₪90"],["הלוואות כנגד נכס למסורבים","₪15 עד ₪100"],["מחיקת BDI","₪20 עד ₪55"],["איתור כספים אבודים","₪15 עד ₪55"],["פורקס","₪75 עד ₪200"],["עורכי דין","₪50 עד ₪110"],["רופאי שיניים","₪80 עד ₪150"],["השתלות שיניים","₪45 עד ₪100"],["רופאים ובעיות רפואיות","₪50 עד ₪130"],["אסתטיקה רפואית","₪60 עד ₪120"],["הסרת שיער בלייזר","₪40 עד ₪90"],["רפואה משלימה","₪40 עד ₪70"],["NLP","₪50 עד ₪150"],["בניית אתרים","₪70 עד ₪175"],["שיווק עסקים","₪30 עד ₪90"],["שיפוצים","₪100 עד ₪250"],["הובלות","₪60 עד ₪100"],["אדריכלים","₪40 עד ₪90"],["הפקות אירועים","₪40 עד ₪100"],["קורסים ומכללות","₪50 עד ₪150"],["תקשורת","₪40 עד ₪70"]];
+  var chatBtn = document.getElementById('chatBtn'), chatBox = document.getElementById('chatBox');
+  var msgs = document.getElementById('chatMsgs'), chips = document.getElementById('chatChips');
+  var input = document.getElementById('chatInput');
+  var started = false;
+
+  function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function addMsg(txt, who, isHtml){
+    var el = document.createElement('div');
+    el.className = 'cmsg ' + who;
+    if(isHtml) el.innerHTML = txt; else el.textContent = txt;
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  }
+  function typing(cb, delay){
+    var t = document.createElement('div'); t.className = 'ctyping';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(function(){ t.remove(); cb(); }, delay || 700);
+  }
+  function setChips(list){
+    chips.innerHTML = '';
+    list.forEach(function(c){
+      var b = document.createElement('button'); b.textContent = c;
+      b.addEventListener('click', function(){ send(c); });
+      chips.appendChild(b);
+    });
+  }
+  function link(href, txt){ return '<a href="' + ROOT + href + '">' + txt + '</a>'; }
+
+  var VERT = [
+    [/רכב/, 'ביטוח רכב'], [/ביטוח/, 'ביטוח'], [/משכנת/, 'משכנתאות'], [/פיננס/, 'פיננסים'],
+    [/השקע/, 'השקעות'], [/(החזר|מס הכנסה|\bמס\b)/, 'החזרי מס'],
+    [/(עסק).*(הלווא)|(הלווא).*(עסק)/, 'הלוואות לעסקים'], [/(קופה|פנסיה)/, 'הלוואות כנגד קופה או פנסיה'],
+    [/(נכס|מסורב)/, 'הלוואות כנגד נכס למסורבים'], [/הלווא/, 'הלוואה לכל מטרה'],
+    [/bdi/i, 'מחיקת BDI'], [/(כספים אבודים|איתור כספ)/, 'איתור כספים אבודים'], [/פורקס/, 'פורקס'],
+    [/(עורכי דין|עו"ד|עורך דין)/, 'עורכי דין'], [/השתל/, 'השתלות שיניים'], [/שיניים/, 'רופאי שיניים'],
+    [/אסתטיק/, 'אסתטיקה רפואית'], [/לייזר/, 'הסרת שיער בלייזר'], [/(רפואה משלימה|אלטרנטיב)/, 'רפואה משלימה'],
+    [/nlp/i, 'NLP'], [/רופא/, 'רופאים ובעיות רפואיות'],
+    [/(אתר|אתרים)/, 'בניית אתרים'], [/שיפוצ/, 'שיפוצים'], [/הובל/, 'הובלות'], [/אדריכל/, 'אדריכלים'],
+    [/אירוע/, 'הפקות אירועים'], [/(קורס|מכלל)/, 'קורסים ומכללות'], [/תקשורת/, 'תקשורת'], [/שיווק עסק/, 'שיווק עסקים']
+  ];
+  function findPrice(t){
+    for (var i = 0; i < VERT.length; i++) {
+      if (VERT[i][0].test(t)) {
+        var name = VERT[i][1];
+        for (var j = 0; j < PRICES.length; j++) if (PRICES[j][0] === name) return [name, PRICES[j][1]];
+      }
+    }
+    return null;
+  }
+
+  function answer(t){
+    t = t.trim();
+    var low = t.toLowerCase();
+    var pr = findPrice(low);
+    var phoneMatch = t.replace(/[^0-9]/g, '');
+    if (phoneMatch.length >= 9 && phoneMatch.length <= 13) {
+      var wamsg = 'היי, השארתי את המספר שלי בצ׳אט באתר: ' + t + '. אשמח שתחזרו אליי לגבי לידים.';
+      return { html: 'מעולה! לוחצים על הקישור ואנחנו כבר מדברים 👇<br><a href="' + WA + '?text=' + encodeURIComponent(wamsg) + '" target="_blank" rel="noopener"><b>שליחת הפרטים בוואטסאפ ←</b></a>', chips: ['איך זה עובד?', 'כמה עולה ליד?'] };
+    }
+    if (/(מחיר|עולה|עלות|כמה)/.test(low) && pr) {
+      return { html: 'ליד בתחום <b>' + pr[0] + '</b> עולה אצלנו <b>' + pr[1] + '</b>, בלעדי לכם בלבד ומשלמים פר ליד.<br>' + link('מחירון-לידים/', 'למחירון המלא 2026 ←'), chips: ['רוצה פיילוט ניסיון', 'איך זה עובד?', 'דברו איתי'] };
+    }
+    if (pr && /(ליד|לקוח)/.test(low)) {
+      return { html: 'יש לנו לידים חמים בתחום <b>' + pr[0] + '</b> בטווח <b>' + pr[1] + '</b> לליד, מסוננים ובלעדיים.<br>' + link('מחירון-לידים/', 'למחירון המלא ←'), chips: ['רוצה פיילוט ניסיון', 'איך זה עובד?'] };
+    }
+    if (/(מחיר|מחירון|עולה|עלות|כמה)/.test(low)) {
+      return { html: 'המחיר תלוי בתחום: מ-10 ₪ ועד 250 ₪ לליד. באיזה תחום אתם? (ביטוח, משכנתאות, הלוואות, החזרי מס...)<br>' + link('מחירון-לידים/', 'או צפו במחירון המלא ←'), chips: ['ביטוח', 'משכנתאות', 'הלוואות', 'החזרי מס'] };
+    }
+    if (/(איך|תהליך|עובד)/.test(low)) {
+      return { html: 'פשוט: 1️⃣ מגדירים יחד את הלקוח המדויק. 2️⃣ אנחנו מריצים קמפיינים בפלטפורמות המובילות. 3️⃣ כל פנייה מסוננת ומאומתת. 4️⃣ הליד מגיע אליכם בזמן אמת, בלעדי לכם.<br>' + link('חברת-לידים/', 'עוד על המודל שלנו ←'), chips: ['כמה עולה ליד?', 'רוצה פיילוט ניסיון'] };
+    }
+    if (/בלעדי/.test(low)) {
+      return { text: 'כן! כל ליד נמכר לעסק אחד בלבד. אין "ידיים שניות" ואין תחרות עם עסקים אחרים על אותו לקוח.', chips: ['כמה עולה ליד?', 'רוצה פיילוט ניסיון'] };
+    }
+    if (/(פסול|זיכוי|לא רלוונטי)/.test(low)) {
+      return { text: 'ליד לא רלוונטי? יש מנגנון זיכוי מסודר שנקבע מראש, בדרך כלל 0%-15% מהיקף ההזמנה. אתם משלמים רק על לידים אמיתיים.', chips: ['איך זה עובד?', 'דברו איתי'] };
+    }
+    if (/(פיילוט|ניסיון|להתחיל|מתחיל)/.test(low)) {
+      return { html: 'מעולה! אפשר להתחיל בפיילוט קטן, לראות את איכות הלידים בפועל ורק אז להגדיל. השאירו כאן מספר טלפון ונחזור אליכם, או ' + '<a href="' + WA + '" target="_blank" rel="noopener"><b>דברו איתנו עכשיו בוואטסאפ ←</b></a>', chips: ['איך זה עובד?'] };
+    }
+    if (/(וואטסאפ|ואטסאפ|טלפון|נציג|אנושי|בן אדם|לדבר|חייג)/.test(low)) {
+      return { html: 'בשמחה! 📞 <b>' + PHONE + '</b> (צחי) או <a href="' + WA + '" target="_blank" rel="noopener"><b>וואטסאפ ←</b></a>. אפשר גם להשאיר כאן מספר ונחזור אליכם.', chips: ['כמה עולה ליד?'] };
+    }
+    if (/(כתובת|איפה|משרד)/.test(low)) {
+      return { text: 'המשרד שלנו: אצ"ל 34, רמת גן. אבל את רוב העבודה אנחנו עושים בדיגיטל 😉', chips: ['שעות פעילות', 'דברו איתי'] };
+    }
+    if (/שעות/.test(low)) {
+      return { text: 'שעות המשרד: ימים א׳-ה׳, 09:00-16:00. פניות דחופות מטופלות גם מחוץ לשעות, אנחנו זמינים 24/7.', chips: ['דברו איתי'] };
+    }
+    if (/(שיווק|קידום|גוגל|פייסבוק|אינסטגרם|סאו|seo|קמפיין|אתר חדש|אפליקצי|crm|סוכן)/.test(low)) {
+      return { html: 'מעבר ללידים אנחנו נותנים מעטפת דיגיטל מלאה: קידום ממומן, SEO, בניית אתרים ודפי נחיתה, מערכות CRM, אוטומציות וסוכני AI.<br>' + link('שיווק-דיגיטלי/', 'לכל השירותים ←'), chips: ['כמה עולה ליד?', 'דברו איתי'] };
+    }
+    if (/(מאמר|מגזין|מדריך|ללמוד)/.test(low)) {
+      return { html: 'יש לנו מגזין עם עשרות מדריכים על לידים, המרות ושיווק: ' + link('עדכונים-חמים/', 'למגזין ←'), chips: ['כמה עולה ליד?'] };
+    }
+    if (/cpl/i.test(low)) {
+      return { html: 'CPL = Cost Per Lead. משלמים רק על ליד מאומת שהתעניין בכם, לא על חשיפות ולא על קליקים. ' + link('חברת-לידים/', 'ככה זה עובד ←'), chips: ['כמה עולה ליד?'] };
+    }
+    if (/(היי|שלום|הי\b|בוקר|ערב|מה נשמע|מה קורה)/.test(low)) {
+      return { text: 'היי! 👋 אני באלי, העוזר הדיגיטלי של באלי ליד. אני יודע הכל על לידים, מחירים ותהליך העבודה. מה מעניין אתכם?', chips: ['כמה עולה ליד?', 'איך זה עובד?', 'רוצה פיילוט ניסיון'] };
+    }
+    if (/(תודה|מעולה|סבבה|אחלה)/.test(low)) {
+      return { text: 'בכיף! 🙌 אם תרצו, השאירו כאן מספר טלפון ונחזור אליכם עם הצעה מסודרת.', chips: ['דברו איתי', 'כמה עולה ליד?'] };
+    }
+    return { html: 'שאלה טובה! הכי מהר יהיה לשאול את צחי ישירות: <a href="' + WA + '" target="_blank" rel="noopener"><b>וואטסאפ ←</b></a> או השאירו כאן מספר טלפון ונחזור אליכם.<br>אפשר גם לשאול אותי על מחירים, התהליך, פיילוט או השירותים שלנו.', chips: ['כמה עולה ליד?', 'איך זה עובד?', 'רוצה פיילוט ניסיון'] };
+  }
+
+  function send(t){
+    if(!t) return;
+    addMsg(t, 'user'); input.value = '';
+    setChips([]);
+    typing(function(){
+      var a = answer(t);
+      if(a.html) addMsg(a.html, 'bot', true); else addMsg(a.text, 'bot');
+      setChips(a.chips || []);
+    }, 550 + Math.random() * 500);
+  }
+  function openChat(greeting){
+    chatBox.classList.add('open'); chatBtn.setAttribute('aria-expanded', 'true');
+    if(!started){
+      started = true;
+      typing(function(){
+        addMsg(greeting || 'היי! 👋 אני באלי, העוזר הדיגיטלי. אשמח לעזור עם מחירים, תהליך העבודה או כל שאלה. במה מדובר?', 'bot');
+        setChips(['כמה עולה ליד?', 'איך זה עובד?', 'רוצה פיילוט ניסיון', 'דברו איתי']);
+      }, 600);
+    }
+  }
+  chatBtn.addEventListener('click', function(){
+    if(chatBox.classList.contains('open')){ chatBox.classList.remove('open'); chatBtn.setAttribute('aria-expanded','false'); }
+    else openChat();
+  });
+  document.getElementById('chatClose').addEventListener('click', function(){ chatBox.classList.remove('open'); chatBtn.setAttribute('aria-expanded','false'); });
+  document.getElementById('chatSend').addEventListener('click', function(){ send(input.value.trim()); });
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') send(input.value.trim()); });
+
+  /* ============ Conversion popups ============ */
+  var popOv = document.getElementById('popOv'), toast = document.getElementById('toast');
+  var isMobile = window.matchMedia('(max-width: 860px)').matches;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function seen(k){ try { return sessionStorage.getItem('bl_pop_' + k); } catch(e){ return '1'; } }
+  function mark(k){ try { sessionStorage.setItem('bl_pop_' + k, '1'); } catch(e){} }
+  function modalShown(){ return seen('modal'); }
+
+  function showModal(kind){
+    if(modalShown() || document.querySelector('.mnav.open') || chatBox.classList.contains('open')) return;
+    mark('modal'); mark(kind);
+    var ey = document.getElementById('popEyebrow'), ti = document.getElementById('popTitle'), tx = document.getElementById('popText');
+    if(kind === 'exit'){
+      ey.textContent = 'רגע לפני שיוצאים';
+      ti.innerHTML = 'הלידים הבאים שלכם <span class="gw">כבר מחכים</span>';
+      tx.textContent = 'התחילו בפיילוט ניסיון קטן, תראו את איכות הלידים בעצמכם, ורק אז תחליטו. השאירו טלפון ונחזור אליכם עוד היום.';
+    } else {
+      ey.textContent = 'מתלבטים?';
+      ti.innerHTML = 'שווה לדבר איתנו <span class="gw">לפני שסוגרים עם מישהו אחר</span>';
+      tx.textContent = 'תוך שיחה אחת תדעו בדיוק כמה עולה ליד בתחום שלכם ומתי מתחילים. בלי התחייבות.';
+    }
+    popOv.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(){ popOv.classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('popX').addEventListener('click', closeModal);
+  popOv.addEventListener('click', function(e){ if(e.target === popOv) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); toast.classList.remove('open'); } });
+  document.getElementById('popForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var ph = document.getElementById('popPhone').value.replace(/[^0-9+]/g, '');
+    if(ph.length < 9) return;
+    var msg = 'היי, השארתי טלפון באתר (' + document.getElementById('popPhone').value.trim() + '). אשמח לשמוע על פיילוט לידים לעסק שלי.';
+    window.open(WA + '?text=' + encodeURIComponent(msg), '_blank');
+    closeModal();
+  });
+
+  function showToast(title, text, withChat){
+    if(seen('toast') || modalShown() || chatBox.classList.contains('open')) return;
+    mark('toast');
+    document.getElementById('toastTitle').textContent = title;
+    document.getElementById('toastText').textContent = text;
+    var row = document.getElementById('toastRow');
+    row.innerHTML = '';
+    if(withChat){
+      var b = document.createElement('button'); b.className = 't-gold'; b.textContent = '💬 דברו עם באלי';
+      b.addEventListener('click', function(){ toast.classList.remove('open'); openChat('היי! ראיתי שאתם מסתובבים פה כבר כמה דקות 😊 אשמח לעזור, מה מעניין אתכם?'); });
+      row.appendChild(b);
+    }
+    var a = document.createElement('a'); a.className = withChat ? 't-ghost' : 't-gold'; a.textContent = 'וואטסאפ';
+    a.href = WA; a.target = '_blank'; a.rel = 'noopener';
+    row.appendChild(a);
+    if(!withChat){
+      var c = document.createElement('a'); c.className = 't-ghost'; c.textContent = '058-4700706';
+      c.href = 'tel:0584700706';
+      row.appendChild(c);
+    }
+    toast.classList.add('open');
+    setTimeout(function(){ toast.classList.remove('open'); }, 16000);
+  }
+  document.getElementById('toastX').addEventListener('click', function(){ toast.classList.remove('open'); });
+
+  if(!reduce){
+    /* exit intent: desktop only, armed after 12s */
+    if(!isMobile){
+      setTimeout(function(){
+        document.addEventListener('mouseout', function(e){
+          if(!e.relatedTarget && e.clientY <= 0 && !seen('exit')) showModal('exit');
+        });
+      }, 12000);
+    }
+    /* time on page: 50s -> gentle toast */
+    setTimeout(function(){ showToast('עדיין מתלבטים?', 'קבלו הצעת מחיר לתחום שלכם תוך דקות, בלי התחייבות.', false); }, 50000);
+    /* idle 40s -> chat invitation toast */
+    var idleTimer = null;
+    function resetIdle(){
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function(){
+        if(!seen('idle') && !modalShown()){ mark('idle'); showToast('צריכים עזרה?', 'באלי, העוזר הדיגיטלי שלנו, עונה על הכל תוך שניות.', true); }
+      }, 40000);
+    }
+    ['scroll','mousemove','keydown','touchstart'].forEach(function(ev){
+      window.addEventListener(ev, resetIdle, { passive: true });
+    });
+    resetIdle();
   }
 })();</script>
 </body>

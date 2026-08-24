@@ -1,5 +1,6 @@
 // Shared layout: CSS, header, footer, CTA form, page shell, JS.
 // All URLs are root-relative via the `root` prefix ('' | '../' | '../../').
+import { widgetsCss, widgetsHtml, widgetsJs } from './widgets.mjs';
 
 export const SITE = {
   phone: '058-4700706',
@@ -19,8 +20,10 @@ export const NAV_LEADS = [
   ['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'],
   ['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'],
   ['לידים-לרואי-חשבון/', 'לידים לרואי חשבון'],
+  ['קניית-לידים/לידים-לבניית-אתרים/', 'לידים לבניית אתרים'],
   ['פתיחת-עוסק-מורשה/', 'פתיחת עוסק מורשה'],
   ['מכירת-תיק-לרואי-חשבון/', 'העברת תיקים לרו"ח'],
+  ['מחשבון-roi-ללידים/', 'מחשבון ROI ללידים'],
 ];
 
 export const NAV_DIGITAL = [
@@ -31,6 +34,12 @@ export const NAV_DIGITAL = [
   ['פרסום-באינסטגרם/', 'פרסום באינסטגרם'],
   ['קידום-בלינקדאין/', 'קידום בלינקדאין'],
   ['פרסום-בטאבולה-ואאוטבריין/', 'טאבולה ואאוטבריין'],
+  ['בניית-אתרים/', 'בניית אתרים'],
+  ['דפי-נחיתה/', 'דפי נחיתה ממירים'],
+  ['פיתוח-אפליקציות/', 'פיתוח אפליקציות'],
+  ['מערכת-ניהול-לידים/', 'מערכות CRM וניהול לידים'],
+  ['סוכני-ai/', 'סוכני AI חכמים'],
+  ['אוטומציות-שיווק/', 'אוטומציות שיווק'],
 ];
 
 export const css = `
@@ -98,12 +107,12 @@ section{position:relative}
 .nav-item:hover .menu,.nav-item:focus-within .menu{opacity:1;visibility:visible;transform:translateY(0)}
 .menu-in{border-radius:20px;padding:10px;background:rgba(16,12,8,.94);
   backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
-  border:1px solid var(--line-strong);
+  border:1px solid var(--line-strong);display:grid;grid-template-columns:1fr 1fr;gap:0 6px;min-width:470px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 34px 80px -24px rgba(0,0,0,.95)}
 .menu-in a{display:block;padding:10px 14px;border-radius:12px;font-size:15px;font-weight:600;color:var(--muted);
   transition:color .35s var(--ease),background .35s var(--ease)}
 .menu-in a:hover{color:var(--gold2);background:rgba(217,164,91,.08)}
-.menu-in a:first-child{color:var(--ink);border-bottom:1px solid var(--line);border-radius:12px 12px 0 0;margin-bottom:4px}
+.menu-in a:first-child{grid-column:1/-1;color:var(--ink);border-bottom:1px solid var(--line);border-radius:12px 12px 0 0;margin-bottom:4px}
 .header-cta{margin-inline-start:auto;flex:0 0 auto}
 .nav + .header-cta{margin-inline-start:0}
 
@@ -426,6 +435,8 @@ section{position:relative}
 .field input,.field select{width:100%;border-radius:14px;border:1px solid var(--line-strong);
   background:rgba(244,238,227,.05);color:var(--ink);font-family:'Assistant';font-size:16px;font-weight:500;
   padding:14px 16px;outline:none;transition:border-color .4s var(--ease),box-shadow .4s var(--ease);appearance:none}
+.field input[type="tel"]{direction:ltr;text-align:right}
+.field input[type="tel"]::placeholder{direction:ltr;text-align:right}
 .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23d9a45b' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:left 16px center}
 .field select option{background:#141008;color:#f4eee3;font-size:16px}
@@ -677,12 +688,14 @@ export function footer(root) {
         <a href="${root}מחירון-לידים/">מחירון לידים 2026</a>
       </div>
       <div class="f-col">
-        <h4>שיווק דיגיטלי</h4>
+        <h4>פתרונות דיגיטל</h4>
         <a href="${root}קידום-בגוגל/">קידום ממומן בגוגל</a>
         <a href="${root}קידום-אתרים-seo/">קידום אתרים SEO</a>
-        <a href="${root}קידום-בפייסבוק/">קידום בפייסבוק</a>
-        <a href="${root}פרסום-באינסטגרם/">פרסום באינסטגרם</a>
-        <a href="${root}קידום-בלינקדאין/">קידום בלינקדאין</a>
+        <a href="${root}בניית-אתרים/">בניית אתרים</a>
+        <a href="${root}דפי-נחיתה/">דפי נחיתה ממירים</a>
+        <a href="${root}מערכת-ניהול-לידים/">מערכות CRM וניהול לידים</a>
+        <a href="${root}סוכני-ai/">סוכני AI חכמים</a>
+        <a href="${root}אוטומציות-שיווק/">אוטומציות שיווק</a>
         <a href="${root}עדכונים-חמים/">המגזין שלנו</a>
       </div>
       <div class="f-col">
@@ -690,6 +703,8 @@ export function footer(root) {
         <a href="${SITE.phoneHref}">${SITE.phone}</a>
         <a href="mailto:${SITE.email}">${SITE.email}</a>
         <a href="https://maps.google.com/?q=אצל 34 רמת גן" target="_blank" rel="noopener">${SITE.address}</a>
+        <a href="${root}מחשבון-roi-ללידים/">מחשבון ROI ללידים</a>
+        <a href="${root}מדיניות-פרטיות/">מדיניות פרטיות ותנאי שימוש</a>
         <a href="${root}הצהרת-נגישות/">הצהרת נגישות</a>
       </div>
     </div>
@@ -752,6 +767,7 @@ export function ctaSection(root, { title, sub } = {}) {
               <option>תחום אחר</option>
             </select>
           </div>
+          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic">${IC.send}</span>
             שולחים ומתחילים
@@ -813,8 +829,9 @@ export const js = `
     new IntersectionObserver(function(entries){
       if(!entries[0].isIntersecting || counted) return;
       counted = true;
-      document.querySelectorAll('.stat-num').forEach(function(el){
+      document.querySelectorAll('.stat-num[data-count]').forEach(function(el){
         var target = parseInt(el.getAttribute('data-count'),10);
+        if(isNaN(target)) return;
         if(reduce || target > 999){ el.textContent = target; return; }
         el.textContent = '0';
         var start = null;
@@ -838,7 +855,7 @@ export const js = `
       var name = form.name.value.trim();
       var phone = form.phone.value.replace(/[^0-9+]/g,'');
       var topic = form.topic.value;
-      if(!name || phone.length < 9 || !topic){ err.classList.add('show'); return; }
+      if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
       err.classList.remove('show');
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
@@ -867,16 +884,19 @@ ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 ${ldjson ? `<script type="application/ld+json">${ldjson}</script>` : ''}
 ${extraLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}
-<style>${css.replaceAll("url('assets/hero-poster.jpg')", `url('${root}assets/hero-poster.jpg')`)}</style>
+<style>${css.replaceAll("url('assets/hero-poster.jpg')", `url('${root}assets/hero-poster.jpg')`)}${widgetsCss}</style>
 </head>
 <body>
+<a class="skip-link" href="#top">דילוג לתוכן המרכזי</a>
 <div class="grain" aria-hidden="true"></div>
 ${header(root, active)}
 <main id="top">
 ${body}
 </main>
 ${footer(root)}
-<script>${js}</script>
+${widgetsHtml(root)}
+<script>${js}
+${widgetsJs}</script>
 </body>
 </html>`;
 }

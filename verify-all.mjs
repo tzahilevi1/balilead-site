@@ -38,6 +38,14 @@ const PAGES = [
   ['מה-זה-לידים/', 'art-leads'],
   ['hot-insurance-leads/', 'art-insurance'],
   ['quality-mortgage-leads/', 'art-mortgage'],
+  ['מחשבון-roi-ללידים/', 'roi-calc'],
+  ['מדיניות-פרטיות/', 'privacy'],
+  ['סוכני-ai/', 'ai-agents'],
+  ['בניית-אתרים/', 'websites'],
+  ['מערכת-ניהול-לידים/', 'crm'],
+  ['קניית-לידים/לידים-לבניית-אתרים/', 'leads-web'],
+  ['tag/לידים-חמים/', 'tag-hot'],
+  ['leads-psychology/', 'art-random'],
 ];
 
 mkdirSync('shots', { recursive: true });
@@ -65,6 +73,8 @@ for (const [path, name] of PAGES) {
     nav: !!document.querySelector('.nav'),
     video: !!document.querySelector('.hero-media video'),
     brokenImgs: [...document.images].filter(i => i.complete && i.naturalWidth === 0).length,
+    widgets: !!document.getElementById('accBtn') && !!document.getElementById('chatBtn') && !!document.getElementById('popOv'),
+    consent: !document.getElementById('leadForm') || !!document.querySelector('#leadForm .consent input:checked'),
   }));
   const bad = c.overflow || c.h1 === 'MISSING' || c.brokenImgs > 0;
   if (bad) fails++;

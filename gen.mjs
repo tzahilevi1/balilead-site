@@ -1,6 +1,60 @@
 import { mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { shell, pageHero, ctaSection, SITE, IC } from './src/layout.mjs';
+import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
+
+const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
+
+/* ---------- internal auto-linker (on-page SEO) ---------- */
+const LINK_MAP = [
+  ['לידים לביטוח', 'קניית-לידים/לידים-לביטוח/'],
+  ['לידים למשכנתאות', 'קניית-לידים/לידים-למשכנתאות/'],
+  ['לידים להלוואות', 'קניית-לידים/לידים-להלוואות/'],
+  ['לידים להחזרי מס', 'קניית-לידים/לידים-להחזרי-מס/'],
+  ['לידים לרואי חשבון', 'לידים-לרואי-חשבון/'],
+  ['קניית לידים', 'קניית-לידים/'],
+  ['חברת לידים', 'חברת-לידים/'],
+  ['ספק לידים', 'חברת-לידים/'],
+  ['מחירון לידים', 'מחירון-לידים/'],
+  ['לידים חמים', 'קניית-לידים/'],
+  ['לידים איכותיים', 'קניית-לידים/'],
+  ['שיווק דיגיטלי', 'שיווק-דיגיטלי/'],
+  ['קידום ממומן בגוגל', 'קידום-בגוגל/'],
+  ['קידום אתרים', 'קידום-אתרים-seo/'],
+  ['בניית אתרים', 'בניית-אתרים/'],
+  ['דפי נחיתה', 'דפי-נחיתה/'],
+];
+function autolink(html, root, selfPath) {
+  const used = new Set();
+  return html.replace(/<p>([\s\S]*?)<\/p>/g, (m, inner) => {
+    if (inner.includes('<a ')) return m;
+    for (const [phrase, target] of LINK_MAP) {
+      if (used.has(target) || target === selfPath + '/' || used.size >= 4) continue;
+      const i = inner.indexOf(phrase);
+      if (i < 0) continue;
+      used.add(target);
+      inner = inner.slice(0, i) + `<a href="${root}${target}">` + phrase + '</a>' + inner.slice(i + phrase.length);
+      return '<p>' + inner + '</p>';
+    }
+    return m;
+  });
+}
+
+/* ---------- deep content from the original WP pages ---------- */
+function deepSection(root, slug, title) {
+  const e = SITE_CONTENT[slug];
+  if (!e || !e.blocks || e.blocks.length < 6) return '';
+  let html = cleanArticleBlocks(e.blocks);
+  if (html.replace(/<[^>]+>/g, '').length < 400) return '';
+  html = autolink(html, root, slug);
+  return `
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="sec-head reveal"><h2>${title || 'המדריך המלא: <span class="gw">כל מה שחשוב לדעת</span>'}</h2></div>
+    <div class="prose art-body reveal" style="--d:.06s">${html}</div>
+  </div>
+</section>`;
+}
 
 const OUT = '.';
 const canon = path => 'https://balilead.co.il/' + (path ? encodeURI(path) + '/' : '');
@@ -81,7 +135,49 @@ const relatedBlock = (root, links) => `
 /* =================================================================
    Magazine articles: full in-site pages (content migrated from WP)
 ================================================================= */
-const RAW_ARTICLES = JSON.parse(readFileSync('data/articles.json', 'utf8'));
+const CUSTOM_PAGES = new Set([
+  'קניית-לידים', 'קניית-לידים/לידים-לביטוח', 'קניית-לידים/לידים-להחזרי-מס', 'קניית-לידים/לידים-להלוואות',
+  'קניית-לידים/לידים-למשכנתאות', 'קניית-לידים/לידים-לבניית-אתרים', 'לידים-לרואי-חשבון', 'פתיחת-עוסק-מורשה',
+  'מכירת-תיק-לרואי-חשבון', 'שיווק-דיגיטלי', 'קידום-אתרים-seo', 'קידום-בגוגל', 'קידום-בפייסבוק',
+  'פרסום-באינסטגרם', 'קידום-בלינקדאין', 'פרסום-בטאבולה-ואאוטבריין', 'מחירון-לידים', 'עדכונים-חמים',
+  'יצירת-קשר', 'הצהרת-נגישות', 'מערכת-ניהול-לידים', 'מחשבון-roi-ללידים',
+]);
+const HIDDEN_POSTS = new Set(['לא-לחזור-על-נושאים-שכבר-כתבת-עליהם-בעב-2']);
+const RAW_ARTICLES = Object.keys(SITE_CONTENT)
+  .filter(k => !CUSTOM_PAGES.has(k))
+  .map(slug => ({ slug, ...SITE_CONTENT[slug] }))
+  .filter(a => (a.blocks || []).length > 5);
+const LISTED_ARTICLES = RAW_ARTICLES.filter(a => !HIDDEN_POSTS.has(a.slug));
+
+function inferCat(a) {
+  const s = a.slug + ' ' + (a.h1 || '') + ' ' + (a.title || '');
+  if (/insurance|ביטוח/i.test(s)) return 'ביטוח';
+  if (/mortgage|משכנת/i.test(s)) return 'משכנתאות';
+  if (/loan|הלווא/i.test(s)) return 'הלוואות';
+  if (/tax|החזר/i.test(s)) return 'החזרי מס';
+  if (/account|רואי חשבון|עוסק/i.test(s)) return 'רואי חשבון';
+  if (/market|שיווק|digital|דיגיטל|website|אתרים|seo|ppc|ממומן/i.test(s)) return 'שיווק דיגיטלי';
+  return 'לידים';
+}
+const CAT_COVER = { 'ביטוח': 'cover-insurance.webp', 'משכנתאות': 'cover-mortgage.webp', 'הלוואות': 'cover-loans.webp', 'החזרי מס': 'cover-loans.webp', 'רואי חשבון': 'img-office.webp', 'שיווק דיגיטלי': 'cover-marketing.webp', 'לידים': 'cover-leads.webp' };
+const CAT_SERVICES = {
+  'ביטוח': [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']],
+  'משכנתאות': [['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות']],
+  'הלוואות': [['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות']],
+  'החזרי מס': [['קניית-לידים/לידים-להחזרי-מס/', 'לידים להחזרי מס']],
+  'רואי חשבון': [['לידים-לרואי-חשבון/', 'לידים לרואי חשבון']],
+  'שיווק דיגיטלי': [['שיווק-דיגיטלי/', 'שיווק דיגיטלי'], ['קידום-בגוגל/', 'קידום ממומן בגוגל']],
+  'לידים': [['קניית-לידים/', 'קניית לידים'], ['חברת-לידים/', 'חברת לידים במודל CPL']],
+};
+function artTitle(a) { return a.h1 || (a.title || '').split('|')[0].split(' - ')[0].trim() || a.slug; }
+function getMeta(slug) {
+  if (ART_META[slug]) return ART_META[slug];
+  const a = SITE_CONTENT[slug] || {};
+  const cat = inferCat({ slug, ...a });
+  const firstP = ((a.blocks || []).find(b => b[0] === 'p' && b[1].length > 80) || ['', ''])[1];
+  const teaser = (a.desc || firstP || '').slice(0, 150);
+  return { cat, cover: CAT_COVER[cat], teaser, services: CAT_SERVICES[cat] };
+}
 
 const ART_META = {
   'מה-זה-שיווק-דיגיטלי': { cat: 'שיווק דיגיטלי', cover: 'cover-marketing.webp', teaser: 'כל מה שבעל עסק צריך לדעת על שיווק דיגיטלי: ערוצים, תקציבים ואיך מתחילים נכון.', services: [['שיווק-דיגיטלי/', 'שיווק דיגיטלי'], ['קידום-בגוגל/', 'קידום ממומן בגוגל']] },
@@ -130,14 +226,15 @@ function cleanArticleBlocks(blocks) {
 const readMinutes = blocks => Math.max(2, Math.round(blocks.map(b => b[1]).join(' ').split(/\s+/).length / 180));
 
 const artCard = (root, slug, i = 0) => {
-  const a = RAW_ARTICLES.find(x => x.slug === slug); const m = ART_META[slug];
+  const a = RAW_ARTICLES.find(x => x.slug === slug); const m = getMeta(slug);
+  if (!a) return '';
   return `
-  <a class="art-card reveal" style="--d:${(i % 3) * 0.08}s" href="${root}${slug}/">
+  <a class="art-card reveal" style="--d:${(i % 3) * 0.08}s" href="${root}${slug}/" data-cat="${m.cat}">
     <div class="art-in">
-      <div class="a-img"><img src="${root}assets/${m.cover}" alt="${a.h1}" loading="lazy"></div>
+      <div class="a-img"><img src="${root}assets/${m.cover}" alt="${artTitle(a)}" loading="lazy"></div>
       <div class="a-txt">
         <span class="a-tag">${m.cat} · ${readMinutes(a.blocks)} דקות קריאה</span>
-        <h3>${a.h1}</h3>
+        <h3>${artTitle(a)}</h3>
         <span class="a-read">לקריאת המאמר ${IC.crumb}</span>
       </div>
     </div>
@@ -479,6 +576,7 @@ function leadPage(path, o) {
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price })}
 ${o.sections(root)}
+${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${o.articles ? articlesStrip(root, o.articles, 'מאמרים שיעשו לכם סדר') : ''}
 ${relatedBlock(root, o.related)}
@@ -819,6 +917,8 @@ function digitalPage(path, o) {
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub })}
 ${o.sections(root)}
+${deepSection(root, path)}
+${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
 ${ctaSection(root, { title: o.ctaTitle, sub: 'השאירו פרטים ונחזור אליכם עם תוכנית פעולה מותאמת לעסק שלכם.' })}`,
   });
@@ -1005,25 +1105,7 @@ digitalPage('פרסום-בטאבולה-ואאוטבריין', {
 /* =================================================================
    מחירון 2026
 ================================================================= */
-const PRICES = {
-  fin: [
-    ['ביטוח', '₪10 עד ₪100'], ['ביטוח רכב', '₪40 עד ₪80'], ['משכנתאות', '₪50 עד ₪150'],
-    ['פיננסים', '₪60 עד ₪180'], ['השקעות', '₪60 עד ₪140'], ['החזרי מס', '₪15 עד ₪45'],
-    ['הלוואה לכל מטרה', '₪10 עד ₪45'], ['הלוואות לעסקים', '₪50 עד ₪90'],
-    ['הלוואות כנגד קופה או פנסיה', '₪40 עד ₪90'], ['הלוואות כנגד נכס למסורבים', '₪15 עד ₪100'],
-    ['מחיקת BDI', '₪20 עד ₪55'], ['איתור כספים אבודים', '₪15 עד ₪55'], ['פורקס', '₪75 עד ₪200'],
-  ],
-  med: [
-    ['עורכי דין', '₪50 עד ₪110'], ['רופאי שיניים', '₪80 עד ₪150'], ['השתלות שיניים', '₪45 עד ₪100'],
-    ['רופאים ובעיות רפואיות', '₪50 עד ₪130'], ['אסתטיקה רפואית', '₪60 עד ₪120'],
-    ['הסרת שיער בלייזר', '₪40 עד ₪90'], ['רפואה משלימה', '₪40 עד ₪70'], ['NLP', '₪50 עד ₪150'],
-  ],
-  biz: [
-    ['בניית אתרים', '₪70 עד ₪175'], ['שיווק עסקים', '₪30 עד ₪90'], ['שיפוצים', '₪100 עד ₪250'],
-    ['הובלות', '₪60 עד ₪100'], ['אדריכלים', '₪40 עד ₪90'], ['הפקות אירועים', '₪40 עד ₪100'],
-    ['קורסים ומכללות', '₪50 עד ₪150'], ['תקשורת', '₪40 עד ₪70'],
-  ],
-};
+const PRICES = PRICE_GROUPS;
 const priceRows = arr => arr.map(([n, p]) => `<div class="pg-row"><span class="n">${n}</span><span class="p">${p}</span></div>`).join('');
 
 page('מחירון-לידים', {
@@ -1148,13 +1230,14 @@ page('עדכונים-חמים', {
   extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'המגזין' }])],
   body: root => {
     const featured = 'מה-זה-לידים';
-    const fa = RAW_ARTICLES.find(x => x.slug === featured); const fm = ART_META[featured];
-    const rest = RAW_ARTICLES.map(a => a.slug).filter(s => s !== featured);
+    const fa = RAW_ARTICLES.find(x => x.slug === featured); const fm = getMeta(featured);
+    const rest = LISTED_ARTICLES.map(a => a.slug).filter(s => s !== featured);
+    const cats = ['הכל', ...new Set(rest.map(s => getMeta(s).cat))];
     return `
 ${pageHero(root, {
       crumbs: [{ href: '', t: 'ראשי' }, { t: 'המגזין' }],
       h1: 'המגזין: <span class="gw">ידע זה כוח</span>',
-      sub: '"ידע הוא הכוח המרכזי היחיד בעולם שאף אחד לא יכול לקחת ממך." מדריכים, מגמות וטיפים מהשטח, <b>בלי סיסמאות ריקות</b>.',
+      sub: `${LISTED_ARTICLES.length} מדריכים ומאמרים מהשטח על לידים, המרות ושיווק דיגיטלי, <b>בלי סיסמאות ריקות</b>.`,
       ctas: false,
     })}
 
@@ -1164,18 +1247,37 @@ ${pageHero(root, {
       <div class="af-in">
         <div class="af-txt">
           <span class="a-tag">המדריך המרכזי · ${fm.cat} · ${readMinutes(fa.blocks)} דקות קריאה</span>
-          <h3>${fa.h1}</h3>
+          <h3>${artTitle(fa)}</h3>
           <p>${fm.teaser}</p>
           <span class="a-read">לקריאת המאמר ${IC.crumb}</span>
         </div>
-        <div class="af-img"><img src="${root}assets/${fm.cover}" alt="${fa.h1}" loading="lazy"></div>
+        <div class="af-img"><img src="${root}assets/${fm.cover}" alt="${artTitle(fa)}" loading="lazy"></div>
       </div>
     </a>
-    <div class="art-grid">
+    <div class="dig-row reveal" id="magFilter" style="margin-bottom:26px">
+      ${cats.map((c, i) => `<button class="dig-pill" data-fcat="${c}" style="cursor:pointer;border:none;font-family:'Assistant';${i === 0 ? 'background:rgba(217,164,91,.16);color:var(--gold2)' : ''}">${c}</button>`).join('')}
+    </div>
+    <div class="art-grid" id="magGrid">
       ${rest.map((s, i) => artCard(root, s, i)).join('')}
     </div>
   </div>
 </section>
+<script>
+(function(){
+  var pills = document.querySelectorAll('#magFilter [data-fcat]');
+  var cards = document.querySelectorAll('#magGrid .art-card');
+  pills.forEach(function(p){
+    p.addEventListener('click', function(){
+      var cat = p.getAttribute('data-fcat');
+      pills.forEach(function(x){ x.style.background=''; x.style.color=''; });
+      p.style.background = 'rgba(217,164,91,.16)'; p.style.color = 'var(--gold2)';
+      cards.forEach(function(c){
+        c.style.display = (cat === 'הכל' || c.getAttribute('data-cat') === cat) ? '' : 'none';
+      });
+    });
+  });
+})();
+</script>
 
 ${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw">בשבילכם?</span>' })}`;
   },
@@ -1183,11 +1285,11 @@ ${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw
 
 /* Article pages */
 for (const art of RAW_ARTICLES) {
-  const m = ART_META[art.slug];
+  const m = getMeta(art.slug);
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: m.cat }];
   const mins = readMinutes(art.blocks);
   page(art.slug, {
-    title: art.title || art.h1 + ' | BaliLead',
+    title: art.title || artTitle(art) + ' | BaliLead',
     desc: art.desc || m.teaser,
     active: 'magazine',
     ogImage: GH + 'assets/' + m.cover,
@@ -1195,7 +1297,7 @@ for (const art of RAW_ARTICLES) {
       crumbsLd(crumbs),
       {
         '@context': 'https://schema.org', '@type': 'Article',
-        headline: art.h1, description: art.desc || m.teaser,
+        headline: artTitle(art), description: art.desc || m.teaser,
         image: GH + 'assets/' + m.cover,
         author: { '@type': 'Organization', name: 'BaliLeads' },
         publisher: { '@type': 'Organization', name: 'BaliLeads', logo: { '@type': 'ImageObject', url: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png' } },
@@ -1206,21 +1308,21 @@ for (const art of RAW_ARTICLES) {
 ${pageHero(root, {
       crumbs,
       metaLine: `<span class="am-cat">${m.cat}</span><span>${mins} דקות קריאה</span>`,
-      h1: art.h1,
+      h1: artTitle(art),
       sub: m.teaser,
       ctas: false,
     })}
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="${root}assets/${m.cover}" alt="${art.h1}"></div>
+    <div class="art-cover reveal"><img src="${root}assets/${m.cover}" alt="${artTitle(art)}"></div>
     <div class="prose art-body reveal" style="--d:.08s">
-      ${cleanArticleBlocks(art.blocks)}
+      ${autolink(cleanArticleBlocks(art.blocks), root, art.slug)}
     </div>
   </div>
 </section>
 
-${articlesStrip(root, RAW_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && ART_META[s].cat === m.cat).slice(0, 3).concat(RAW_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && ART_META[s].cat !== m.cat)).slice(0, 3), 'עוד מהמגזין')}
+${articlesStrip(root, LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat === m.cat).slice(0, 3).concat(LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat !== m.cat)).slice(0, 3), 'עוד מהמגזין')}
 ${relatedBlock(root, m.services.concat([['מחירון-לידים/', 'מחירון 2026']]))}
 ${ctaSection(root, { title: 'רוצים שהלידים יגיעו <span class="gw">אליכם מעכשיו?</span>' })}`,
   });
@@ -1286,24 +1388,440 @@ ${pageHero(root, {
   <div class="container">
     <div class="prose">
       <p>אתר זה עומד בדרישות תקנות שוויון זכויות לאנשים עם מוגבלות (התאמות נגישות לשירות), התשע"ג 2013. התאמות הנגישות בוצעו על פי המלצות התקן הישראלי (ת"י 5568) לנגישות תכנים באינטרנט ברמת AA ומסמך WCAG 2.0 הבינלאומי.</p>
-      <h2>דרכי הנגשה</h2>
+      <h2>רכיב הנגישות באתר</h2>
+      <p>בצד האתר מוצב כפתור נגישות צף (סמל נגישות על רקע כחול) הפותח תפריט התאמות, הנשמרות בין ביקורים:</p>
+      <ul>
+        <li>הגדלת טקסט בשתי רמות</li>
+        <li>מצב ניגודיות גבוהה (צהוב על שחור)</li>
+        <li>תצוגת גווני אפור</li>
+        <li>הדגשת קישורים בקו תחתון</li>
+        <li>החלפה לפונט קריא</li>
+        <li>עצירת אנימציות, תנועה ווידאו</li>
+        <li>איפוס כל ההגדרות בלחיצה אחת</li>
+      </ul>
+      <h2>דרכי הנגשה נוספות</h2>
       <ul>
         <li>האתר מותאם לתצוגה בכל דפדפן מודרני ובמכשירי טלפון סלולריים, ונבדק בדפדפנים הנפוצים.</li>
-        <li>האתר תומך בטכנולוגיות מסייעות ובהפעלה באמצעות מקלדת: מקשי החיצים, Enter ו-Esc ליציאה מתפריטים וחלונות.</li>
-        <li>ההתאמות כוללות היררכיית כותרות תקינה, טקסט חלופי לתמונות, ניגודיות צבעים גבוהה והתאמה למצב הפחתת תנועה.</li>
+        <li>האתר תומך בטכנולוגיות מסייעות ובהפעלה באמצעות מקלדת, כולל קישור "דילוג לתוכן המרכזי" ומקש Esc לסגירת חלונות.</li>
+        <li>ההתאמות כוללות היררכיית כותרות תקינה, טקסט חלופי לתמונות, ניגודיות צבעים גבוהה והתאמה אוטומטית למצב הפחתת תנועה (prefers-reduced-motion).</li>
       </ul>
       <h2>אחראי נגישות</h2>
       <p>למרות מאמצינו להנגיש את האתר באופן מלא, ייתכן שיתגלו חלקים שאינם נגישים. אם נתקלתם בבעיה, אנא פנו לאחראי הנגישות:</p>
       <ul>
-        <li><b>שם:</b> יוסי לוי</li>
-        <li><b>טלפון:</b> 050-2277087</li>
-        <li><b>דוא"ל:</b> Yositaxes@gmail.com</li>
+        <li><b>שם:</b> צחי לוי</li>
+        <li><b>טלפון:</b> 058-4700706</li>
+        <li><b>דוא"ל:</b> info@balilead.co.il</li>
       </ul>
-      <p>הצהרת הנגישות עודכנה לאחרונה בתאריך 01.12.24.</p>
+      <p>הצהרת הנגישות עודכנה לאחרונה בתאריך 24.08.2026.</p>
     </div>
   </div>
 </section>`,
 });
+
+/* =================================================================
+   לידים לבניית אתרים (עמוד שהיה חסר מול הוורדפרס)
+================================================================= */
+leadPage('קניית-לידים/לידים-לבניית-אתרים', {
+  title: 'לידים לבניית אתרים - לקוחות שרוצים לבנות אתר | BaliLead',
+  desc: 'לידים איכותיים לחברות ובוני אתרים: עסקים שמחפשים אתר חדש או שדרוג. לידים בלעדיים ומסוננים עם תקציב אמיתי.',
+  crumb: 'לידים לבניית אתרים',
+  h1: 'לידים לבניית אתרים, <span class="gw">לקוחות עם פרויקט ביד</span>',
+  sub: 'בוני אתרים ומשרדי דיגיטל מקבלים מאיתנו עסקים שכבר החליטו שהם צריכים אתר, <b>ורק מחפשים למי לתת את הפרויקט</b>.',
+  price: '₪70 עד ₪175',
+  ctaTitle: 'בונים אתרים? <span class="gw">הפרויקט הבא מחכה</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="check-grid">
+      ${checkCard(IC.doc, 'צורך מוגדר', 'הליד ציין מה הוא צריך: אתר תדמית, חנות, דף נחיתה או שדרוג לאתר קיים.')}
+      ${checkCard(IC.shekel, 'תקציב אמיתי', 'שאלות סינון על טווח התקציב מוודאות שאתם מדברים עם לקוח רציני.')}
+      ${checkCard(IC.bolt, 'העברה בזמן אמת', 'הליד מגיע אליכם תוך דקות, לפני שהוא ממשיך לחפש בגוגל.')}
+      ${checkCard(IC.shield, 'בלעדיות מלאה', 'כל פרויקט מוצע לספק אחד בלבד. לא מתחרים על אותו לקוח.')}
+    </div>
+  </div>
+</section>`,
+  faq: [FAQ_COMMON.exclusive, FAQ_COMMON.when, FAQ_COMMON.invalid, FAQ_COMMON.pilot],
+  related: [['בניית-אתרים/', 'שירות בניית אתרים שלנו'], ['קניית-לידים/', 'קניית לידים, כל התחומים'], ['מחירון-לידים/', 'מחירון 2026']],
+});
+
+/* =================================================================
+   פתרונות דיגיטל חדשים (סמכות מלאה בתחום)
+================================================================= */
+digitalPage('בניית-אתרים', {
+  title: 'בניית אתרים לעסקים - אתרים שמייצרים לידים | BaliLead',
+  desc: 'בניית אתרי תדמית, חנויות ואתרי לידים לעסקים: עיצוב פרימיום, מהירות טעינה, SEO מובנה וחיבור ל-CRM. אתר שהוא מכונת מכירות.',
+  crumb: 'בניית אתרים',
+  h1: 'בניית אתרים <span class="gw">שמייצרים לקוחות</span>',
+  sub: 'אתר יפה זה נחמד. אתר שממיר גולשים ללידים זה עסק. אנחנו בונים אתרים על אותם עקרונות שמכניסים לנו אלפי לידים בחודש, <b>ומחברים אותם ישר ל-CRM שלכם</b>.',
+  ctaTitle: 'רוצים אתר <span class="gw">שעובד בשבילכם?</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>מה מקבלים <span class="gw">בכל אתר שלנו?</span></h2></div>
+    <div class="check-grid">
+      ${checkCard(IC.target, 'ארכיטקטורת המרה', 'כל עמוד בנוי סביב פעולה אחת: טופס, שיחה או וואטסאפ. בלי קישוטים שמסיחים את הדעת.')}
+      ${checkCard(IC.bolt, 'מהירות טעינה', 'אתר סטטי מהיר או וורדפרס מוקשח. ציוני Core Web Vitals ירוקים, כי גוגל מדרג מהירות.')}
+      ${checkCard(IC.chart, 'SEO מובנה מהיסוד', 'מבנה כותרות תקין, סכמות, sitemap וקישור פנימי. האתר נולד מוכן לקידום אורגני.')}
+      ${checkCard(IC.users, 'חיבור ללידים', 'כל טופס מתחבר ל-CRM, למייל ולוואטסאפ שלכם. אף פנייה לא הולכת לאיבוד.')}
+    </div>
+  </div>
+</section>
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="prose">
+      <h2>מה אנחנו <span class="gw">בונים?</span></h2>
+      <ul>
+        <li><b>אתרי תדמית לעסקים.</b> נוכחות מקצועית שממצבת אתכם כסמכות בתחום.</li>
+        <li><b>אתרי לידים.</b> אתרים שכל מטרתם ייצור פניות, בדיוק כמו שאנחנו עושים לעצמנו.</li>
+        <li><b>חנויות אונליין.</b> מכירה ישירה עם סליקה, מלאי וניהול הזמנות.</li>
+        <li><b>מיני-סייטים לקמפיינים.</b> אתר ממוקד לקמפיין ספציפי, באוויר תוך ימים.</li>
+      </ul>
+      <p>ההבדל בינינו לבין סטודיו רגיל: אנחנו חברת לידים. אנחנו יודעים מה גורם לגולש להשאיר פרטים, כי אנחנו חיים מזה כל יום.</p>
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['כמה זמן לוקח לבנות אתר?', 'דף נחיתה: ימים בודדים. אתר תדמית מלא: שבועיים עד חודש. חנות: לפי היקף. מגדירים לוח זמנים מדויק לפני שמתחילים.'],
+    ['האם האתר יהיה שלי?', 'לחלוטין. הדומיין, התכנים והקוד רשומים על שמכם. אתם לא כלואים אצלנו.'],
+    ['האתר יופיע בגוגל?', 'האתר נבנה מוכן לקידום: מבנה תקין, מהירות, סכמות ותוכן. קידום אורגני שוטף הוא שירות משלים שאנחנו מציעים.'],
+  ],
+  related: [['דפי-נחיתה/', 'דפי נחיתה ממירים'], ['קידום-אתרים-seo/', 'קידום אתרים SEO'], ['קניית-לידים/לידים-לבניית-אתרים/', 'לידים לבוני אתרים']],
+});
+
+digitalPage('דפי-נחיתה', {
+  title: 'בניית דפי נחיתה ממירים - עמוד אחד שמוכר | BaliLead',
+  desc: 'דפי נחיתה ממירים לקמפיינים: קופי מכירתי, עיצוב ממוקד פעולה, טעינה מהירה וחיבור ישיר ללידים. הדפים שמאחורי אלפי הלידים שלנו.',
+  crumb: 'דפי נחיתה',
+  h1: 'דפי נחיתה <span class="gw">שהופכים קליקים ללידים</span>',
+  sub: 'כל שקל שאתם שמים על קמפיין עובר דרך דף הנחיתה. דף חלש שורף תקציב, דף חזק מכפיל תוצאות. <b>אנחנו בונים את הדפים שמאחורי הלידים שלנו עצמנו.</b>',
+  ctaTitle: 'הקמפיין הבא שלכם <span class="gw">ראוי לדף טוב יותר</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>האנטומיה של <span class="gw">דף שממיר</span></h2></div>
+    <div class="process-grid">
+      <div class="step reveal"><h3>הבטחה חדה</h3><p>כותרת שעונה בשנייה אחת על השאלה "מה יוצא לי מזה?", בלי מלל ריק.</p></div>
+      <div class="step reveal" style="--d:.1s"><h3>אמון מיידי</h3><p>הוכחות חברתיות, מספרים אמיתיים ותשובות להתנגדויות, בדיוק בסדר הנכון.</p></div>
+      <div class="step reveal" style="--d:.2s"><h3>טופס חכם</h3><p>מינימום שדות, שאלות מסננות כשצריך, וכפתור שאי אפשר לפספס.</p></div>
+      <div class="step reveal" style="--d:.3s"><h3>מדידה ושיפור</h3><p>פיקסלים, אנליטיקס ובדיקות A/B. הדף משתפר מקמפיין לקמפיין.</p></div>
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['במה דף נחיתה שונה מאתר?', 'אתר מספר את כל הסיפור שלכם. דף נחיתה עושה דבר אחד: הופך גולש מקמפיין ספציפי לליד. בלי תפריטים, בלי הסחות, רק מסר אחד ופעולה אחת.'],
+    ['כמה מהר אפשר לעלות לאוויר?', 'דף נחיתה ממוקד עולה לאוויר תוך ימים בודדים, כולל חיבור לקמפיין ולמערכת הלידים שלכם.'],
+    ['אתם גם מריצים את הקמפיין?', 'כן. החבילה המשתלמת ביותר היא דף + קמפיין + אופטימיזציה שוטפת אצל צוות אחד, כי אז כל הנתונים מתחברים.'],
+  ],
+  related: [['בניית-אתרים/', 'בניית אתרים'], ['קידום-בגוגל/', 'קידום ממומן בגוגל'], ['קידום-בפייסבוק/', 'קידום בפייסבוק']],
+});
+
+digitalPage('פיתוח-אפליקציות', {
+  title: 'פיתוח אפליקציות לעסקים - מהרעיון לחנויות האפליקציות | BaliLead',
+  desc: 'פיתוח אפליקציות מובייל ווב לעסקים: אפיון, עיצוב UX, פיתוח והשקה. אפליקציות שמייצרות ערך עסקי אמיתי, לא רק אייקון על המסך.',
+  crumb: 'פיתוח אפליקציות',
+  h1: 'פיתוח אפליקציות <span class="gw">שעושות כסף, לא רק רושם</span>',
+  sub: 'אפליקציה טובה היא לא אוסף פיצ׳רים, היא תוצאה עסקית: הזמנות, נאמנות לקוחות או תפעול חכם. אנחנו מפתחים <b>רק אחרי שמגדירים מה היא צריכה להחזיר לכם</b>.',
+  ctaTitle: 'יש לכם רעיון לאפליקציה? <span class="gw">בואו נבדוק אותו</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>מה אנחנו <span class="gw">מפתחים?</span></h2></div>
+    <div class="check-grid">
+      ${checkCard(IC.users, 'אפליקציות ללקוחות', 'הזמנות, תורים, מועדוני לקוחות והטבות. הלקוח שלכם בכיס של הלקוחות שלו.')}
+      ${checkCard(IC.chart, 'אפליקציות תפעול', 'ניהול עובדים בשטח, דוחות, מלאי ומשימות. פחות אקסלים, יותר שליטה.')}
+      ${checkCard(IC.bolt, 'Web Apps', 'מערכות דפדפן מהירות בלי חנויות אפליקציות, מושלם לכלים פנים-ארגוניים.')}
+      ${checkCard(IC.target, 'MVP לסטארטאפים', 'גרסה ראשונה רזה שבודקת את הרעיון מול משתמשים אמיתיים, לפני השקעה גדולה.')}
+    </div>
+  </div>
+</section>
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="prose">
+      <h2>איך זה <span class="gw">עובד אצלנו?</span></h2>
+      <p><b>אפיון קודם לקוד.</b> אנחנו מתחילים משאלה אחת: מה האפליקציה צריכה להשיג לעסק? מזה נגזרים המסכים, הפיצ'רים וסדרי העדיפויות. אחר כך עיצוב UX/UI, פיתוח בשלבים עם גרסאות ביניים שאתם רואים, והשקה מסודרת כולל העלאה לחנויות.</p>
+      <p>ומה שהכי חשוב: אנחנו אנשי שיווק. אפליקציה בלי משתמשים היא קובץ יקר, ולכן ההשקה אצלנו מגיעה עם תוכנית שיווק אמיתית.</p>
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['כמה עולה לפתח אפליקציה?', 'תלוי בהיקף: Web App ממוקד יתחיל בעשרות אלפי שקלים, אפליקציית מובייל מלאה יותר. אחרי שיחת אפיון קצרה תקבלו הצעה מסודרת עם טווח מדויק.'],
+    ['iOS, אנדרואיד או שניהם?', 'ברוב המקרים אנחנו מפתחים בטכנולוגיה היברידית אחת שרצה על שתי המערכות, מה שחוסך זמן וכסף.'],
+    ['מי מתחזק את האפליקציה אחרי ההשקה?', 'אנחנו מציעים חבילת תחזוקה חודשית: עדכונים, תיקונים ושדרוגים. אפשר גם להעביר את הקוד לצוות שלכם.'],
+  ],
+  related: [['מערכת-ניהול-לידים/', 'מערכות CRM וניהול לידים'], ['סוכני-ai/', 'סוכני AI חכמים'], ['בניית-אתרים/', 'בניית אתרים']],
+});
+
+digitalPage('סוכני-ai', {
+  title: 'סוכני AI חכמים לעסקים - אוטומציה שמדברת עם לקוחות | BaliLead',
+  desc: 'פיתוח סוכני AI לעסקים: מענה ללקוחות 24/7, סינון וטיפול בלידים, תיאום פגישות ואוטומציית תהליכים. הטכנולוגיה שמאחורי העסק שלנו.',
+  crumb: 'סוכני AI חכמים',
+  h1: 'סוכני AI <span class="gw">שעובדים בשבילכם 24/7</span>',
+  sub: 'עובד שלא ישן, לא שוכח ועונה תוך שניות. אנחנו בונים סוכני AI שעונים ללקוחות, מסננים לידים ומתאמים פגישות, <b>ומשתמשים בהם בעצמנו כל יום</b>.',
+  ctaTitle: 'רוצים עובד AI <span class="gw">בצוות שלכם?</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>מה סוכן AI <span class="gw">יכול לעשות לעסק שלכם?</span></h2></div>
+    <div class="check-grid">
+      ${checkCard(IC.bolt, 'מענה מיידי ללידים', 'הסוכן עונה לכל פנייה תוך שניות, גם בשתיים בלילה. מהירות תגובה היא ההבדל בין ליד חם לליד אבוד.')}
+      ${checkCard(IC.filter, 'סינון וכימות', 'שאלות חכמות שמבדילות בין סקרן ללקוח רציני, כך שאנשי המכירות מדברים רק עם מי ששווה את זמנם.')}
+      ${checkCard(IC.clock, 'תיאום פגישות', 'הסוכן סוגר פגישה ביומן, שולח תזכורות ומצמצם אי-הגעות.')}
+      ${checkCard(IC.chart, 'תובנות מהשיחות', 'כל שיחה מתועדת ומנותחת: מה שואלים, מה עוצר עסקאות ואיפה אפשר לשפר.')}
+    </div>
+  </div>
+</section>
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    <div class="prose">
+      <h2>איפה הסוכן <span class="gw">פוגש את הלקוחות?</span></h2>
+      <ul>
+        <li><b>וואטסאפ.</b> הערוץ החזק בישראל: מענה, סינון והעברה לנציג אנושי ברגע הנכון.</li>
+        <li><b>האתר שלכם.</b> צ'אט חכם שמכיר את המחירים והשירותים שלכם, בדיוק כמו זה שרץ באתר הזה עכשיו.</li>
+        <li><b>טפסים ולידים נכנסים.</b> חיוג או הודעה אוטומטית לכל ליד חדש, עם הפרטים שכבר נאספו.</li>
+        <li><b>מערכות פנימיות.</b> סוכנים שמסכמים שיחות, מעדכנים CRM וכותבים דוחות.</li>
+      </ul>
+      <p>אנחנו לא מוכרים "בינה מלאכותית" כקסם. אנחנו בונים תהליך עבודה מדויק, מגדירים מה הסוכן יודע ומה אסור לו להגיד, ומודדים את התוצאות במספרים.</p>
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['הסוכן לא יגיד שטויות ללקוחות שלי?', 'הסוכן עובד על בסיס ידע סגור שאתם מאשרים: המחירים, השירותים והנהלים שלכם. מה שהוא לא יודע, הוא מעביר לנציג אנושי, לא ממציא.'],
+    ['כמה זמן לוקח להקים סוכן?', 'סוכן ראשון ממוקד (למשל מענה וסינון לידים בוואטסאפ) עולה לאוויר תוך שבועות ספורים, כולל תקופת הרצה מלווה.'],
+    ['זה מחליף את אנשי המכירות שלי?', 'לא, זה משחרר אותם. הסוכן מטפל ב-80% הפניות החוזרות, והצוות שלכם מתמקד בסגירות.'],
+  ],
+  related: [['אוטומציות-שיווק/', 'אוטומציות שיווק'], ['מערכת-ניהול-לידים/', 'מערכות CRM'], ['פיתוח-אפליקציות/', 'פיתוח אפליקציות']],
+});
+
+digitalPage('אוטומציות-שיווק', {
+  title: 'אוטומציות שיווק לעסקים - השיווק עובד גם כשאתם ישנים | BaliLead',
+  desc: 'בניית אוטומציות שיווק ומכירות: מסעות לקוח, פולו-אפ אוטומטי ללידים, חיבורי מערכות ודוחות. פחות עבודה ידנית, יותר סגירות.',
+  crumb: 'אוטומציות שיווק',
+  h1: 'אוטומציות שיווק: <span class="gw">אף ליד לא נופל בין הכיסאות</span>',
+  sub: '44% מהלידים לא מקבלים אפילו פולו-אפ אחד. אוטומציה טובה מוודאת שכל ליד מקבל מענה, תזכורת והצעה, <b>בלי שאף אחד אצלכם צריך לזכור</b>.',
+  ctaTitle: 'רוצים שיווק <span class="gw">שרץ מעצמו?</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>אוטומציות <span class="gw">שאנחנו בונים</span></h2></div>
+    <div class="check-grid">
+      ${checkCard(IC.bolt, 'פולו-אפ ללידים', 'ליד חדש מקבל וואטסאפ תוך דקה, תזכורת אחרי יום ושיחה מתוזמנת. הכל אוטומטי.')}
+      ${checkCard(IC.users, 'מסעות לקוח', 'סדרות הודעות חכמות לפי התנהגות: מי שפתח, מי שלחץ ומי שנעלם מקבלים מסר אחר.')}
+      ${checkCard(IC.doc, 'חיבורי מערכות', 'טפסים, CRM, יומן, סליקה ודוחות מדברים ביניהם. בלי העתקות ידניות ובלי טעויות.')}
+      ${checkCard(IC.chart, 'דוחות אוטומטיים', 'כל בוקר מחכה לכם סיכום: כמה לידים, מאיפה, כמה עלו ומה נסגר.')}
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['על אילו מערכות אתם עובדים?', 'וואטסאפ עסקי, מערכות CRM מובילות, גוגל ומטא, מערכות דיוור וכלי אוטומציה כמו Make ו-n8n. אם יש למערכת חיבור, נחבר אותה.'],
+    ['זה לא ירגיש רובוטי ללקוחות?', 'אוטומציה טובה מרגישה כמו שירות מעולה: מענה מהיר, מסר אישי ותזמון נכון. את הניסוחים כותבים אנשי שיווק, לא רובוטים.'],
+    ['כמה זה חוסך בפועל?', 'עסק ממוצע חוסך שעות עבודה יומיות ומעלה משמעותית את אחוז הלידים שמקבלים טיפול. את המספרים המדויקים תראו בדוח החודשי הראשון.'],
+  ],
+  related: [['סוכני-ai/', 'סוכני AI חכמים'], ['מערכת-ניהול-לידים/', 'מערכות CRM'], ['שיווק-דיגיטלי/', 'שיווק דיגיטלי']],
+});
+
+/* מערכת ניהול לידים (תוכן מלא מהוורדפרס) */
+digitalPage('מערכת-ניהול-לידים', {
+  title: 'מערכת לניהול לידים - פיתוח מותאם אישית לכל עסק | BaliLead',
+  desc: 'מערכת CRM לניהול לידים בהתאמה אישית: קליטת לידים מכל הערוצים, חלוקה לאנשי מכירות, אוטומציות ודוחות. פיתוח על בסיס ניסיון אמיתי בלידים.',
+  crumb: 'מערכות CRM וניהול לידים',
+  h1: 'מערכת לניהול לידים <span class="gw">שנבנתה על ידי אנשי לידים</span>',
+  sub: 'אנחנו מזרימים אלפי לידים בחודש, אז בנינו מערכות שיודעות לנהל אותם: קליטה מכל ערוץ, חלוקה חכמה לאנשי מכירות, <b>ומעקב עד הסגירה</b>.',
+  ctaTitle: 'רוצים שליטה מלאה <span class="gw">על הלידים שלכם?</span>',
+  sections: root => `
+<section class="sec-tight">
+  <div class="container">
+    <div class="check-grid">
+      ${checkCard(IC.bolt, 'קליטה מכל הערוצים', 'פייסבוק, גוגל, אתר, וואטסאפ וטלפון נכנסים למקום אחד, בזמן אמת.')}
+      ${checkCard(IC.users, 'חלוקה אוטומטית', 'כל ליד מנותב לאיש המכירות הנכון לפי תחום, אזור או עומס.')}
+      ${checkCard(IC.clock, 'תזכורות ומעקב', 'המערכת דואגת שאף ליד לא יישכח: סטטוסים, משימות והתראות.')}
+      ${checkCard(IC.chart, 'דוחות אמת', 'עלות לליד, אחוזי סגירה והחזר השקעה לכל ערוץ, בלחיצה אחת.')}
+    </div>
+  </div>
+</section>`,
+  faq: [
+    ['יש לי כבר CRM, זה רלוונטי?', 'כן. אנחנו גם משדרגים ומחברים מערכות קיימות: אוטומציות, חיבורי ערוצים ודוחות מעל מה שכבר יש לכם.'],
+    ['כמה זמן לוקחת הקמה?', 'מערכת בסיסית עם קליטת לידים וחלוקה עולה תוך שבועות בודדים. יכולות מתקדמות מתווספות בשלבים.'],
+    ['המידע שלי מאובטח?', 'המערכות מוקמות עם הרשאות לפי תפקיד, גיבויים ותיעוד גישה. הנתונים שלכם נשארים שלכם.'],
+  ],
+  related: [['סוכני-ai/', 'סוכני AI חכמים'], ['אוטומציות-שיווק/', 'אוטומציות שיווק'], ['קניית-לידים/', 'קניית לידים']],
+});
+
+/* =================================================================
+   מחשבון ROI ללידים
+================================================================= */
+page('מחשבון-roi-ללידים', {
+  title: 'מחשבון ROI ללידים | חישוב החזר השקעה מדויק - BaliLead',
+  desc: 'מחשבון ROI ללידים: הזינו עלות לליד, כמות, אחוז סגירה ורווח מעסקה, וקבלו מיד את ההחזר על ההשקעה ועלות רכישת לקוח.',
+  active: 'leads',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'מחשבון ROI ללידים' }])],
+  body: root => `
+${pageHero(root, {
+    crumbs: [{ href: '', t: 'ראשי' }, { t: 'מחשבון ROI' }],
+    h1: 'מחשבון ROI ללידים: <span class="gw">כמה באמת מחזירה ההשקעה?</span>',
+    sub: 'הזינו ארבעה מספרים וקבלו תשובה מיידית: כמה עסקאות, כמה הכנסה, ומה ההחזר על כל שקל שהשקעתם בלידים.',
+    ctas: false,
+  })}
+
+<section class="sec-tight">
+  <div class="container">
+    <div class="contact-shell reveal">
+      <div class="contact-halo" aria-hidden="true"></div>
+      <div class="contact-in" style="align-items:start">
+        <div class="form" style="gap:14px">
+          <div class="field"><label for="r-cost">עלות ממוצעת לליד (₪)</label><input id="r-cost" type="number" inputmode="numeric" value="60" min="1"></div>
+          <div class="field"><label for="r-count">כמות לידים בחודש</label><input id="r-count" type="number" inputmode="numeric" value="100" min="1"></div>
+          <div class="field"><label for="r-close">אחוז סגירה (%)</label><input id="r-close" type="number" inputmode="numeric" value="10" min="0" max="100"></div>
+          <div class="field"><label for="r-value">רווח ממוצע מעסקה (₪)</label><input id="r-value" type="number" inputmode="numeric" value="1500" min="0"></div>
+        </div>
+        <div>
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:18px;text-align:center">
+            <div class="stat" style="border:none"><div class="stat-num" id="r-deals" style="font-size:clamp(30px,3vw,44px)">10</div><div class="stat-label">עסקאות בחודש</div></div>
+            <div class="stat" style="border:none"><div class="stat-num" id="r-rev" style="font-size:clamp(30px,3vw,44px)">₪15,000</div><div class="stat-label">רווח גולמי</div></div>
+            <div class="stat" style="border:none"><div class="stat-num" id="r-cac" style="font-size:clamp(30px,3vw,44px)">₪600</div><div class="stat-label">עלות רכישת לקוח</div></div>
+            <div class="stat" style="border:none"><div class="stat-num" id="r-roi" style="font-size:clamp(30px,3vw,44px)">150%</div><div class="stat-label">ROI על ההשקעה</div></div>
+          </div>
+          <p class="form-hint" id="r-note" style="margin-top:16px"></p>
+        </div>
+      </div>
+    </div>
+    <p class="price-note reveal" style="--d:.1s">${IC.info} רוצים לדעת כמה עולה ליד בתחום שלכם? <a href="${root}מחירון-לידים/" style="color:var(--gold2);font-weight:700">למחירון המלא 2026</a></p>
+  </div>
+</section>
+<script>
+(function(){
+  var ids = ['r-cost','r-count','r-close','r-value'];
+  function fmt(n){ return '₪' + Math.round(n).toLocaleString('he-IL'); }
+  function calc(){
+    var cost = +document.getElementById('r-cost').value || 0;
+    var count = +document.getElementById('r-count').value || 0;
+    var close = (+document.getElementById('r-close').value || 0) / 100;
+    var val = +document.getElementById('r-value').value || 0;
+    var invest = cost * count;
+    var deals = count * close;
+    var revenue = deals * val;
+    var profit = revenue - invest;
+    var roi = invest > 0 ? (profit / invest) * 100 : 0;
+    var cac = deals > 0 ? invest / deals : 0;
+    document.getElementById('r-deals').textContent = (Math.round(deals * 10) / 10).toLocaleString('he-IL');
+    document.getElementById('r-rev').textContent = fmt(revenue);
+    document.getElementById('r-cac').textContent = deals > 0 ? fmt(cac) : '-';
+    document.getElementById('r-roi').textContent = Math.round(roi) + '%';
+    var note = document.getElementById('r-note');
+    if (roi >= 100) note.textContent = 'מצוין: על כל שקל שהשקעתם חזרו ' + (1 + roi / 100).toFixed(1) + ' ₪. השקעה של ' + fmt(invest) + ' החזירה ' + fmt(revenue) + '.';
+    else if (roi > 0) note.textContent = 'רווחי, ויש לאן לצמוח: שיפור קטן באחוז הסגירה יקפיץ את התמונה. השקעה: ' + fmt(invest) + '.';
+    else note.textContent = 'במספרים האלה ההשקעה לא מחזירה את עצמה. שווה לדבר איתנו על איכות הלידים או על תסריט המכירה.';
+  }
+  ids.forEach(function(id){ document.getElementById(id).addEventListener('input', calc); });
+  calc();
+})();
+</script>
+
+${ctaSection(root, { title: 'רוצים לידים שמצדיקים <span class="gw">את המספרים האלה?</span>' })}`,
+});
+
+/* =================================================================
+   מדיניות פרטיות ותנאי שימוש
+================================================================= */
+page('מדיניות-פרטיות', {
+  title: 'מדיניות פרטיות ותנאי שימוש - BaliLead',
+  desc: 'מדיניות הפרטיות ותנאי השימוש של אתר BaliLead: איסוף פרטים, העברתם לצדדים שלישיים, אבטחת מידע, הסרה מרשימות והגבלת אחריות.',
+  active: '',
+  body: root => `
+${pageHero(root, {
+    crumbs: [{ href: '', t: 'ראשי' }, { t: 'מדיניות פרטיות' }],
+    h1: 'מדיניות פרטיות <span class="gw">ותנאי שימוש</span>',
+    sub: 'שקיפות מלאה: מה אנחנו אוספים, מה אנחנו עושים עם זה, ומה הזכויות שלכם. עודכן לאחרונה: אוגוסט 2026.',
+    ctas: false,
+  })}
+
+<section class="sec-tight" style="padding-bottom:clamp(80px,10vw,140px)">
+  <div class="container">
+    <div class="prose">
+      <p><b>כללי.</b> אתר balilead.co.il (להלן: "האתר") מופעל על ידי BaliLeads (להלן: "החברה", "אנחנו"). השימוש באתר, לרבות השארת פרטים בטפסים, בצ'אט או בכל אמצעי אחר, מהווה הסכמה מלאה למדיניות זו ולתנאי השימוש שלהלן. אם אינכם מסכימים לתנאים, אנא הימנעו משימוש באתר ומהשארת פרטים.</p>
+
+      <h2>איזה מידע אנחנו אוספים?</h2>
+      <ul>
+        <li><b>מידע שאתם מוסרים מרצונכם:</b> שם, טלפון, כתובת דוא"ל, תחום עניין וכל פרט אחר שתבחרו למסור בטפסים, בצ'אט, בוואטסאפ או בטלפון.</li>
+        <li><b>מידע טכני:</b> נתוני גלישה, סוג דפדפן ומכשיר, עמודים שנצפו ונתוני שימוש, לרבות באמצעות עוגיות (Cookies) וכלי מדידה ואנליטיקה.</li>
+      </ul>
+
+      <h2>העברת מידע לצדדים שלישיים, שימו לב</h2>
+      <p><b>ליבת השירות של החברה היא תיווך והפניית פניות (לידים) לבתי עסק ונותני שירותים רלוונטיים.</b> בעצם השארת פרטיכם באתר אתם מאשרים באופן מפורש כי:</p>
+      <ul>
+        <li>הפרטים שמסרתם <b>יועברו לצדדים שלישיים</b>, בהם בתי עסק, סוכנים, יועצים ונותני שירותים בתחום שלגביו פניתם, לצורך יצירת קשר עמכם ומתן הצעות ושירותים.</li>
+        <li>אותם צדדים שלישיים עשויים ליצור עמכם קשר בטלפון, בהודעות, בדוא"ל או בכל אמצעי תקשורת אחר, ואתם מסכימים לקבלת פניות כאמור.</li>
+        <li>החברה רשאית לעשות שימוש בפרטים גם לצורך דיוור, עדכונים והצעות מטעמה, בכפוף לזכותכם לבקש הסרה בכל עת.</li>
+      </ul>
+
+      <h2>הגבלת אחריות</h2>
+      <p>החברה פועלת כגורם מקשר בלבד בין משאירי הפרטים לבין צדדים שלישיים. בהתאם, ומבלי לגרוע מכל דין:</p>
+      <ul>
+        <li>החברה <b>אינה צד</b> לכל התקשרות, עסקה או מגע בינכם לבין צד שלישי כלשהו שאליו הועברו פרטיכם, ואינה אחראית לטיב השירותים, למחיריהם, לזמינותם, למצגיהם או לכל מעשה או מחדל של אותם צדדים שלישיים.</li>
+        <li>המידע באתר, לרבות מחירים, מדריכים, מחשבונים ותכני המגזין, נמסר כמידע כללי בלבד, אינו מהווה ייעוץ מקצועי, פיננסי, ביטוחי, משפטי או אחר, ואין להסתמך עליו ככזה. כל הסתמכות על המידע היא באחריות המשתמש בלבד.</li>
+        <li>השימוש באתר ובשירותים הוא "כפי שהם" (AS IS). החברה, מנהליה ועובדיה לא יישאו בכל אחריות לנזק ישיר או עקיף, כספי או אחר, שייגרם למשתמש או לצד שלישי בקשר עם השימוש באתר, הסתמכות על תכניו או התקשרות עם צד שלישי כלשהו.</li>
+        <li>בכל מקרה, ומבלי לגרוע מהאמור, אחריותה הכוללת של החברה, ככל שתוטל, לא תעלה על הסכום ששולם לה בפועל על ידי המשתמש, ככל ששולם, בשלושת החודשים שקדמו לאירוע.</li>
+      </ul>
+
+      <h2>אבטחת מידע ושמירתו</h2>
+      <p>אנחנו מיישמים אמצעי אבטחה מקובלים לשמירה על המידע, אולם אין באפשרותנו להבטיח חסינות מוחלטת מפני חדירות או שימוש לרעה. המידע נשמר כל עוד הוא נדרש למטרות שלשמן נאסף או בהתאם לדרישות הדין.</p>
+
+      <h2>הזכויות שלכם</h2>
+      <ul>
+        <li>לבקש לעיין במידע שנאסף עליכם, לתקנו או למחוק אותו.</li>
+        <li>לבקש הסרה מרשימות הדיוור והפניות בכל עת, בפנייה לכתובת ${SITE.email} או בטלפון ${SITE.phone}.</li>
+      </ul>
+
+      <h2>שונות</h2>
+      <p>החברה רשאית לעדכן מדיניות זו מעת לעת, והנוסח המעודכן שיפורסם באתר הוא המחייב. על מדיניות זו יחולו דיני מדינת ישראל, וסמכות השיפוט הבלעדית נתונה לבתי המשפט המוסמכים במחוז תל אביב.</p>
+      <p><b>יצירת קשר בנושאי פרטיות:</b> צחי לוי, טלפון ${SITE.phone}, דוא"ל ${SITE.email}.</p>
+    </div>
+  </div>
+</section>`,
+});
+
+/* =================================================================
+   ארכיוני תגיות וקטגוריות (שימור כתובות מהוורדפרס)
+================================================================= */
+const keyOf = a => (a.slug + ' ' + (a.h1 || '') + ' ' + (a.title || ''));
+const TAG_DEFS = [
+  ['tag/גיוס-לידים', 'גיוס לידים', a => /גיוס|recruit/i.test(keyOf(a))],
+  ['tag/לידים-איכותיים', 'לידים איכותיים', a => /איכות|quality/i.test(keyOf(a))],
+  ['tag/לידים-חמים', 'לידים חמים', a => /חמים|\bhot\b/i.test(keyOf(a))],
+  ['tag/מה-זה-לידים', 'מה זה לידים', a => /מה-זה-לידים|מה זה ליד/i.test(keyOf(a))],
+  ['tag/מה-זה-שיווק-דיגיטלי', 'מה זה שיווק דיגיטלי', a => /מה-זה-שיווק|מה זה שיווק/i.test(keyOf(a))],
+  ['tag/ניהול-לידים', 'ניהול לידים', a => /ניהול|management/i.test(keyOf(a))],
+  ['tag/פרסום-ממומן-ppc', 'פרסום ממומן PPC', a => /ממומן|ppc|גוגל/i.test(keyOf(a))],
+  ['tag/קידום-אתרים-seo', 'קידום אתרים SEO', a => /seo|קידום אתרים/i.test(keyOf(a))],
+  ['tag/שיווק-באינטרנט', 'שיווק באינטרנט', a => getMeta(a.slug).cat === 'שיווק דיגיטלי'],
+  ['tag/שיווק-ברשתות-חברתיות', 'שיווק ברשתות חברתיות', a => /פייסבוק|אינסטגרם|רשתות|social/i.test(keyOf(a))],
+  ['tag/שיווק-דיגיטלי', 'שיווק דיגיטלי', a => getMeta(a.slug).cat === 'שיווק דיגיטלי'],
+  ['category/לידים', 'קטגוריה: לידים', () => true],
+  ['category/uncategorized', 'כל המאמרים', () => true],
+  ['category/uncategorized/לידים-חמים', 'לידים חמים', a => /חמים|\bhot\b/i.test(keyOf(a))],
+];
+for (const [path, label, match] of TAG_DEFS) {
+  const items = LISTED_ARTICLES.filter(match).slice(0, 12).map(a => a.slug);
+  if (!items.length) continue;
+  page(path, {
+    title: label + ' - מאמרים ומדריכים | BaliLead',
+    desc: 'כל המאמרים והמדריכים של BaliLead בנושא ' + label + ': ידע מהשטח על לידים, המרות ושיווק דיגיטלי.',
+    active: 'magazine',
+    body: root => `
+${pageHero(root, {
+      crumbs: [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: label }],
+      h1: label.includes(':') ? label : `${label}: <span class="gw">מאמרים ומדריכים</span>`,
+      sub: 'אוסף התכנים שלנו בנושא, מתוך המגזין של באלי ליד.',
+      ctas: false,
+    })}
+<section class="sec-tight" style="padding-bottom:clamp(60px,8vw,100px)">
+  <div class="container">
+    <div class="art-grid">${items.map((s, i) => artCard(root, s, i)).join('')}</div>
+    <p class="price-note reveal" style="--d:.08s">${IC.info} <a href="${root}עדכונים-חמים/" style="color:var(--gold2);font-weight:700">לכל ${LISTED_ARTICLES.length} המאמרים במגזין</a></p>
+  </div>
+</section>
+${ctaSection(root)}`,
+  });
+}
 
 /* =================================================================
    sitemap.xml + robots.txt (canonical domain, ready for the move)
@@ -1315,5 +1833,29 @@ writeFileSync(join(OUT, 'sitemap.xml'),
   `\n</urlset>`);
 writeFileSync(join(OUT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\nSitemap: https://balilead.co.il/sitemap.xml\n`);
-console.log('sitemap.xml + robots.txt written,', BUILT.length, 'pages');
+
+/* branded 404 with base-aware links */
+writeFileSync(join(OUT, '404.html'), `<!DOCTYPE html>
+<html dir="rtl" lang="he"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>העמוד לא נמצא - BaliLead</title><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#080606;color:#f4eee3;font-family:'Assistant',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+h1{font-family:'Secular One';font-size:clamp(60px,12vw,120px);margin:0;background:linear-gradient(115deg,#a96d2b,#f6d9a0,#a96d2b);-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-family:'Secular One';font-weight:400;font-size:clamp(20px,3vw,28px);margin:8px 0 12px}
+p{color:#a89d8d;max-width:46ch;margin:0 auto 26px}
+.row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+a{display:inline-block;border-radius:999px;padding:13px 26px;font-weight:700;text-decoration:none;color:#f4eee3;border:1px solid rgba(244,238,227,.2)}
+a.g{background:linear-gradient(115deg,#a96d2b,#d9a45b,#f6d9a0,#d9a45b,#a96d2b);color:#1c1206;border:none}
+</style></head><body><div>
+<h1>404</h1><h2>הליד הזה התקרר...</h2>
+<p>העמוד שחיפשתם עבר, הוחלף או שלא היה קיים. הכל עדיין כאן, רק כתובת אחת אחורה.</p>
+<div class="row"><a class="g" id="l-home" href="/">לעמוד הבית</a><a id="l-mag" href="/">למגזין</a><a id="l-price" href="/">למחירון 2026</a></div>
+</div><script>
+var base = location.pathname.indexOf('/balilead-site/') === 0 ? '/balilead-site/' : '/';
+document.getElementById('l-home').href = base;
+document.getElementById('l-mag').href = base + encodeURIComponent('עדכונים-חמים') + '/';
+document.getElementById('l-price').href = base + encodeURIComponent('מחירון-לידים') + '/';
+</script></body></html>`);
+console.log('sitemap.xml + robots.txt + 404.html written,', BUILT.length, 'pages');
 console.log('ALL PAGES BUILT');
