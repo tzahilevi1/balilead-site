@@ -1,23 +1,38 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads</title>
-<meta name="description" content="BaliLeads חברת לידים, שיווק ופרסום. מתמחה ביצירת לידים חמים ובלעדיים לסקטור הפיננסי: ביטוח, הלוואות, משכנתאות, החזרי מס ועוד. קידום ממומן ואורגני בגוגל ובניית אתרים.">
-<link rel="canonical" href="https://balilead.co.il/">
-<meta property="og:locale" content="he_IL">
-<meta property="og:type" content="website">
-<meta property="og:title" content="לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads">
-<meta property="og:description" content="BaliLeads חברת לידים, שיווק ופרסום. מתמחה ביצירת לידים חמים ובלעדיים לסקטור הפיננסי: ביטוח, הלוואות, משכנתאות, החזרי מס ועוד. קידום ממומן ואורגני בגוגל ובניית אתרים.">
-<meta property="og:image" content="https://balilead.co.il/wp-content/uploads/2021/10/cropped-%D7%9C%D7%95%D7%92%D7%95-%D7%A9%D7%A7%D7%95%D7%A3.png">
-<meta name="theme-color" content="#080606">
-<link rel="icon" type="image/png" href="assets/logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"BaliLeads","url":"https://balilead.co.il/","logo":"https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png","telephone":"+972-58-470-0706","email":"info@balilead.co.il","address":{"@type":"PostalAddress","streetAddress":"אצ״ל 34","addressLocality":"רמת גן","addressCountry":"IL"},"sameAs":["https://www.facebook.com/BaliLead"]}</script>
-<style>
+// Shared layout: CSS, header, footer, CTA form, page shell, JS.
+// All URLs are root-relative via the `root` prefix ('' | '../' | '../../').
+
+export const SITE = {
+  phone: '058-4700706',
+  phoneHref: 'tel:0584700706',
+  wa: 'https://wa.me/972584700706',
+  waText: 'https://wa.me/972584700706?text=' + encodeURIComponent('היי, אני מעוניין בלידים לעסק שלי'),
+  email: 'info@balilead.co.il',
+  address: 'אצ"ל 34, רמת גן',
+  fb: 'https://www.facebook.com/BaliLead',
+};
+
+export const NAV_LEADS = [
+  ['קניית-לידים/', 'קניית לידים, כל התחומים'],
+  ['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח'],
+  ['קניית-לידים/לידים-להחזרי-מס/', 'לידים להחזרי מס'],
+  ['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'],
+  ['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'],
+  ['לידים-לרואי-חשבון/', 'לידים לרואי חשבון'],
+  ['פתיחת-עוסק-מורשה/', 'פתיחת עוסק מורשה'],
+  ['מכירת-תיק-לרואי-חשבון/', 'העברת תיקים לרו"ח'],
+];
+
+export const NAV_DIGITAL = [
+  ['שיווק-דיגיטלי/', 'שיווק דיגיטלי, מעטפת מלאה'],
+  ['קידום-בגוגל/', 'קידום ממומן בגוגל'],
+  ['קידום-אתרים-seo/', 'קידום אתרים SEO'],
+  ['קידום-בפייסבוק/', 'קידום בפייסבוק'],
+  ['פרסום-באינסטגרם/', 'פרסום באינסטגרם'],
+  ['קידום-בלינקדאין/', 'קידום בלינקדאין'],
+  ['פרסום-בטאבולה-ואאוטבריין/', 'טאבולה ואאוטבריין'],
+];
+
+export const css = `
 @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 :root{
   --bg:#080606; --bg2:#0d0a07; --ink:#f4eee3; --muted:#a89d8d; --dim:#6f675b;
@@ -492,7 +507,7 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 .quote-in{border-radius:var(--r-inner);padding:clamp(26px,3vw,40px);
   background:linear-gradient(165deg,#181109 0%,#0c0906 100%);
   box-shadow:inset 0 1px 1px rgba(255,255,255,.09);position:relative;overflow:hidden}
-.quote-in::before{content:"\201D";position:absolute;top:-30px;inset-inline-end:14px;font-family:'Secular One';
+.quote-in::before{content:"\\201D";position:absolute;top:-30px;inset-inline-end:14px;font-family:'Secular One';
   font-size:170px;color:rgba(217,164,91,.12);line-height:1}
 .quote-txt{font-size:clamp(19px,1.8vw,23px);font-weight:600;line-height:1.55;margin-bottom:22px}
 .quote-who{display:flex;align-items:center;gap:14px}
@@ -509,32 +524,68 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   .hero-media video{display:none}
   .hero-media{background:url('assets/hero-poster.jpg') center/cover}
 }
-</style>
-</head>
-<body>
-<div class="grain" aria-hidden="true"></div>
+`;
 
+/* ---------- SVG icons ---------- */
+export const IC = {
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
+  house: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M10 21v-4h4v4"/></svg>',
+  shekel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
+  bank: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M3 21h18"/><path d="M7 21v-6"/><path d="M17 21v-6"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  filter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 13 4-4 4 4 5-5"/></svg>',
+  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  fbf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+  ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>',
+  li: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>',
+  rss: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>',
+  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>',
+  arrowL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>',
+  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+  info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9a45b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
+  wa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>',
+  fbFill: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+  caret: '<svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
+  crumb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+};
+
+const logoImg = root => `<img src="${root}assets/logo.png" alt="BaliLead באלי ליד" width="103" height="34">`;
+
+export function header(root, active = '') {
+  const mark = href => (href === active ? ' class="active"' : '');
+  const leadsMenu = NAV_LEADS.map(([h, t]) => `<a href="${root}${h}">${t}</a>`).join('');
+  const digMenu = NAV_DIGITAL.map(([h, t]) => `<a href="${root}${h}">${t}</a>`).join('');
+  return `
 <header class="header" id="header">
   <div class="header-pill">
-    <a class="brand" href="" aria-label="באלי ליד, דף הבית"><img src="assets/logo.png" alt="BaliLead באלי ליד" width="103" height="34"></a>
+    <a class="brand" href="${root}" aria-label="באלי ליד, דף הבית">${logoImg(root)}</a>
     <nav class="nav" aria-label="ניווט ראשי">
-      <div class="nav-item"><a href="" class="active">ראשי</a></div>
+      <div class="nav-item"><a href="${root}"${mark('home')}>ראשי</a></div>
       <div class="nav-item">
-        <a href="קניית-לידים/">לידים חמים <svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a>
-        <div class="menu"><div class="menu-in"><a href="קניית-לידים/">קניית לידים, כל התחומים</a><a href="קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a href="קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a href="קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a href="קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a href="לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a href="פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a href="מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a></div></div>
+        <a href="${root}קניית-לידים/"${mark('leads')}>לידים חמים ${IC.caret}</a>
+        <div class="menu"><div class="menu-in">${leadsMenu}</div></div>
       </div>
       <div class="nav-item">
-        <a href="שיווק-דיגיטלי/">שיווק דיגיטלי <svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></a>
-        <div class="menu"><div class="menu-in"><a href="שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a href="קידום-בגוגל/">קידום ממומן בגוגל</a><a href="קידום-אתרים-seo/">קידום אתרים SEO</a><a href="קידום-בפייסבוק/">קידום בפייסבוק</a><a href="פרסום-באינסטגרם/">פרסום באינסטגרם</a><a href="קידום-בלינקדאין/">קידום בלינקדאין</a><a href="פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a></div></div>
+        <a href="${root}שיווק-דיגיטלי/"${mark('digital')}>שיווק דיגיטלי ${IC.caret}</a>
+        <div class="menu"><div class="menu-in">${digMenu}</div></div>
       </div>
-      <div class="nav-item"><a href="מחירון-לידים/">מחירון 2026</a></div>
-      <div class="nav-item"><a href="עדכונים-חמים/">מגזין</a></div>
-      <div class="nav-item"><a href="יצירת-קשר/">צור קשר</a></div>
+      <div class="nav-item"><a href="${root}מחירון-לידים/"${mark('pricing')}>מחירון 2026</a></div>
+      <div class="nav-item"><a href="${root}עדכונים-חמים/"${mark('magazine')}>מגזין</a></div>
+      <div class="nav-item"><a href="${root}יצירת-קשר/"${mark('contact')}>צור קשר</a></div>
     </nav>
     <div class="header-cta">
-      <a class="btn btn-gold" href="tel:0584700706">
-        <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
-        058-4700706
+      <a class="btn btn-gold" href="${SITE.phoneHref}">
+        <span class="btn-ic">${IC.phone}</span>
+        ${SITE.phone}
       </a>
     </div>
     <button class="burger" id="burger" aria-label="פתיחת תפריט" aria-expanded="false" aria-controls="mnav">
@@ -544,222 +595,80 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 </header>
 
 <div class="mnav" id="mnav">
-  <a class="m-main" href="">ראשי</a>
-  <a class="m-main" href="מחירון-לידים/">מחירון 2026</a>
-  <a class="m-main" href="עדכונים-חמים/">מגזין</a>
-  <a class="m-main" href="יצירת-קשר/">צור קשר</a>
+  <a class="m-main" href="${root}">ראשי</a>
+  <a class="m-main" href="${root}מחירון-לידים/">מחירון 2026</a>
+  <a class="m-main" href="${root}עדכונים-חמים/">מגזין</a>
+  <a class="m-main" href="${root}יצירת-קשר/">צור קשר</a>
   <div class="m-group">לידים חמים</div>
-  <div><a class="m-sub" href="קניית-לידים/">קניית לידים, כל התחומים</a><a class="m-sub" href="קניית-לידים/לידים-לביטוח/">לידים לביטוח</a><a class="m-sub" href="קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a><a class="m-sub" href="קניית-לידים/לידים-להלוואות/">לידים להלוואות</a><a class="m-sub" href="קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a><a class="m-sub" href="לידים-לרואי-חשבון/">לידים לרואי חשבון</a><a class="m-sub" href="פתיחת-עוסק-מורשה/">פתיחת עוסק מורשה</a><a class="m-sub" href="מכירת-תיק-לרואי-חשבון/">העברת תיקים לרו"ח</a></div>
+  <div>${NAV_LEADS.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
   <div class="m-group">שיווק דיגיטלי</div>
-  <div><a class="m-sub" href="שיווק-דיגיטלי/">שיווק דיגיטלי, מעטפת מלאה</a><a class="m-sub" href="קידום-בגוגל/">קידום ממומן בגוגל</a><a class="m-sub" href="קידום-אתרים-seo/">קידום אתרים SEO</a><a class="m-sub" href="קידום-בפייסבוק/">קידום בפייסבוק</a><a class="m-sub" href="פרסום-באינסטגרם/">פרסום באינסטגרם</a><a class="m-sub" href="קידום-בלינקדאין/">קידום בלינקדאין</a><a class="m-sub" href="פרסום-בטאבולה-ואאוטבריין/">טאבולה ואאוטבריין</a></div>
-  <div class="mnav-contact">058-4700706 · info@balilead.co.il</div>
-</div>
-<main id="top">
+  <div>${NAV_DIGITAL.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
+  <div class="mnav-contact">${SITE.phone} · ${SITE.email}</div>
+</div>`;
+}
 
-<section class="hero">
-  <div class="hero-media" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="metadata" poster="assets/hero-poster.jpg">
-      <source src="assets/hero.mp4" type="video/mp4">
-    </video>
-    <div class="hero-scrim"></div>
-  </div>
-  <div class="hero-halo" aria-hidden="true"></div>
-  <div class="hero-ghost" aria-hidden="true">לידים</div>
-  <div class="container hero-grid">
-    <div>
-      <span class="hero-eyebrow reveal">חברת הלידים של הסקטור הפיננסי</span>
-      <h1 class="reveal" style="--d:.1s">לידים <span class="hot">רותחים</span>,<br>בלעדיים, בזמן אמת.</h1>
-      <p class="hero-sub reveal" style="--d:.2s">מאז 2020 אנחנו מזרימים לעסקים פיננסיים לקוחות שמחכים לשיחה. <b>לא רשימות ממוחזרות</b>, ליד אחד, עסק אחד.</p>
-      <div class="hero-ctas reveal" style="--d:.3s">
-        <a class="btn btn-gold" href="#contact"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></span>מתחילים לקבל לידים</a>
-        <a class="btn btn-ghost" href="https://wa.me/972584700706?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%91%D7%9C%D7%99%D7%93%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></span>דברו איתנו בוואטסאפ</a>
+export function footer(root) {
+  return `
+<footer>
+  <div class="container">
+    <div class="f-grid">
+      <div class="f-brand">
+        ${logoImg(root)}
+        <p>חברת לידים, שיווק ופרסום המתמחה בסקטור הפיננסי. לידים חמים, בלעדיים ומסוננים, ישירות לאנשי המכירות שלכם.</p>
+      </div>
+      <div class="f-col">
+        <h4>לידים חמים</h4>
+        <a href="${root}קניית-לידים/לידים-לביטוח/">לידים לביטוח</a>
+        <a href="${root}קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a>
+        <a href="${root}קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>
+        <a href="${root}קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>
+        <a href="${root}לידים-לרואי-חשבון/">לידים לרואי חשבון</a>
+        <a href="${root}מחירון-לידים/">מחירון לידים 2026</a>
+      </div>
+      <div class="f-col">
+        <h4>שיווק דיגיטלי</h4>
+        <a href="${root}קידום-בגוגל/">קידום ממומן בגוגל</a>
+        <a href="${root}קידום-אתרים-seo/">קידום אתרים SEO</a>
+        <a href="${root}קידום-בפייסבוק/">קידום בפייסבוק</a>
+        <a href="${root}פרסום-באינסטגרם/">פרסום באינסטגרם</a>
+        <a href="${root}קידום-בלינקדאין/">קידום בלינקדאין</a>
+        <a href="${root}עדכונים-חמים/">המגזין שלנו</a>
+      </div>
+      <div class="f-col">
+        <h4>יצירת קשר</h4>
+        <a href="${SITE.phoneHref}">${SITE.phone}</a>
+        <a href="mailto:${SITE.email}">${SITE.email}</a>
+        <a href="https://maps.google.com/?q=אצל 34 רמת גן" target="_blank" rel="noopener">${SITE.address}</a>
+        <a href="${root}הצהרת-נגישות/">הצהרת נגישות</a>
       </div>
     </div>
-    <div class="cascade reveal" style="--d:.35s" aria-label="דוגמאות לתחומי לידים ומחירים">
-      <a class="lead-card" href="קניית-לידים/לידים-לביטוח/">
-        <span class="lc-tag">הכי מבוקש</span>
-        <div class="lead-card-in">
-          <div class="lc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></div>
-          <div class="lc-body"><div class="lc-title">לידים לביטוח</div><div class="lc-meta">ממוקדים לפי סוג פוליסה</div></div>
-          <div class="lc-price">₪10 עד ₪100</div>
-        </div>
-      </a>
-      <a class="lead-card" href="קניית-לידים/לידים-למשכנתאות/">
-        <div class="lead-card-in">
-          <div class="lc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M10 21v-4h4v4"/></svg></div>
-          <div class="lc-body"><div class="lc-title">לידים למשכנתאות</div><div class="lc-meta">לקוחות בתהליך החלטה</div></div>
-          <div class="lc-price">₪50 עד ₪150</div>
-        </div>
-      </a>
-      <a class="lead-card" href="קניית-לידים/לידים-להחזרי-מס/">
-        <div class="lead-card-in">
-          <div class="lc-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="lc-body"><div class="lc-title">לידים להחזרי מס</div><div class="lc-meta">שכירים עם זכאות</div></div>
-          <div class="lc-price">₪15 עד ₪45</div>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="clients">
-  <div class="clients-label">חברות שכבר מוכרות יותר איתנו</div>
-  <div class="marquee">
-    <div class="marquee-track" id="marqTrack">
-      <div class="client-chip"><img src="assets/client-elia.png" alt="Elia" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-getfuel.png" alt="GetFuel" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-tevel.jpg" alt="תבל" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-yehadim.png" alt="יהלומים" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-tsm.jpg" alt="TSM" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-1907.png" alt="לקוח" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-tempweb.jpg" alt="לקוח" loading="lazy"></div>
-      <div class="client-chip"><img src="assets/client-untitled.png" alt="לקוח" loading="lazy"></div>
-    </div>
-  </div>
-</section>
-
-<section style="padding:clamp(70px,9vw,110px) 0 0">
-  <div class="container stats-grid">
-    <div class="stat reveal"><div class="stat-num" data-count="2020">2020</div><div class="stat-label">פועלים בסקטור הפיננסי מאז</div></div>
-    <div class="stat reveal" style="--d:.12s"><div class="stat-num" data-count="29">29</div><div class="stat-label">תחומי התמחות במחירון</div></div>
-    <div class="stat reveal" style="--d:.24s"><div class="stat-num" data-count="24">24</div><div class="stat-label">שעות עד שהלידים מתחילים לזרום</div></div>
-  </div>
-</section>
-
-<section class="sec" id="about">
-  <div class="container about-grid">
-    <div class="about-copy">
-      <div class="sec-head reveal"><h2>מי אנחנו, <span class="gw">ולמה זה משנה לכם</span></h2></div>
-      <p class="reveal" style="--d:.1s">באלי ליד היא חברת לידים ותיקה הפועלת מאז 2020 בזירה הכי תחרותית שיש, הסקטור הפיננסי: <b>ביטוח, הלוואות, משכנתאות, החזרי מס והטבות מס</b>.</p>
-      <p class="reveal" style="--d:.18s">ליד אצלנו הוא לא מספר טלפון אקראי. זה לקוח שהתעניין בשירות שלכם, עבר סינון לפי דרישות התחום, ומגיע לאנשי המכירות שלכם <b>כשהוא עדיין חם</b>.</p>
-      <p class="reveal" style="--d:.26s">הצוות שלנו מורכב מאנשי שיווק, כותבי תוכן ומומחי פרסום שחיים את עולם ההמרות. שיחת המכירה עליכם, האיכות עלינו.</p>
-    </div>
-    <div class="quote-shell reveal" style="--d:.2s">
-      <div class="quote-in">
-        <p class="quote-txt">"העסק שלכם הוא לא משחק. המטרה שלנו אחת: להביא לכם לקוחות משלמים ולהגדיל את אחוזי הסגירה."</p>
-        <div class="quote-who">
-          <div class="quote-avatar">צ</div>
-          <div><div class="quote-name">צחי לוי</div><div class="quote-role">מנכ"ל ומייסד, באלי ליד</div></div>
-        </div>
+    <div class="f-bottom">
+      <span>© 2026 BaliLeads. כל הזכויות שמורות.</span>
+      <div class="f-social">
+        <a href="${SITE.fb}" target="_blank" rel="noopener" aria-label="פייסבוק">${IC.fbFill}</a>
+        <a href="${SITE.wa}" target="_blank" rel="noopener" aria-label="וואטסאפ">${IC.wa}</a>
       </div>
     </div>
   </div>
-</section>
+</footer>
 
-<section class="sec process" id="process">
-  <div class="container">
-    <div class="sec-head reveal">
-      <h2>איך בתכלס <span class="gw">זה עובד?</span></h2>
-      <p>ארבעה שלבים בין החתימה לבין הליד הראשון שמצלצל אליכם.</p>
-    </div>
-    <div class="process-grid">
-      <div class="step reveal"><h3>אפיון מדויק</h3><p>מגדירים יחד את הלקוח האידיאלי: תחום, אזור, פרופיל פיננסי ותנאי סף.</p></div>
-      <div class="step reveal" style="--d:.1s"><h3>קמפיינים חכמים</h3><p>משיקים קמפיינים ממומנים בגוגל, פייסבוק, אינסטגרם וטאבולה, בדיוק איפה שהלקוחות שלכם נמצאים.</p></div>
-      <div class="step reveal" style="--d:.2s"><h3>סינון קפדני</h3><p>כל פנייה נבדקת מול הדרישות שלכם. ליד שלא רלוונטי לתחום, פשוט לא מגיע אליכם.</p></div>
-      <div class="step reveal" style="--d:.3s"><h3>העברה בזמן אמת</h3><p>הליד נוחת אצל אנשי המכירות שלכם תוך דקות, בלעדי לכם בלבד, כשהוא הכי חם.</p></div>
-    </div>
-  </div>
-</section>
+<a class="wa-float" href="${SITE.waText}" target="_blank" rel="noopener" aria-label="שיחת וואטסאפ">${IC.wa}</a>`;
+}
 
-<section class="sec" id="verticals">
-  <div class="container">
-    <div class="sec-head reveal">
-      <h2>תחומי הלידים <span class="gw">שלנו</span></h2>
-      <p>מיקוד לפי דרישות המקצוע והעסק שלכם. אין סיכוי שתקבלו ליד שלא קשור לתחום המומחיות שלכם.</p>
-    </div>
-    <div class="bento">
-      <a class="v-card feature col-5 reveal" href="קניית-לידים/לידים-לביטוח/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></div><span class="v-range">₪10 עד ₪100</span></div>
-        <div><h3>לידים לביטוח</h3><p class="v-desc">התחום המבוקש ביותר שלנו. לקוחות שמחפשים פוליסה חדשה או משדרגים קיימת, כולל ביטוח רכב.</p></div>
-      </div></a>
-      <a class="v-card col-4 reveal" style="--d:.08s" href="קניית-לידים/לידים-למשכנתאות/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M10 21v-4h4v4"/></svg></div><span class="v-range">₪50 עד ₪150</span></div>
-        <div><h3>לידים למשכנתאות</h3><p class="v-desc">רוכשי דירות וממחזרי משכנתא בתהליך החלטה פעיל.</p></div>
-      </div></a>
-      <a class="v-card col-3 reveal" style="--d:.16s" href="קניית-לידים/לידים-להחזרי-מס/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><span class="v-range">₪15 עד ₪45</span></div>
-        <div><h3>לידים להחזרי מס</h3><p class="v-desc">שכירים עם זכאות להחזר.</p></div>
-      </div></a>
-      <a class="v-card col-3 reveal" style="--d:.1s" href="קניית-לידים/לידים-להלוואות/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div><span class="v-range">₪10 עד ₪45</span></div>
-        <div><h3>הלוואה לכל מטרה</h3><p class="v-desc">כולל הלוואות כנגד קופה ופנסיה.</p></div>
-      </div></a>
-      <a class="v-card col-4 reveal" style="--d:.18s" href="קניית-לידים/לידים-להלוואות/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M3 21h18"/><path d="M7 21v-6"/><path d="M17 21v-6"/></svg></div><span class="v-range">₪50 עד ₪90</span></div>
-        <div><h3>הלוואות לעסקים</h3><p class="v-desc">בעלי עסקים שמחפשים מימון לצמיחה, כולל מסלולים למסורבי בנקים.</p></div>
-      </div></a>
-      <a class="v-card col-5 reveal" style="--d:.26s" href="לידים-לרואי-חשבון/"><div class="v-in">
-        <div class="v-top"><div class="v-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><span class="v-range">₪50 עד ₪110</span></div>
-        <div><h3>לידים לעורכי דין ורואי חשבון</h3><p class="v-desc">תיקים חדשים, פתיחת עוסק מורשה והעברת תיקים, ישירות למשרד שלכם.</p></div>
-      </div></a>
-    </div>
-  </div>
-</section>
-
-<section class="sec" id="pricing" style="padding-top:0">
-  <div class="container">
-    <div class="contact-shell reveal" style="border-radius:var(--r-card)">
-      <div class="contact-in" style="grid-template-columns:1fr auto;align-items:center;padding:clamp(26px,4vw,44px)">
-        <div>
-          <h2 style="font-size:clamp(24px,2.8vw,36px);margin-bottom:10px">מחירון שקוף. <span class="gw" style="background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent">בלי הפתעות.</span></h2>
-          <p style="color:var(--muted)">אנחנו מהיחידים בענף שמפרסמים מחירון מלא. כל 29 התחומים, מעודכן לשנת 2026.</p>
-        </div>
-        <a class="btn btn-gold" href="מחירון-לידים/"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></span>למחירון המלא 2026</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="sec dig" id="digital" style="padding-top:0">
-  <div class="container">
-    <div class="sec-head reveal">
-      <h2>שיווק דיגיטלי, <span class="gw">מעטפת מלאה</span></h2>
-      <p>מעבר ללידים, אנחנו מנהלים עבורכם את כל הנוכחות הדיגיטלית: מהקמפיין הראשון ועד האתר.</p>
-    </div>
-    <div class="dig-row reveal" style="--d:.1s">
-      <a class="dig-pill" href="קידום-בגוגל/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>קידום ממומן בגוגל</a>
-      <a class="dig-pill" href="קידום-אתרים-seo/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 13 4-4 4 4 5-5"/></svg>קידום אתרים SEO</a>
-      <a class="dig-pill" href="קידום-בפייסבוק/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>קידום בפייסבוק</a>
-      <a class="dig-pill" href="פרסום-באינסטגרם/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>פרסום באינסטגרם</a>
-      <a class="dig-pill" href="קידום-בלינקדאין/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>קידום בלינקדאין</a>
-      <a class="dig-pill" href="פרסום-בטאבולה-ואאוטבריין/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>טאבולה ואאוטבריין</a>
-    </div>
-  </div>
-</section>
-
-<section class="sec" style="padding-top:0">
-  <div class="container">
-    <div class="sec-head reveal"><h2>למה דווקא <span class="gw">באלי ליד?</span></h2></div>
-    <div class="why-grid">
-      <div class="why-card reveal"><div class="why-in">
-        <span class="why-num">ניסיון</span><h3>שנים בנישה הכי תחרותית</h3>
-        <p>מאז 2020 אנחנו חיים ונושמים את הסקטור הפיננסי. אנחנו יודעים בדיוק איזה ליד סוגר ואיזה מבזבז לכם זמן.</p>
-      </div></div>
-      <div class="why-card reveal" style="--d:.12s"><div class="why-in">
-        <span class="why-num">איכות</span><h3>סינון לפני העברה</h3>
-        <p>כל ליד עובר מיקוד לפי דרישות המקצוע שלכם. שיחת המכירה עליכם, האיכות עלינו.</p>
-      </div></div>
-      <div class="why-card reveal" style="--d:.24s"><div class="why-in">
-        <span class="why-num">מקצועיות</span><h3>זמינים 24/7, באמת</h3>
-        <p>ליווי אישי לאורך כל הדרך, כולל קו ישיר למנכ"ל. צריכים אותנו? אנחנו כאן.</p>
-      </div></div>
-    </div>
-  </div>
-</section>
-
-
+export function ctaSection(root, { title, sub } = {}) {
+  return `
 <section class="sec contact" id="contact" style="padding-top:0">
   <div class="container">
     <div class="contact-shell reveal">
       <div class="contact-halo" aria-hidden="true"></div>
       <div class="contact-in">
         <div class="contact-copy">
-          <h2>הלקוח הבא שלכם <span class="gw">כבר מחפש אתכם</span></h2>
-          <p>השאירו פרטים ותוך 24 שעות נתחיל להגדיל את כמות הלקוחות שלכם. בלי התחייבות, אפשר להתחיל בפיילוט.</p>
+          <h2>${title || 'הלקוח הבא שלכם <span class="gw">כבר מחפש אתכם</span>'}</h2>
+          <p>${sub || 'השאירו פרטים ותוך 24 שעות נתחיל להגדיל את כמות הלקוחות שלכם. בלי התחייבות, אפשר להתחיל בפיילוט.'}</p>
           <div class="contact-lines">
-            <a href="tel:0584700706"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>058-4700706</a>
-            <a href="mailto:info@balilead.co.il"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>info@balilead.co.il</a>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>אצ"ל 34, רמת גן</span>
+            <a href="${SITE.phoneHref}">${IC.phone}${SITE.phone}</a>
+            <a href="mailto:${SITE.email}">${IC.mail}${SITE.email}</a>
+            <span>${IC.pin}${SITE.address}</span>
           </div>
         </div>
         <form class="form" id="leadForm" novalidate>
@@ -788,7 +697,7 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
             </select>
           </div>
           <button class="btn btn-gold" type="submit">
-            <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
+            <span class="btn-ic">${IC.send}</span>
             שולחים ומתחילים
           </button>
           <div class="form-err" id="formErr">כמעט שם, רק צריך שם, טלפון תקין ותחום.</div>
@@ -797,54 +706,10 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
       </div>
     </div>
   </div>
-</section>
-</main>
+</section>`;
+}
 
-<footer>
-  <div class="container">
-    <div class="f-grid">
-      <div class="f-brand">
-        <img src="assets/logo.png" alt="BaliLead באלי ליד" width="103" height="34">
-        <p>חברת לידים, שיווק ופרסום המתמחה בסקטור הפיננסי. לידים חמים, בלעדיים ומסוננים, ישירות לאנשי המכירות שלכם.</p>
-      </div>
-      <div class="f-col">
-        <h4>לידים חמים</h4>
-        <a href="קניית-לידים/לידים-לביטוח/">לידים לביטוח</a>
-        <a href="קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a>
-        <a href="קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>
-        <a href="קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>
-        <a href="לידים-לרואי-חשבון/">לידים לרואי חשבון</a>
-        <a href="מחירון-לידים/">מחירון לידים 2026</a>
-      </div>
-      <div class="f-col">
-        <h4>שיווק דיגיטלי</h4>
-        <a href="קידום-בגוגל/">קידום ממומן בגוגל</a>
-        <a href="קידום-אתרים-seo/">קידום אתרים SEO</a>
-        <a href="קידום-בפייסבוק/">קידום בפייסבוק</a>
-        <a href="פרסום-באינסטגרם/">פרסום באינסטגרם</a>
-        <a href="קידום-בלינקדאין/">קידום בלינקדאין</a>
-        <a href="עדכונים-חמים/">המגזין שלנו</a>
-      </div>
-      <div class="f-col">
-        <h4>יצירת קשר</h4>
-        <a href="tel:0584700706">058-4700706</a>
-        <a href="mailto:info@balilead.co.il">info@balilead.co.il</a>
-        <a href="https://maps.google.com/?q=אצל 34 רמת גן" target="_blank" rel="noopener">אצ"ל 34, רמת גן</a>
-        <a href="הצהרת-נגישות/">הצהרת נגישות</a>
-      </div>
-    </div>
-    <div class="f-bottom">
-      <span>© 2026 BaliLeads. כל הזכויות שמורות.</span>
-      <div class="f-social">
-        <a href="https://www.facebook.com/BaliLead" target="_blank" rel="noopener" aria-label="פייסבוק"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
-        <a href="https://wa.me/972584700706" target="_blank" rel="noopener" aria-label="וואטסאפ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<a class="wa-float" href="https://wa.me/972584700706?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%91%D7%9C%D7%99%D7%93%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener" aria-label="שיחת וואטסאפ"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></a>
-<script>
+export const js = `
 (function(){
   "use strict";
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -923,6 +788,66 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
     });
   }
-})();</script>
+})();`;
+
+export function shell({ root, title, desc, canonical, active, body, ldjson }) {
+  return `<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${title}</title>
+<meta name="description" content="${desc}">
+${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
+<meta property="og:locale" content="he_IL">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${title}">
+<meta property="og:description" content="${desc}">
+<meta property="og:image" content="https://balilead.co.il/wp-content/uploads/2021/10/cropped-%D7%9C%D7%95%D7%92%D7%95-%D7%A9%D7%A7%D7%95%D7%A3.png">
+<meta name="theme-color" content="#080606">
+<link rel="icon" type="image/png" href="${root}assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+${ldjson ? `<script type="application/ld+json">${ldjson}</script>` : ''}
+<style>${css.replaceAll("url('assets/hero-poster.jpg')", `url('${root}assets/hero-poster.jpg')`)}</style>
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+${header(root, active)}
+<main id="top">
+${body}
+</main>
+${footer(root)}
+<script>${js}</script>
 </body>
-</html>
+</html>`;
+}
+
+export function pageHero(root, { crumbs, h1, sub, price, ctas = true }) {
+  const crumbHtml = crumbs
+    ? `<nav class="crumbs reveal" aria-label="פירורי לחם">${crumbs.map((c, i) =>
+        (i ? IC.crumb : '') + (c.href !== undefined ? `<a href="${root}${c.href}">${c.t}</a>` : `<span>${c.t}</span>`)
+      ).join('')}</nav>`
+    : '';
+  const priceHtml = price
+    ? `<div class="price-chip reveal" style="--d:.25s">טווח מחיר לליד: <span class="pc-num">${price}</span> <a href="${root}מחירון-לידים/">למחירון המלא 2026</a></div>`
+    : '';
+  const ctasHtml = ctas
+    ? `<div class="hero-ctas reveal" style="--d:.3s;margin-top:28px">
+        <a class="btn btn-gold" href="#contact"><span class="btn-ic">${IC.arrowL}</span>מתחילים לקבל לידים</a>
+        <a class="btn btn-ghost" href="${SITE.waText}" target="_blank" rel="noopener"><span class="btn-ic">${IC.wa}</span>דברו איתנו בוואטסאפ</a>
+      </div>`
+    : '';
+  return `
+<section class="p-hero">
+  <div class="hero-halo" aria-hidden="true"></div>
+  <div class="container">
+    ${crumbHtml}
+    <h1 class="reveal" style="--d:.08s">${h1}</h1>
+    <p class="p-sub reveal" style="--d:.16s">${sub}</p>
+    ${priceHtml}
+    ${ctasHtml}
+  </div>
+</section>`;
+}
