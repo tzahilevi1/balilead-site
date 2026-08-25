@@ -431,7 +431,38 @@ section{position:relative}
 
 /* Deep content + sidebar */
 .deep-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:clamp(28px,4vw,56px);align-items:start}
-.side-menu{position:sticky;top:110px;display:flex;flex-direction:column;gap:16px}
+.side-menu{position:sticky;top:100px;display:flex;flex-direction:column;gap:16px;
+  max-height:calc(100vh - 120px);overflow-y:auto;padding:2px 2px 8px;
+  scrollbar-width:thin;scrollbar-color:rgba(217,164,91,.35) transparent}
+.side-menu::-webkit-scrollbar{width:5px}
+.side-menu::-webkit-scrollbar-thumb{background:rgba(217,164,91,.3);border-radius:99px}
+/* stats counter widget */
+.sm-stat .sm-in{text-align:center;background:var(--grad-gold);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.sm-stat .st-cap{font-size:13.5px;font-weight:800;color:#3a2508;letter-spacing:.02em}
+.sm-stat .st-num{font-family:'Secular One';font-size:36px;color:#1c1206;line-height:1.2;margin:4px 0}
+.sm-stat .st-sub{font-size:13px;font-weight:700;color:#4a3210}
+.sm-actions{display:flex;gap:8px;margin-top:12px}
+.sm-actions button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:999px;
+  padding:9px 8px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;
+  background:rgba(20,12,4,.18);border:1px solid rgba(20,12,4,.25);color:#1c1206;
+  transition:background .35s var(--ease),transform .35s var(--ease)}
+.sm-actions button:hover{background:rgba(20,12,4,.28)}
+.sm-actions button:active{transform:scale(.97)}
+.sm-actions svg{width:15px;height:15px;flex:0 0 auto}
+.sm-actions .liked svg{fill:#b3261e;stroke:#b3261e}
+/* gold action buttons widget */
+.sm-btns a{display:block;text-align:center;border-radius:12px;padding:10px 12px;margin-bottom:8px;
+  font-size:14px;font-weight:700;color:var(--gold2);
+  background:rgba(217,164,91,.1);border:1px solid rgba(217,164,91,.3);
+  transition:background .35s var(--ease),transform .35s var(--ease)}
+.sm-btns a:last-child{margin-bottom:0}
+.sm-btns a:hover{background:rgba(217,164,91,.2);transform:translateY(-1px)}
+/* why-us checks widget */
+.sm-checks .chk{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--line);
+  font-size:13.5px;color:var(--muted);line-height:1.55}
+.sm-checks .chk:last-child{border-bottom:none;padding-bottom:0}
+.sm-checks .chk b{color:var(--ink)}
+.sm-checks .chk svg{width:15px;height:15px;flex:0 0 auto;margin-top:3px;color:var(--gold2)}
 .sm-card{border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.04);border:1px solid var(--line)}
 .sm-in{border-radius:var(--r-inner);padding:20px 18px;background:linear-gradient(160deg,#130e08 0%,#0b0906 100%);
   box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
@@ -673,6 +704,7 @@ export const IC = {
   wa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>',
   fbFill: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
   caret: '<svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
   crumb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
 };
 
@@ -789,6 +821,21 @@ export function sideMenu(root, activePath) {
   const link = ([h, t]) => `<a href="${root}${h}"${h === activePath + '/' ? ' class="on"' : ''}>${t}</a>`;
   return `
     <aside class="side-menu" aria-label="ניווט שירותים">
+      <div class="sm-card sm-stat"><div class="sm-in">
+        <div class="st-cap">סיפקנו בשנה האחרונה</div>
+        <div class="st-num">129,853</div>
+        <div class="st-sub">לידים איכותיים לעסקים בישראל</div>
+        <div class="sm-actions">
+          <button id="smLike" type="button" aria-label="אהבתי">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            <span id="smLikeCnt">4,832</span> אהבתי
+          </button>
+          <button id="smShare" type="button" aria-label="שיתוף העמוד">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg>
+            שתפו
+          </button>
+        </div>
+      </div></div>
       <div class="sm-card"><div class="sm-in">
         <h4>לידים חמים</h4>
         ${NAV_LEADS.map(link).join('')}
@@ -796,6 +843,27 @@ export function sideMenu(root, activePath) {
       <div class="sm-card"><div class="sm-in">
         <h4>שיווק דיגיטלי</h4>
         ${NAV_DIGITAL.map(link).join('')}
+      </div></div>
+      <div class="sm-card"><div class="sm-in">
+        <h4>כלים שיווקיים</h4>
+        ${link(['מחשבון-roi-ללידים/', 'מחשבון ROI ללידים'])}
+        ${link(['בדיקת-איכות-לידים/', 'בדיקת איכות לידים'])}
+        ${link(['מערכת-ניהול-לידים/', 'מערכת ניהול לידים'])}
+        ${link(['מדריך-המרת-לידים-ללקוחות/', 'מדריך המרת לידים ללקוחות'])}
+      </div></div>
+      <div class="sm-card"><div class="sm-in sm-btns">
+        <h4>שירותי לידים מותאמים לעסק שלך</h4>
+        <a href="${root}קניית-לידים/">קבלת לידים חמים למכירה מיידית</a>
+        <a href="${root}שיווק-דיגיטלי/">שירותי שיווק דיגיטלי לעסק</a>
+        <a href="${root}קידום-בגוגל/">ניהול קמפיינים בגוגל ופייסבוק</a>
+        <a href="${root}יצירת-קשר/">ייעוץ שיווקי מקצועי ללא עלות</a>
+      </div></div>
+      <div class="sm-card"><div class="sm-in sm-checks">
+        <h4>למה לבחור בבאלי ליד?</h4>
+        <div class="chk">${IC.check}<span><b>לידים חמים בלבד.</b> רק לידים עם כוונת קנייה אמיתית, בשונה ממאגרי לידים רגילים.</span></div>
+        <div class="chk">${IC.check}<span><b>תשלום רק עבור תוצאות.</b> משלמים על לידים איכותיים שהגיעו לעסק שלכם, לא על קליקים או חשיפות.</span></div>
+        <div class="chk">${IC.check}<span><b>התאמה מדויקת לתחום.</b> אנחנו מתמחים בלידים ממוקדים לענף המקצועי שלכם.</span></div>
+        <div class="chk">${IC.check}<span><b>שיעורי המרה גבוהים.</b> הלידים שאנו מספקים מובילים לשיעורי סגירה גבוהים מהממוצע.</span></div>
       </div></div>
       <div class="sm-card sm-cta"><div class="sm-in">
         <p>צריכים לידים עכשיו?</p>
@@ -941,6 +1009,34 @@ export const js = `
         requestAnimationFrame(tick);
       });
     }, {threshold:.4}).observe(statsEl);
+  }
+
+  /* sidebar: like + share */
+  var likeBtn = document.getElementById('smLike');
+  if(likeBtn){
+    var likeCnt = document.getElementById('smLikeCnt');
+    function renderLike(){
+      var liked = null;
+      try { liked = localStorage.getItem('bl_liked'); } catch(e){}
+      likeCnt.textContent = (4832 + (liked ? 1 : 0)).toLocaleString('he-IL');
+      likeBtn.classList.toggle('liked', !!liked);
+    }
+    renderLike();
+    likeBtn.addEventListener('click', function(){
+      try {
+        if(localStorage.getItem('bl_liked')) localStorage.removeItem('bl_liked');
+        else localStorage.setItem('bl_liked','1');
+      } catch(e){}
+      renderLike();
+    });
+  }
+  var shareBtn = document.getElementById('smShare');
+  if(shareBtn){
+    shareBtn.addEventListener('click', function(){
+      var u = location.href;
+      if(navigator.share){ navigator.share({ title: document.title, url: u }).catch(function(){}); }
+      else window.open('https://wa.me/?text=' + encodeURIComponent('שווה הצצה: ' + document.title + ' ' + u), '_blank');
+    });
   }
 
   /* spotlight hover: track pointer on cards */

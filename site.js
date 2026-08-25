@@ -70,6 +70,34 @@
     }, {threshold:.4}).observe(statsEl);
   }
 
+  /* sidebar: like + share */
+  var likeBtn = document.getElementById('smLike');
+  if(likeBtn){
+    var likeCnt = document.getElementById('smLikeCnt');
+    function renderLike(){
+      var liked = null;
+      try { liked = localStorage.getItem('bl_liked'); } catch(e){}
+      likeCnt.textContent = (4832 + (liked ? 1 : 0)).toLocaleString('he-IL');
+      likeBtn.classList.toggle('liked', !!liked);
+    }
+    renderLike();
+    likeBtn.addEventListener('click', function(){
+      try {
+        if(localStorage.getItem('bl_liked')) localStorage.removeItem('bl_liked');
+        else localStorage.setItem('bl_liked','1');
+      } catch(e){}
+      renderLike();
+    });
+  }
+  var shareBtn = document.getElementById('smShare');
+  if(shareBtn){
+    shareBtn.addEventListener('click', function(){
+      var u = location.href;
+      if(navigator.share){ navigator.share({ title: document.title, url: u }).catch(function(){}); }
+      else window.open('https://wa.me/?text=' + encodeURIComponent('שווה הצצה: ' + document.title + ' ' + u), '_blank');
+    });
+  }
+
   /* spotlight hover: track pointer on cards */
   if(window.matchMedia('(hover: hover)').matches && !reduce){
     document.querySelectorAll('.v-card,.art-card,.check-card,.why-card,.t-card').forEach(function(c){ c.classList.add('spot'); });
