@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { shell, pageHero, ctaSection, clientsStrip, siteCss, siteJs, SITE, IC } from './src/layout.mjs';
+import { shell, pageHero, ctaSection, clientsStrip, sideMenu, siteCss, siteJs, SITE, IC } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
 
 const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
@@ -42,17 +42,26 @@ function autolink(html, root, selfPath) {
 }
 
 /* ---------- deep content from the original WP pages ---------- */
-function deepSection(root, slug, title) {
+function deepSection(root, slug, title, withSidebar = false) {
   const e = SITE_CONTENT[slug];
   if (!e || !e.blocks || e.blocks.length < 6) return '';
   let html = cleanArticleBlocks(e.blocks);
   if (html.replace(/<[^>]+>/g, '').length < 400) return '';
   html = autolink(html, root, slug);
+  const content = `
+    <div class="sec-head reveal"><h2>${title || 'המדריך המלא: <span class="gw">כל מה שחשוב לדעת</span>'}</h2></div>
+    <div class="prose art-body reveal" style="--d:.06s">${html}</div>`;
+  if (!withSidebar) {
+    return `
+<section class="sec" style="padding-top:0">
+  <div class="container">${content}</div>
+</section>`;
+  }
   return `
 <section class="sec" style="padding-top:0">
-  <div class="container">
-    <div class="sec-head reveal"><h2>${title || 'המדריך המלא: <span class="gw">כל מה שחשוב לדעת</span>'}</h2></div>
-    <div class="prose art-body reveal" style="--d:.06s">${html}</div>
+  <div class="container deep-grid">
+    <div>${content}</div>
+    ${sideMenu(root, slug)}
   </div>
 </section>`;
 }
@@ -583,7 +592,7 @@ function leadPage(path, o) {
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
 ${o.sections(root)}
 ${clientsStrip(root)}
-${deepSection(root, path)}
+${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${o.articles ? articlesStrip(root, o.articles, 'מאמרים שיעשו לכם סדר') : ''}
 ${relatedBlock(root, o.related)}

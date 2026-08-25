@@ -429,6 +429,28 @@ section{position:relative}
   filter:grayscale(1) contrast(.92);opacity:.8;transition:filter .5s var(--ease),opacity .5s var(--ease)}
 .client-chip:hover img{filter:grayscale(0);opacity:1}
 
+/* Deep content + sidebar */
+.deep-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:clamp(28px,4vw,56px);align-items:start}
+.side-menu{position:sticky;top:110px;display:flex;flex-direction:column;gap:16px}
+.sm-card{border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.04);border:1px solid var(--line)}
+.sm-in{border-radius:var(--r-inner);padding:20px 18px;background:linear-gradient(160deg,#130e08 0%,#0b0906 100%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
+.sm-in h4{font-family:'Secular One';font-size:15.5px;color:var(--gold2);margin-bottom:10px;padding-bottom:9px;
+  border-bottom:1px solid rgba(217,164,91,.22)}
+.sm-in a{display:block;padding:7px 10px;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--muted);
+  transition:color .35s var(--ease),background .35s var(--ease)}
+.sm-in a:hover{color:var(--gold2);background:rgba(217,164,91,.07)}
+.sm-in a.on{color:var(--gold2);background:rgba(217,164,91,.13)}
+.sm-cta .sm-in{text-align:center;background:
+  radial-gradient(120% 120% at 50% -10%,rgba(217,164,91,.25) 0%,transparent 55%),
+  linear-gradient(160deg,#1a1207 0%,#0b0906 100%)}
+.sm-cta p{font-weight:800;font-size:16px;margin-bottom:12px}
+.sm-cta .btn{width:100%;justify-content:center;padding:11px 18px;font-size:15px;margin-bottom:8px}
+@media (max-width:1024px){
+  .deep-grid{grid-template-columns:1fr}
+  .side-menu{position:static}
+}
+
 /* Related */
 .related{display:flex;flex-wrap:wrap;gap:12px}
 .related a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:10px 20px;font-size:15px;font-weight:600;
@@ -762,6 +784,26 @@ export function footer(root) {
 }
 
 const FORM_TOPICS = ['ביטוח', 'משכנתאות', 'הלוואות', 'החזרי מס', 'פיננסים והשקעות', 'עורכי דין', 'רואי חשבון', 'רפואה ואסתטיקה', 'בניית אתרים', 'שיווק דיגיטלי לעסק שלי', 'תחום אחר'];
+
+export function sideMenu(root, activePath) {
+  const link = ([h, t]) => `<a href="${root}${h}"${h === activePath + '/' ? ' class="on"' : ''}>${t}</a>`;
+  return `
+    <aside class="side-menu" aria-label="ניווט שירותים">
+      <div class="sm-card"><div class="sm-in">
+        <h4>לידים חמים</h4>
+        ${NAV_LEADS.map(link).join('')}
+      </div></div>
+      <div class="sm-card"><div class="sm-in">
+        <h4>שיווק דיגיטלי</h4>
+        ${NAV_DIGITAL.map(link).join('')}
+      </div></div>
+      <div class="sm-card sm-cta"><div class="sm-in">
+        <p>צריכים לידים עכשיו?</p>
+        <a class="btn btn-gold" href="${SITE.phoneHref}"><span class="btn-ic">${IC.phone}</span>${SITE.phone}</a>
+        <a class="btn btn-ghost" href="${SITE.waText}" target="_blank" rel="noopener"><span class="btn-ic">${IC.wa}</span>וואטסאפ</a>
+      </div></div>
+    </aside>`;
+}
 
 export function clientsStrip(root) {
   return `
