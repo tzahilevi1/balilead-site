@@ -8,7 +8,7 @@ const tag = process.argv[3] || 'gen';
 let server = null;
 
 if (!base) {
-  const MIME = { html: 'text/html; charset=utf-8', png: 'image/png', jpg: 'image/jpeg', mp4: 'video/mp4', ico: 'image/png' };
+  const MIME = { html: 'text/html; charset=utf-8', css: 'text/css', js: 'application/javascript', png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', mp4: 'video/mp4', ico: 'image/png', xml: 'application/xml', txt: 'text/plain' };
   server = http.createServer((req, res) => {
     let p = decodeURIComponent(req.url.split('?')[0]);
     let fp = join('C:/Users/zahci/balilead-site', p);

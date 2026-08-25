@@ -1,9 +1,10 @@
 import { mkdirSync, writeFileSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { shell, pageHero, ctaSection, SITE, IC } from './src/layout.mjs';
+import { shell, pageHero, ctaSection, clientsStrip, siteCss, siteJs, SITE, IC } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
 
 const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
+const LASTMOD = JSON.parse(readFileSync('data/lastmod.json', 'utf8'));
 
 /* ---------- internal auto-linker (on-page SEO) ---------- */
 const LINK_MAP = [
@@ -95,7 +96,14 @@ function page(path, opts) {
   const depth = path ? path.split('/').length : 0;
   const root = '../'.repeat(depth);
   BUILT.push(path);
-  write(path, shell({ root, canonical: canon(path), ...opts, body: opts.body(root) }));
+  const body = opts.body(root);
+  // auto og:image from the page's hero image (shared previews per page)
+  let ogImage = opts.ogImage;
+  if (!ogImage) {
+    const m = body.match(/class="p-hero-media">\s*<img src="(?:\.\.\/)*assets\/([^"]+)"/);
+    if (m) ogImage = GH + 'assets/' + m[1];
+  }
+  write(path, shell({ root, canonical: canon(path), ...opts, ogImage, body }));
 }
 
 /* ---------- reusable blocks ---------- */
@@ -175,7 +183,8 @@ function getMeta(slug) {
   const a = SITE_CONTENT[slug] || {};
   const cat = inferCat({ slug, ...a });
   const firstP = ((a.blocks || []).find(b => b[0] === 'p' && b[1].length > 80) || ['', ''])[1];
-  const teaser = (a.desc || firstP || '').slice(0, 150);
+  const goodDesc = a.desc && a.desc.length > 20 ? a.desc : '';
+  const teaser = (goodDesc || firstP || '').slice(0, 150);
   return { cat, cover: CAT_COVER[cat], teaser, services: CAT_SERVICES[cat] };
 }
 
@@ -210,6 +219,15 @@ function cleanArticleBlocks(blocks) {
   }
   const cutAt = out.findIndex(([t, txt]) => (t === 'h2' || t === 'h3') && /^(יצירת קשר|לידים חמים$|שיווק דיגיטלי$|ליצירת קשר)/.test(txt));
   if (cutAt > 3) out.length = cutAt;
+  // עריכה: תיקון שגיאות כתיב שהגיעו מהוורדפרס
+  const TYPOS = [
+    ['נכנס למסורבים', 'נכס למסורבים'], ['אפסקה של', 'הפסקה של'], ['לעצור אפסקה', 'לעצור הפסקה'],
+    ['הבקנאות', 'הבנקאות'], ['אנסטגרם', 'אינסטגרם'], ['לתקשרות', 'לתקשורת'],
+    ['מנתח ההזמנה', 'מהיקף ההזמנה'], ['מנפח ההזמנה', 'מהיקף ההזמנה'],
+    ['בתחום הפתיחת עוסק', 'בתחום פתיחת עוסק'], ['ההחזרי מס', 'החזרי המס'],
+    ['הלידיםלידים', 'הלידים. לידים'], ['במשחק הזה אין קיצורי', 'במשחק הזה אין קיצורי'],
+  ];
+  for (const b of out) for (const [f, t] of TYPOS) b[1] = b[1].split(f).join(t);
   while (out.length && out[out.length - 1][0] !== 'p' && out[out.length - 1][1].length < 60) out.pop();
   let html = '', inList = false;
   for (const [t, txt] of out) {
@@ -256,7 +274,7 @@ page('', {
   title: 'לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads',
   desc: 'BaliLeads חברת לידים, שיווק ופרסום. מתמחה ביצירת לידים חמים ובלעדיים לסקטור הפיננסי: ביטוח, הלוואות, משכנתאות, החזרי מס ועוד. קידום ממומן ואורגני בגוגל ובניית אתרים.',
   active: 'home',
-  ldjson: JSON.stringify({ '@context': 'https://schema.org', '@type': 'Organization', name: 'BaliLeads', url: 'https://balilead.co.il/', logo: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png', telephone: '+972-58-470-0706', email: SITE.email, address: { '@type': 'PostalAddress', streetAddress: 'אצ״ל 34', addressLocality: 'רמת גן', addressCountry: 'IL' }, sameAs: [SITE.fb] }),
+  ldjson: JSON.stringify({ '@context': 'https://schema.org', '@type': ['Organization', 'ProfessionalService'], name: 'BaliLeads', alternateName: 'באלי ליד', description: 'חברת לידים ושיווק דיגיטלי המתמחה בסקטור הפיננסי: לידים בלעדיים ומאומתים במודל CPL', url: 'https://balilead.co.il/', logo: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png', image: GH + 'assets/hero-poster.jpg', telephone: '+972-58-470-0706', email: SITE.email, priceRange: '₪10-₪250 לליד', address: { '@type': 'PostalAddress', streetAddress: 'אצ״ל 34', addressLocality: 'רמת גן', addressCountry: 'IL' }, areaServed: { '@type': 'Country', name: 'Israel' }, openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '09:00', closes: '16:00' }], sameAs: [SITE.fb] }),
   body: root => `
 <section class="hero">
   <div class="hero-media" aria-hidden="true">
@@ -270,7 +288,7 @@ page('', {
   <div class="container hero-grid">
     <div>
       <span class="hero-eyebrow reveal">חברת הלידים של הסקטור הפיננסי</span>
-      <h1 class="reveal" style="--d:.1s">לידים <span class="hot">רותחים</span>,<br>בלעדיים, בזמן אמת.</h1>
+      <h1><span class="hl-line"><span>לידים <span class="hot">רותחים</span>,</span></span><span class="hl-line"><span>בלעדיים, בזמן אמת.</span></span></h1>
       <p class="hero-sub reveal" style="--d:.2s">מאז 2020 אנחנו מזרימים לעסקים פיננסיים לקוחות שמחכים לשיחה. <b>לא רשימות ממוחזרות</b>, ליד אחד, עסק אחד.</p>
       <div class="hero-ctas reveal" style="--d:.3s">
         <a class="btn btn-gold" href="#contact"><span class="btn-ic">${IC.arrowL}</span>מתחילים לקבל לידים</a>
@@ -304,21 +322,7 @@ page('', {
   </div>
 </section>
 
-<section class="clients">
-  <div class="clients-label">חברות שכבר מוכרות יותר איתנו</div>
-  <div class="marquee">
-    <div class="marquee-track" id="marqTrack">
-      <div class="client-chip"><img src="${root}assets/client-elia.png" alt="Elia" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-getfuel.png" alt="GetFuel" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tevel.jpg" alt="תבל" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-yehadim.png" alt="יהלומים" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tsm.jpg" alt="TSM" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-1907.png" alt="לקוח" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tempweb.jpg" alt="לקוח" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-untitled.png" alt="לקוח" loading="lazy"></div>
-    </div>
-  </div>
-</section>
+${clientsStrip(root)}
 
 <section style="padding:clamp(70px,9vw,110px) 0 0">
   <div class="container stats-grid">
@@ -477,6 +481,7 @@ page('קניית-לידים', {
   title: 'קניית לידים חמים ובלעדיים לכל תחום - BaliLeads',
   desc: 'קניית לידים חמים ואיכותיים שעברו תהליך סינון מעמיק. לידים בלעדיים במגוון תחומים, תשלום פר ליד בלבד. מחירון שקוף מעודכן 2026.',
   active: 'leads',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'קניית לידים' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'קניית לידים' }],
@@ -577,6 +582,7 @@ function leadPage(path, o) {
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
 ${o.sections(root)}
+${clientsStrip(root)}
 ${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${o.articles ? articlesStrip(root, o.articles, 'מאמרים שיעשו לכם סדר') : ''}
@@ -853,6 +859,7 @@ page('שיווק-דיגיטלי', {
   title: 'שיווק דיגיטלי - פתרונות מתקדמים להגדלת מכירות | BaliLead',
   desc: 'שירותי שיווק דיגיטלי מקצועיים לעסקים: קידום ממומן, SEO, רשתות חברתיות וכתבות ממירות. אסטרטגיה מותאמת ותוצאות מדידות.',
   active: 'digital',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'שיווק דיגיטלי' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'שיווק דיגיטלי' }],
@@ -1114,6 +1121,7 @@ page('מחירון-לידים', {
   title: 'מחירון לידים מעודכן 2026 - שקיפות מלאה | BaliLead',
   desc: 'מחירון לידים מעודכן לשנת 2026: כל 29 התחומים עם טווחי מחיר לליד. מהיחידים בענף שמפרסמים מחירון מלא ושקוף.',
   active: 'pricing',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'מחירון לידים 2026' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'מחירון לידים 2026' }],
@@ -1288,20 +1296,24 @@ ${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw
 });
 
 /* Article pages */
+const HOME_TITLE = 'לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads';
 for (const art of RAW_ARTICLES) {
   const m = getMeta(art.slug);
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: m.cat }];
   const mins = readMinutes(art.blocks);
+  const artDate = LASTMOD[art.slug] || '2025-04-27';
+  const artPageTitle = (!art.title || art.title === HOME_TITLE) ? artTitle(art) + ' | BaliLead' : art.title;
   page(art.slug, {
-    title: art.title || artTitle(art) + ' | BaliLead',
-    desc: art.desc || m.teaser,
+    title: artPageTitle,
+    desc: (art.desc && art.desc.length > 20) ? art.desc : m.teaser,
     active: 'magazine',
     ogImage: GH + 'assets/' + m.cover,
     extraLd: [
       crumbsLd(crumbs),
       {
         '@context': 'https://schema.org', '@type': 'Article',
-        headline: artTitle(art), description: art.desc || m.teaser,
+        headline: artTitle(art), description: (art.desc && art.desc.length > 20) ? art.desc : m.teaser,
+        datePublished: artDate, dateModified: artDate,
         image: GH + 'assets/' + m.cover,
         author: { '@type': 'Organization', name: 'BaliLeads' },
         publisher: { '@type': 'Organization', name: 'BaliLeads', logo: { '@type': 'ImageObject', url: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png' } },
@@ -1339,6 +1351,7 @@ page('יצירת-קשר', {
   title: 'יצירת קשר - קבל לידים איכותיים לעסק שלך | BaliLead',
   desc: 'צרו קשר עם BaliLead: טלפון 058-4700706, מייל info@balilead.co.il. שירות הלקוחות פעיל א-ה 09:00-16:00, מענה מובטח תוך 24 שעות.',
   active: 'contact',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'יצירת קשר' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'יצירת קשר' }],
@@ -1381,6 +1394,7 @@ page('הצהרת-נגישות', {
   title: 'הצהרת נגישות - balilead.co.il',
   desc: 'הצהרת הנגישות של אתר BaliLead: התאמות נגישות לפי ת"י 5568 ברמת AA ומסמך WCAG 2.0, פרטי אחראי הנגישות ודרכי פנייה.',
   active: '',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'הצהרת נגישות' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'הצהרת נגישות' }],
@@ -1698,6 +1712,21 @@ ${pageHero(root, {
 (function(){
   var ids = ['r-cost','r-count','r-close','r-value'];
   function fmt(n){ return '₪' + Math.round(n).toLocaleString('he-IL'); }
+  var anims = {};
+  function setNum(id, target, format){
+    var el = document.getElementById(id);
+    var from = anims[id] != null ? anims[id] : target;
+    anims[id] = target;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || from === target) { el.textContent = format(target); return; }
+    var t0 = performance.now();
+    function tick(t){
+      var p = Math.min((t - t0) / 300, 1);
+      var v = from + (target - from) * (1 - Math.pow(1 - p, 3));
+      el.textContent = format(v);
+      if (p < 1 && anims[id] === target) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
   function calc(){
     var cost = +document.getElementById('r-cost').value || 0;
     var count = +document.getElementById('r-count').value || 0;
@@ -1709,10 +1738,10 @@ ${pageHero(root, {
     var profit = revenue - invest;
     var roi = invest > 0 ? (profit / invest) * 100 : 0;
     var cac = deals > 0 ? invest / deals : 0;
-    document.getElementById('r-deals').textContent = (Math.round(deals * 10) / 10).toLocaleString('he-IL');
-    document.getElementById('r-rev').textContent = fmt(revenue);
-    document.getElementById('r-cac').textContent = deals > 0 ? fmt(cac) : '-';
-    document.getElementById('r-roi').textContent = Math.round(roi) + '%';
+    setNum('r-deals', deals, function(v){ return (Math.round(v * 10) / 10).toLocaleString('he-IL'); });
+    setNum('r-rev', revenue, fmt);
+    if (deals > 0) setNum('r-cac', cac, fmt); else document.getElementById('r-cac').textContent = '-';
+    setNum('r-roi', roi, function(v){ return Math.round(v) + '%'; });
     var note = document.getElementById('r-note');
     if (roi >= 100) note.textContent = 'מצוין: על כל שקל שהשקעתם חזרו ' + (1 + roi / 100).toFixed(1) + ' ₪. השקעה של ' + fmt(invest) + ' החזירה ' + fmt(revenue) + '.';
     else if (roi > 0) note.textContent = 'רווחי, ויש לאן לצמוח: שיפור קטן באחוז הסגירה יקפיץ את התמונה. השקעה: ' + fmt(invest) + '.';
@@ -1733,6 +1762,7 @@ page('מדיניות-פרטיות', {
   title: 'מדיניות פרטיות ותנאי שימוש - BaliLead',
   desc: 'מדיניות הפרטיות ותנאי השימוש של אתר BaliLead: איסוף פרטים, העברתם לצדדים שלישיים, אבטחת מידע, הסרה מרשימות והגבלת אחריות.',
   active: '',
+  extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'מדיניות פרטיות' }])],
   body: root => `
 ${pageHero(root, {
     crumbs: [{ href: '', t: 'ראשי' }, { t: 'מדיניות פרטיות' }],
@@ -1805,15 +1835,17 @@ const TAG_DEFS = [
   ['tag/שיווק-דיגיטלי', 'שיווק דיגיטלי', a => getMeta(a.slug).cat === 'שיווק דיגיטלי'],
   ['category/לידים', 'קטגוריה: לידים', () => true],
   ['category/uncategorized', 'כל המאמרים', () => true],
-  ['category/uncategorized/לידים-חמים', 'לידים חמים', a => /חמים|\bhot\b/i.test(keyOf(a))],
+  ['category/uncategorized/לידים-חמים', 'קטגוריית לידים חמים', a => /חמים|\bhot\b/i.test(keyOf(a))],
 ];
 for (const [path, label, match] of TAG_DEFS) {
   const items = LISTED_ARTICLES.filter(match).slice(0, 12).map(a => a.slug);
   if (!items.length) continue;
+  const archCrumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: label }];
   page(path, {
     title: label + ' - מאמרים ומדריכים | BaliLead',
     desc: 'כל המאמרים והמדריכים של BaliLead בנושא ' + label + ': ידע מהשטח על לידים, המרות ושיווק דיגיטלי.',
     active: 'magazine',
+    extraLd: [crumbsLd(archCrumbs), { '@context': 'https://schema.org', '@type': 'CollectionPage', name: label, url: canon(path), isPartOf: { '@type': 'WebSite', name: 'BaliLeads', url: 'https://balilead.co.il/' } }],
     body: root => `
 ${pageHero(root, {
       crumbs: [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: label }],
@@ -1836,10 +1868,13 @@ ${ctaSection(root)}`,
 /* =================================================================
    sitemap.xml + robots.txt (canonical domain, ready for the move)
 ================================================================= */
-const today = '2026-08-24';
+const today = '2026-08-25';
+writeFileSync(join(OUT, 'style.css'), siteCss());
+writeFileSync(join(OUT, 'site.js'), siteJs());
+console.log('style.css + site.js written');
 writeFileSync(join(OUT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  BUILT.map(p => `  <url><loc>${canon(p)}</loc><lastmod>${today}</lastmod><changefreq>${p === '' || p === 'מחירון-לידים' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
+  BUILT.map(p => `  <url><loc>${canon(p)}</loc><lastmod>${LASTMOD[p] || today}</lastmod><changefreq>${p === '' || p === 'מחירון-לידים' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
   `\n</urlset>`);
 writeFileSync(join(OUT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\nSitemap: https://balilead.co.il/sitemap.xml\n`);

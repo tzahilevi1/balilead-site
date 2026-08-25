@@ -1,48 +1,4 @@
-// Shared layout: CSS, header, footer, CTA form, page shell, JS.
-// All URLs are root-relative via the `root` prefix ('' | '../' | '../../').
-import { widgetsCss, widgetsHtml, widgetsJs } from './widgets.mjs';
 
-export const SITE = {
-  phone: '058-4700706',
-  phoneHref: 'tel:0584700706',
-  wa: 'https://wa.me/972584700706',
-  waText: 'https://wa.me/972584700706?text=' + encodeURIComponent('היי, אני מעוניין בלידים לעסק שלי'),
-  email: 'info@balilead.co.il',
-  address: 'אצ"ל 34, רמת גן',
-  fb: 'https://www.facebook.com/BaliLead',
-};
-
-export const NAV_LEADS = [
-  ['קניית-לידים/', 'קניית לידים, כל התחומים'],
-  ['חברת-לידים/', 'חברת לידים, מודל CPL'],
-  ['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח'],
-  ['קניית-לידים/לידים-להחזרי-מס/', 'לידים להחזרי מס'],
-  ['קניית-לידים/לידים-להלוואות/', 'לידים להלוואות'],
-  ['קניית-לידים/לידים-למשכנתאות/', 'לידים למשכנתאות'],
-  ['לידים-לרואי-חשבון/', 'לידים לרואי חשבון'],
-  ['קניית-לידים/לידים-לבניית-אתרים/', 'לידים לבניית אתרים'],
-  ['פתיחת-עוסק-מורשה/', 'פתיחת עוסק מורשה'],
-  ['מכירת-תיק-לרואי-חשבון/', 'העברת תיקים לרו"ח'],
-  ['מחשבון-roi-ללידים/', 'מחשבון ROI ללידים'],
-];
-
-export const NAV_DIGITAL = [
-  ['שיווק-דיגיטלי/', 'שיווק דיגיטלי, מעטפת מלאה'],
-  ['קידום-בגוגל/', 'קידום ממומן בגוגל'],
-  ['קידום-אתרים-seo/', 'קידום אתרים SEO'],
-  ['קידום-בפייסבוק/', 'קידום בפייסבוק'],
-  ['פרסום-באינסטגרם/', 'פרסום באינסטגרם'],
-  ['קידום-בלינקדאין/', 'קידום בלינקדאין'],
-  ['פרסום-בטאבולה-ואאוטבריין/', 'טאבולה ואאוטבריין'],
-  ['בניית-אתרים/', 'בניית אתרים'],
-  ['דפי-נחיתה/', 'דפי נחיתה ממירים'],
-  ['פיתוח-אפליקציות/', 'פיתוח אפליקציות'],
-  ['מערכת-ניהול-לידים/', 'מערכות CRM וניהול לידים'],
-  ['סוכני-ai/', 'סוכני AI חכמים'],
-  ['אוטומציות-שיווק/', 'אוטומציות שיווק'],
-];
-
-export const css = `
 @property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 :root{
   --bg:#080606; --bg2:#0d0a07; --ink:#f4eee3; --muted:#a89d8d; --dim:#6f675b;
@@ -554,7 +510,7 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 .quote-in{border-radius:var(--r-inner);padding:clamp(26px,3vw,40px);
   background:linear-gradient(165deg,#181109 0%,#0c0906 100%);
   box-shadow:inset 0 1px 1px rgba(255,255,255,.09);position:relative;overflow:hidden}
-.quote-in::before{content:"\\201D";position:absolute;top:-30px;inset-inline-end:14px;font-family:'Secular One';
+.quote-in::before{content:"\201D";position:absolute;top:-30px;inset-inline-end:14px;font-family:'Secular One';
   font-size:170px;color:rgba(217,164,91,.12);line-height:1}
 .quote-txt{font-size:clamp(19px,1.8vw,23px);font-weight:600;line-height:1.55;margin-bottom:22px}
 .quote-who{display:flex;align-items:center;gap:14px}
@@ -620,412 +576,135 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   .hero-media video{display:none}
   .hero-media{background:url('assets/hero-poster.jpg') center/cover}
 }
-`;
 
-/* ---------- SVG icons ---------- */
-export const IC = {
-  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
-  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>',
-  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
-  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>',
-  house: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M10 21v-4h4v4"/></svg>',
-  shekel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
-  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>',
-  bank: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M5 8l7-5 7 5"/><path d="M3 21h18"/><path d="M7 21v-6"/><path d="M17 21v-6"/></svg>',
-  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-  filter: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
-  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
-  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m7 13 4-4 4 4 5-5"/></svg>',
-  search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
-  fbf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
-  ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>',
-  li: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>',
-  rss: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>',
-  doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>',
-  arrowL: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
-  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>',
-  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
-  info: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d9a45b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>',
-  wa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>',
-  fbFill: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
-  caret: '<svg class="car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>',
-  crumb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
-};
+/* ===== Skip link ===== */
+.skip-link{position:fixed;top:-60px;inset-inline-start:16px;z-index:200;background:var(--grad-gold);color:#1c1206;
+  font-weight:800;padding:10px 22px;border-radius:999px;transition:top .3s var(--ease)}
+.skip-link:focus{top:14px}
 
-const logoImg = root => `<img src="${root}assets/logo.png" alt="BaliLead באלי ליד" width="103" height="34">`;
+/* ===== Accessibility widget ===== */
+.acc-btn{position:fixed;top:44%;inset-inline-end:0;z-index:90;width:46px;height:46px;
+  border-radius:12px 0 0 12px;border:none;cursor:pointer;background:#1a56db;color:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
+.acc-btn svg{width:26px;height:26px}
+.acc-panel{position:fixed;top:20%;inset-inline-end:14px;z-index:95;width:280px;max-height:64vh;overflow-y:auto;
+  border-radius:20px;padding:18px;background:rgba(16,12,8,.97);backdrop-filter:blur(26px);
+  border:1px solid var(--line-strong);box-shadow:0 40px 90px -20px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateX(-10px);transition:opacity .4s var(--ease),transform .4s var(--ease),visibility .4s}
+.acc-panel.open{opacity:1;visibility:visible;transform:translateX(0)}
+.acc-panel h3{font-size:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.acc-panel h3 button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1}
+.acc-panel .acc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+  border:1px solid var(--line);background:rgba(244,238,227,.04);border-radius:12px;padding:10px 14px;margin-bottom:8px;
+  color:var(--ink);font-family:'Assistant';font-size:14.5px;font-weight:600;cursor:pointer;text-align:start}
+.acc-row .dot{width:16px;height:16px;border-radius:999px;border:1.5px solid var(--line-strong);flex:0 0 auto}
+.acc-row[aria-pressed="true"]{border-color:rgba(217,164,91,.5);background:rgba(217,164,91,.1)}
+.acc-row[aria-pressed="true"] .dot{background:var(--gold);border-color:var(--gold)}
+.acc-panel .acc-link{display:block;text-align:center;font-size:13.5px;color:var(--gold2);margin-top:8px;text-decoration:underline}
+/* modes */
+html.acc-f1{font-size:112%}
+html.acc-f2{font-size:126%}
+html.acc-contrast body{background:#000 !important}
+html.acc-contrast body *{color:#ffe700 !important;border-color:#ffe700 !important}
+html.acc-contrast .btn-gold,html.acc-contrast .mcta .m-call{background:#ffe700 !important;color:#000 !important}
+html.acc-contrast img,html.acc-contrast video{filter:grayscale(1) contrast(1.2)}
+html.acc-gray{filter:grayscale(1)}
+html.acc-links a{text-decoration:underline !important}
+html.acc-font body,html.acc-font h1,html.acc-font h2,html.acc-font h3,html.acc-font .btn{font-family:Arial,Helvetica,sans-serif !important}
+html.acc-noanim *,html.acc-noanim *::before,html.acc-noanim *::after{animation:none !important;transition:none !important}
+html.acc-noanim .reveal{opacity:1 !important;transform:none !important;filter:none !important}
+html.acc-noanim .hero-media video{display:none}
 
-export function header(root, active = '') {
-  const mark = href => (href === active ? ' class="active"' : '');
-  const leadsMenu = NAV_LEADS.map(([h, t]) => `<a href="${root}${h}">${t}</a>`).join('');
-  const digMenu = NAV_DIGITAL.map(([h, t]) => `<a href="${root}${h}">${t}</a>`).join('');
-  return `
-<header class="header" id="header">
-  <div class="header-pill">
-    <a class="brand" href="${root}" aria-label="באלי ליד, דף הבית">${logoImg(root)}</a>
-    <nav class="nav" aria-label="ניווט ראשי">
-      <div class="nav-item"><a href="${root}"${mark('home')}>ראשי</a></div>
-      <div class="nav-item">
-        <a href="${root}קניית-לידים/"${mark('leads')}>לידים חמים ${IC.caret}</a>
-        <div class="menu"><div class="menu-in">${leadsMenu}</div></div>
-      </div>
-      <div class="nav-item">
-        <a href="${root}שיווק-דיגיטלי/"${mark('digital')}>שיווק דיגיטלי ${IC.caret}</a>
-        <div class="menu"><div class="menu-in">${digMenu}</div></div>
-      </div>
-      <div class="nav-item"><a href="${root}מחירון-לידים/"${mark('pricing')}>מחירון 2026</a></div>
-      <div class="nav-item"><a href="${root}עדכונים-חמים/"${mark('magazine')}>מגזין</a></div>
-      <div class="nav-item"><a href="${root}יצירת-קשר/"${mark('contact')}>צור קשר</a></div>
-    </nav>
-    <div class="header-cta">
-      <a class="btn btn-gold" href="${SITE.phoneHref}">
-        <span class="btn-ic">${IC.phone}</span>
-        ${SITE.phone}
-      </a>
-    </div>
-    <button class="burger" id="burger" aria-label="פתיחת תפריט" aria-expanded="false" aria-controls="mnav">
-      <span></span><span></span>
-    </button>
-  </div>
-</header>
-
-<div class="mnav" id="mnav">
-  <a class="m-main" href="${root}">ראשי</a>
-  <a class="m-main" href="${root}מחירון-לידים/">מחירון 2026</a>
-  <a class="m-main" href="${root}עדכונים-חמים/">מגזין</a>
-  <a class="m-main" href="${root}יצירת-קשר/">צור קשר</a>
-  <div class="m-group">לידים חמים</div>
-  <div>${NAV_LEADS.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
-  <div class="m-group">שיווק דיגיטלי</div>
-  <div>${NAV_DIGITAL.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
-  <div class="mnav-contact">${SITE.phone} · ${SITE.email}</div>
-</div>`;
+/* ===== Chat widget ===== */
+.chat-btn{position:fixed;bottom:92px;inset-inline-start:24px;z-index:50;width:56px;height:56px;border-radius:999px;
+  border:none;cursor:pointer;background:var(--grad-gold);color:#1c1206;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 16px 40px -12px rgba(217,164,91,.65);transition:transform .5s var(--ease)}
+.chat-btn:hover{transform:translateY(-4px) scale(1.05)}
+.chat-btn svg{width:26px;height:26px}
+.chat-box{position:fixed;bottom:160px;inset-inline-start:24px;z-index:94;width:min(370px,calc(100vw - 32px));
+  height:min(520px,70vh);display:flex;flex-direction:column;border-radius:24px;overflow:hidden;
+  background:rgba(14,11,7,.98);backdrop-filter:blur(28px);border:1px solid var(--line-strong);
+  box-shadow:0 50px 120px -30px rgba(0,0,0,.95);
+  opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .45s var(--ease),transform .45s var(--ease),visibility .45s}
+.chat-box.open{opacity:1;visibility:visible;transform:translateY(0)}
+.chat-head{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(160deg,#1a1207,#0d0a07);
+  border-bottom:1px solid var(--line)}
+.chat-head .cav{width:40px;height:40px;border-radius:999px;background:var(--grad-gold);display:flex;align-items:center;justify-content:center;
+  font-family:'Secular One';font-size:17px;color:#1c1206}
+.chat-head .cname{font-weight:800;font-size:15.5px}
+.chat-head .cstat{font-size:12.5px;color:#7ddc9a}
+.chat-head button{margin-inline-start:auto;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.cmsg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:14.5px;line-height:1.55;white-space:pre-line}
+.cmsg.bot{align-self:flex-start;background:rgba(244,238,227,.07);border:1px solid var(--line);border-start-start-radius:4px}
+.cmsg.user{align-self:flex-end;background:rgba(217,164,91,.16);border:1px solid rgba(217,164,91,.3);border-start-end-radius:4px}
+.cmsg a{color:var(--gold2);text-decoration:underline}
+.chat-chips{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 10px}
+.chat-chips button{border-radius:999px;border:1px solid rgba(217,164,91,.35);background:rgba(217,164,91,.07);
+  color:var(--gold2);font-family:'Assistant';font-size:13px;font-weight:700;padding:7px 14px;cursor:pointer;
+  transition:background .3s var(--ease)}
+.chat-chips button:hover{background:rgba(217,164,91,.16)}
+.chat-in{display:flex;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.chat-in input{flex:1;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
+  color:var(--ink);font-family:'Assistant';font-size:14.5px;padding:11px 16px;outline:none}
+.chat-in input:focus{border-color:var(--gold)}
+.chat-in button{width:42px;height:42px;border-radius:999px;border:none;background:var(--grad-gold);color:#1c1206;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.chat-in button svg{width:17px;height:17px}
+.ctyping{display:inline-flex;gap:4px;padding:12px 16px}
+.ctyping span{width:7px;height:7px;border-radius:999px;background:var(--gold);opacity:.4;animation:cty 1s infinite}
+.ctyping span:nth-child(2){animation-delay:.18s}.ctyping span:nth-child(3){animation-delay:.36s}
+@keyframes cty{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+@media (max-width:860px){
+  .chat-btn{bottom:150px}
+  .chat-box{bottom:150px;inset-inline-start:16px}
 }
 
-export function footer(root) {
-  return `
-<footer>
-  <div class="container">
-    <div class="f-grid">
-      <div class="f-brand">
-        ${logoImg(root)}
-        <p>חברת לידים, שיווק ופרסום המתמחה בסקטור הפיננסי. לידים חמים, בלעדיים ומסוננים, ישירות לאנשי המכירות שלכם.</p>
-      </div>
-      <div class="f-col">
-        <h4>לידים חמים</h4>
-        <a href="${root}קניית-לידים/לידים-לביטוח/">לידים לביטוח</a>
-        <a href="${root}קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a>
-        <a href="${root}קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>
-        <a href="${root}קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>
-        <a href="${root}לידים-לרואי-חשבון/">לידים לרואי חשבון</a>
-        <a href="${root}חברת-לידים/">חברת לידים, מודל CPL</a>
-        <a href="${root}מחירון-לידים/">מחירון לידים 2026</a>
-      </div>
-      <div class="f-col">
-        <h4>פתרונות דיגיטל</h4>
-        <a href="${root}קידום-בגוגל/">קידום ממומן בגוגל</a>
-        <a href="${root}קידום-אתרים-seo/">קידום אתרים SEO</a>
-        <a href="${root}בניית-אתרים/">בניית אתרים</a>
-        <a href="${root}דפי-נחיתה/">דפי נחיתה ממירים</a>
-        <a href="${root}מערכת-ניהול-לידים/">מערכות CRM וניהול לידים</a>
-        <a href="${root}סוכני-ai/">סוכני AI חכמים</a>
-        <a href="${root}אוטומציות-שיווק/">אוטומציות שיווק</a>
-        <a href="${root}עדכונים-חמים/">המגזין שלנו</a>
-      </div>
-      <div class="f-col">
-        <h4>יצירת קשר</h4>
-        <a href="${SITE.phoneHref}">${SITE.phone}</a>
-        <a href="mailto:${SITE.email}">${SITE.email}</a>
-        <a href="https://maps.google.com/?q=אצל 34 רמת גן" target="_blank" rel="noopener">${SITE.address}</a>
-        <a href="${root}מחשבון-roi-ללידים/">מחשבון ROI ללידים</a>
-        <a href="${root}מדיניות-פרטיות/">מדיניות פרטיות ותנאי שימוש</a>
-        <a href="${root}הצהרת-נגישות/">הצהרת נגישות</a>
-      </div>
-    </div>
-    <div class="f-bottom">
-      <span>© 2026 BaliLeads. כל הזכויות שמורות.</span>
-      <div class="f-social">
-        <a href="${SITE.fb}" target="_blank" rel="noopener" aria-label="פייסבוק">${IC.fbFill}</a>
-        <a href="${SITE.wa}" target="_blank" rel="noopener" aria-label="וואטסאפ">${IC.wa}</a>
-      </div>
-    </div>
-  </div>
-</footer>
+/* ===== Popups ===== */
+.pop-ov{position:fixed;inset:0;z-index:120;background:rgba(5,4,2,.7);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
+.pop-ov.open{opacity:1;visibility:visible}
+.pop{position:relative;width:min(520px,94vw);border-radius:2rem;padding:.5rem;background:rgba(244,238,227,.06);
+  border:1px solid var(--line-strong);box-shadow:0 60px 140px -40px rgba(0,0,0,.95);
+  transform:translateY(20px) scale(.97);transition:transform .5s var(--ease)}
+.pop-ov.open .pop{transform:translateY(0) scale(1)}
+.pop-in{border-radius:calc(2rem - .5rem);padding:clamp(26px,5vw,40px);overflow:hidden;position:relative;
+  background:linear-gradient(160deg,rgba(26,17,8,.98),rgba(10,8,5,.99));box-shadow:inset 0 1px 1px rgba(255,255,255,.1)}
+.pop-x{position:absolute;top:14px;inset-inline-start:14px;z-index:2;width:34px;height:34px;border-radius:999px;
+  border:1px solid var(--line-strong);background:rgba(244,238,227,.06);color:var(--muted);font-size:17px;cursor:pointer}
+.pop-eyebrow{display:inline-block;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:800;letter-spacing:.1em;
+  color:var(--gold2);border:1px solid rgba(217,164,91,.35);background:rgba(217,164,91,.08);margin-bottom:14px}
+.pop h3{font-family:'Secular One';font-size:clamp(22px,3vw,30px);margin-bottom:10px}
+.pop h3 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pop p{color:var(--muted);font-size:15.5px;margin-bottom:18px}
+.pop .pop-form{display:flex;gap:10px}
+.pop .pop-form input{flex:1;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
+  color:var(--ink);font-family:'Assistant';font-size:15px;padding:12px 18px;outline:none;direction:ltr;text-align:right}
+.pop .pop-form input:focus{border-color:var(--gold)}
+.pop .consent{margin-top:12px}
+/* toast */
+.toast{position:fixed;bottom:24px;inset-inline-end:24px;z-index:110;width:min(340px,calc(100vw - 32px));
+  border-radius:20px;padding:18px 20px;background:rgba(16,12,8,.97);backdrop-filter:blur(24px);
+  border:1px solid rgba(217,164,91,.3);box-shadow:0 30px 80px -20px rgba(0,0,0,.9);
+  opacity:0;visibility:hidden;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease),visibility .5s}
+.toast.open{opacity:1;visibility:visible;transform:translateY(0)}
+.toast h4{font-size:16px;margin-bottom:6px}
+.toast p{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+.toast .t-row{display:flex;gap:8px}
+.toast .t-row a,.toast .t-row button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:999px;padding:9px 10px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;border:none}
+.toast .t-gold{background:var(--grad-gold);color:#1c1206}
+.toast .t-ghost{background:rgba(244,238,227,.07);color:var(--ink);border:1px solid var(--line-strong)}
+.toast .t-x{position:absolute;top:8px;inset-inline-start:10px;background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer}
+@media (max-width:860px){.toast{bottom:86px}}
 
-<a class="wa-float" href="${SITE.waText}" target="_blank" rel="noopener" aria-label="שיחת וואטסאפ">${IC.wa}</a>
-
-<div class="mcta">
-  <a class="m-call" href="${SITE.phoneHref}">${IC.phone}חייגו עכשיו</a>
-  <a class="m-wa" href="${SITE.waText}" target="_blank" rel="noopener">${IC.wa}וואטסאפ</a>
-</div>`;
-}
-
-const FORM_TOPICS = ['ביטוח', 'משכנתאות', 'הלוואות', 'החזרי מס', 'פיננסים והשקעות', 'עורכי דין', 'רואי חשבון', 'רפואה ואסתטיקה', 'בניית אתרים', 'שיווק דיגיטלי לעסק שלי', 'תחום אחר'];
-
-export function clientsStrip(root) {
-  return `
-<section class="clients">
-  <div class="clients-label">חברות שכבר מוכרות יותר איתנו</div>
-  <div class="marquee">
-    <div class="marquee-track" id="marqTrack">
-      <div class="client-chip"><img src="${root}assets/client-elia.png" alt="אליה סוכנות ביטוח, לקוחה של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-getfuel.png" alt="GetFuel, לקוחה של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tevel.jpg" alt="תבל, לקוחה של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-yehadim.png" alt="יהלומים, לקוחה של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tsm.jpg" alt="TSM, לקוחה של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-1907.png" alt="לקוח של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-tempweb.jpg" alt="לקוח של באלי ליד" loading="lazy"></div>
-      <div class="client-chip"><img src="${root}assets/client-untitled.png" alt="לקוח של באלי ליד" loading="lazy"></div>
-    </div>
-  </div>
-</section>`;
-}
-
-export function ctaSection(root, { title, sub, topic } = {}) {
-  const topics = FORM_TOPICS.includes(topic) || !topic ? FORM_TOPICS : [topic, ...FORM_TOPICS];
-  return `
-<section class="sec contact" id="contact" style="padding-top:0">
-  <div class="container">
-    <div class="contact-shell reveal">
-      <div class="contact-halo" aria-hidden="true"></div>
-      <div class="contact-in">
-        <div class="contact-copy">
-          <h2>${title || 'הלקוח הבא שלכם <span class="gw">כבר מחפש אתכם</span>'}</h2>
-          <p>${sub || 'השאירו פרטים ותוך 24 שעות נתחיל להגדיל את כמות הלקוחות שלכם. בלי התחייבות, אפשר להתחיל בפיילוט.'}</p>
-          <div class="contact-lines">
-            <a href="${SITE.phoneHref}">${IC.phone}${SITE.phone}</a>
-            <a href="mailto:${SITE.email}">${IC.mail}${SITE.email}</a>
-            <span>${IC.pin}${SITE.address}</span>
-          </div>
-        </div>
-        <form class="form" id="leadForm" novalidate>
-          <div class="field">
-            <label for="f-name">שם מלא</label>
-            <input id="f-name" name="name" type="text" placeholder="ישראל ישראלי" autocomplete="name" required>
-          </div>
-          <div class="field">
-            <label for="f-phone">טלפון נייד</label>
-            <input id="f-phone" name="phone" type="tel" inputmode="tel" placeholder="050-0000000" autocomplete="tel" required>
-          </div>
-          <div class="field">
-            <label for="f-topic">איזה לידים אתם צריכים?</label>
-            <select id="f-topic" name="topic" required>
-              <option value=""${topic ? '' : ' selected'} disabled>בחרו תחום</option>
-              ${topics.map(t => `<option${t === topic ? ' selected' : ''}>${t}</option>`).join('\n              ')}
-            </select>
-          </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
-          <button class="btn btn-gold" type="submit">
-            <span class="btn-ic">${IC.send}</span>
-            שולחים ומתחילים
-          </button>
-          <div class="form-err" id="formErr">כמעט שם, רק צריך שם, טלפון תקין ותחום.</div>
-          <div class="form-hint">לחיצה על שליחה פותחת שיחת וואטסאפ עם הפרטים שמילאתם.</div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>`;
-}
-
-export const js = `
-(function(){
-  "use strict";
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  var header = document.getElementById('header');
-  var sentinel = document.querySelector('.hero-eyebrow') || document.querySelector('.crumbs') || document.body;
-  var lastState = false;
-  new IntersectionObserver(function(entries){
-    var past = !entries[0].isIntersecting;
-    if(past !== lastState){ lastState = past; header.classList.toggle('scrolled', past); }
-  }, {rootMargin:'40px 0px 0px 0px'}).observe(sentinel);
-
-  var burger = document.getElementById('burger');
-  var mnav = document.getElementById('mnav');
-  function closeNav(){ burger.classList.remove('open'); mnav.classList.remove('open');
-    burger.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
-  burger.addEventListener('click', function(){
-    var open = !mnav.classList.contains('open');
-    burger.classList.toggle('open', open); mnav.classList.toggle('open', open);
-    burger.setAttribute('aria-expanded', String(open));
-    document.body.style.overflow = open ? 'hidden' : '';
-  });
-  mnav.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', closeNav); });
-
-  var track = document.getElementById('marqTrack');
-  if(track){
-    var original = track.innerHTML;
-    var copies = 1;
-    while(track.scrollWidth < window.innerWidth * 2.2 && copies < 8){
-      track.innerHTML += original; copies++;
-    }
-    track.innerHTML += track.innerHTML;
-  }
-
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    });
-  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
-  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
-  /* safety: never leave content hidden if the observer misses */
-  setTimeout(function(){
-    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
-      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
-    });
-  }, 1500);
-
-  var counted = false;
-  var statsEl = document.querySelector('.stats-grid');
-  if(statsEl){
-    new IntersectionObserver(function(entries){
-      if(!entries[0].isIntersecting || counted) return;
-      counted = true;
-      document.querySelectorAll('.stat-num[data-count]').forEach(function(el){
-        var target = parseInt(el.getAttribute('data-count'),10);
-        if(isNaN(target)) return;
-        if(reduce || target > 999){ el.textContent = target; return; }
-        el.textContent = '0';
-        var start = null;
-        function tick(ts){
-          if(!start) start = ts;
-          var p = Math.min((ts-start)/1400, 1);
-          var eased = 1 - Math.pow(1-p, 4);
-          el.textContent = Math.round(target*eased);
-          if(p < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      });
-    }, {threshold:.4}).observe(statsEl);
-  }
-
-  /* spotlight hover: track pointer on cards */
-  if(window.matchMedia('(hover: hover)').matches && !reduce){
-    document.querySelectorAll('.v-card,.art-card,.check-card,.why-card,.t-card').forEach(function(c){ c.classList.add('spot'); });
-    document.addEventListener('pointermove', function(e){
-      var card = e.target.closest ? e.target.closest('.spot') : null;
-      if(!card) return;
-      var r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-    }, { passive: true });
-  }
-
-  var form = document.getElementById('leadForm');
-  if(form){
-    var err = document.getElementById('formErr');
-    form.addEventListener('submit', function(ev){
-      ev.preventDefault();
-      var name = form.name.value.trim();
-      var phone = form.phone.value.replace(/[^0-9+]/g,'');
-      var topic = form.topic.value;
-      if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
-      err.classList.remove('show');
-      var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
-      window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
-    });
-  }
-})();`;
-
-/* מזהי מדידה: מלאו כאן GA4 (G-XXXXXXX) ו/או פיקסל מטא (מספר), הריצו node gen.mjs, וזה יוזרק לכל העמודים */
-export const ANALYTICS = { ga4: '', metaPixel: '' };
-
-const escAttr = s => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const escText = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
-
-function analyticsHtml() {
-  let out = '';
-  if (ANALYTICS.ga4) out += `
-<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ANALYTICS.ga4}');</script>`;
-  if (ANALYTICS.metaPixel) out += `
-<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${ANALYTICS.metaPixel}');fbq('track','PageView');</script>`;
-  return out;
-}
-
-export const siteCss = () => css + widgetsCss;
-export const siteJs = () => js + '\n' + widgetsJs;
-
-export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage }) {
-  return `<!DOCTYPE html>
-<html dir="rtl" lang="he">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${escText(title)}</title>
-<meta name="description" content="${escAttr(desc)}">
-${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
-<meta property="og:locale" content="he_IL">
-<meta property="og:type" content="website">
-<meta property="og:title" content="${escAttr(title)}">
-<meta property="og:description" content="${escAttr(desc)}">
-<meta property="og:image" content="${ogImage || 'https://tzahilevi1.github.io/balilead-site/assets/hero-poster.jpg'}">
-<meta name="theme-color" content="#080606">
-<link rel="icon" type="image/png" sizes="64x64" href="${root}assets/favicon-64.png">
-<link rel="apple-touch-icon" href="${root}assets/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${root}style.css">
-${ldjson ? `<script type="application/ld+json">${ldjson}</script>` : ''}
-${extraLd.map(o => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('\n')}${analyticsHtml()}
-</head>
-<body>
-<a class="skip-link" href="#top">דילוג לתוכן המרכזי</a>
-<div class="grain" aria-hidden="true"></div>
-${header(root, active)}
-<main id="top">
-${body}
-</main>
-${footer(root)}
-${widgetsHtml(root)}
-<script defer src="${root}site.js"></script>
-</body>
-</html>`;
-}
-
-export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine, img, alt }) {
-  const crumbHtml = crumbs
-    ? `<nav class="crumbs reveal" aria-label="פירורי לחם">${crumbs.map((c, i) =>
-        (i ? IC.crumb : '') + (c.href !== undefined ? `<a href="${root}${c.href}">${c.t}</a>` : `<span>${c.t}</span>`)
-      ).join('')}</nav>`
-    : '';
-  const priceHtml = price
-    ? `<div class="price-chip reveal" style="--d:.25s">טווח מחיר לליד: <span class="pc-num">${price}</span> <a href="${root}מחירון-לידים/">למחירון המלא 2026</a></div>`
-    : '';
-  const ctasHtml = ctas
-    ? `<div class="hero-ctas reveal" style="--d:.3s;margin-top:28px">
-        <a class="btn btn-gold" href="#contact"><span class="btn-ic">${IC.arrowL}</span>מתחילים לקבל לידים</a>
-        <a class="btn btn-ghost" href="${SITE.waText}" target="_blank" rel="noopener"><span class="btn-ic">${IC.wa}</span>דברו איתנו בוואטסאפ</a>
-      </div>`
-    : '';
-  const inner = `
-    ${crumbHtml}
-    ${metaLine ? `<div class="art-meta reveal">${metaLine}</div>` : ''}
-    <h1 class="reveal" style="--d:.08s">${h1}</h1>
-    <p class="p-sub reveal" style="--d:.16s">${sub}</p>
-    ${priceHtml}
-    ${ctasHtml}`;
-  if (img) {
-    return `
-<section class="p-hero has-media">
-  <div class="p-hero-media">
-    <img src="${root}assets/${img}" alt="${alt || ''}" fetchpriority="high">
-    <div class="p-hero-scrim" aria-hidden="true"></div>
-  </div>
-  <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
-    ${inner}
-  </div>
-</section>`;
-  }
-  return `
-<section class="p-hero">
-  <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
-    ${inner}
-  </div>
-</section>`;
-}
+/* Consent checkbox */
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
+  border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
+.consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
+.consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
+.consent a{color:var(--gold2);text-decoration:underline}
