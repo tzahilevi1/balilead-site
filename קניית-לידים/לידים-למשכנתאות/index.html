@@ -199,16 +199,18 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
-.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
-.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
-  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
-.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
-.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
-@media (max-width:860px){
-  .p-hero-grid{grid-template-columns:1fr}
-  .p-hero-img img{aspect-ratio:16/9}
-}
+.p-hero.has-media{padding:clamp(160px,22vh,230px) 0 clamp(70px,9vw,110px)}
+.p-hero-media{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.p-hero-media img{width:100%;height:100%;object-fit:cover;object-position:center;
+  transform:scale(1.04);animation:kenburns 34s ease-in-out infinite alternate}
+.p-hero-scrim{position:absolute;inset:0;
+  background:linear-gradient(105deg,rgba(8,6,6,.38) 0%,rgba(8,6,6,.68) 52%,rgba(8,6,6,.88) 100%),
+  linear-gradient(180deg,rgba(8,6,6,.62) 0%,rgba(8,6,6,.28) 45%,var(--bg) 97%)}
+.p-hero.has-media h1{text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.p-hero.has-media .p-sub{color:#d3c9b9;text-shadow:0 2px 18px rgba(0,0,0,.65)}
+.p-hero.has-media .price-chip{background:rgba(20,14,8,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.p-hero.has-media .crumbs a,.p-hero.has-media .crumbs span{text-shadow:0 1px 10px rgba(0,0,0,.7)}
+@media (prefers-reduced-motion:reduce){.p-hero-media img{animation:none}}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -754,10 +756,14 @@ html.acc-noanim .hero-media video{display:none}
 <main id="top">
 
 
-<section class="p-hero">
+<section class="p-hero has-media">
+  <div class="p-hero-media">
+    <img src="../../assets/cover-mortgage.webp" alt="לידים למשכנתאות - מפתחות ובית זהב על שיש" fetchpriority="high">
+    <div class="p-hero-scrim" aria-hidden="true"></div>
+  </div>
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container p-hero-grid">
-    <div>
+  <div class="container">
+    
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../../קניית-לידים/">קניית לידים</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים למשכנתאות</span></nav>
     
     <h1 class="reveal" style="--d:.08s">לידים למשכנתאות <span class="gw">שמגיעים לחתימה</span></h1>
@@ -766,8 +772,7 @@ html.acc-noanim .hero-media video{display:none}
     <div class="hero-ctas reveal" style="--d:.3s;margin-top:28px">
         <a class="btn btn-gold" href="#contact"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></span>מתחילים לקבל לידים</a>
         <a class="btn btn-ghost" href="https://wa.me/972584700706?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%91%D7%9C%D7%99%D7%93%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></span>דברו איתנו בוואטסאפ</a>
-      </div></div>
-    <div class="p-hero-img reveal" style="--d:.22s"><img src="../../assets/cover-mortgage.webp" alt="לידים למשכנתאות - מפתחות ובית זהב על שיש" fetchpriority="high"></div>
+      </div>
   </div>
 </section>
 
