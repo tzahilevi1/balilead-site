@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים</span></nav>
     <div class="art-meta reveal"><span class="am-cat">לידים</span><span>6 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">לידים חמים וקרים: המדריך המלא להגדלת מכירות ב-2025</h1>
     <p class="p-sub reveal" style="--d:.16s">גלה איך להבחין בין לידים חמים לקרים ולהגדיל אחוזי סגירה ב-80%. דוגמאות, נתונים וטיפים מעשיים לעסקים בתחומי ביטוח, משכנתאות והלוואות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-leads.webp" alt="לידים חמים וקרים: המדריך המלא להגדלת מכירות ב-2025 - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-leads.webp" alt="לידים חמים וקרים: המדריך המלא להגדלת מכירות ב-2025"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>יתר על כן, מחקרים מראים ש<a href="../קניית-לידים/">לידים חמים</a> ממירים פי 5-7 יותר מלידים קרים. כתוצאה מכך, חברות שמבינות את ההבדל רואות עלייה של 45% במכירות.</p><p>בנוסף לכך, במדריך הזה תלמד:</p><ul><li>איך לזהות כל סוג ליד במהירות</li><li>מה לעשות עם כל אחד בדיוק</li><li>איך להפוך קרים לחמים ביעילות</li></ul><h2>מה זה ליד חם ומה זה ליד קר?</h2><h3 style="font-size:20px;margin:30px 0 10px">ליד חם - המוכן לקנייה</h3><p>ראשית, ליד חם הוא לקוח שמוכן לקנות עכשיו. במילים אחרות, הוא כבר עבר את רוב תהליך הקנייה.</p><p>בנוסף, הוא כבר:</p><ul><li>יודע בדיוק מה הוא רוצה</li><li>הגדיר תקציב ברור</li><li>מחפש ספק מתאים</li></ul><p>לדוגמה: סוכן ביטוח שמבקש הצעת מחיר ספציפית ל-50 <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> לחודש הקרוב.</p><h3 style="font-size:20px;margin:30px 0 10px">ליד קר - בתחילת המסע</h3><p>לעומת זאת, ליד קר נמצא בתחילת דרכו. כלומר, הוא עדיין לא מוכן לרכישה.</p><p>יתרה מכך, הוא:</p><ul><li>נמצא בשלב מחקר ראשוני</li><li>לא בטוח מה הצורך שלו</li><li>בודק אפשרויות שונות</li></ul><p>לדוגמה: מישהו שהוריד מדריך כללי על "טיפים ל<a href="../שיווק-דיגיטלי/">שיווק דיגיטלי</a>" מהאתר שלך.</p><h2>7 סימנים ברורים לזיהוי ליד חם</h2><h3 style="font-size:20px;margin:30px 0 10px">1. שואל ישירות על מחיר</h3><p>למשל: "כמה עולה חבילה של 100 <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> לחודש?"</p><h3 style="font-size:20px;margin:30px 0 10px">2. מבקר חוזר בדף המחירון</h3><p>בנוסף, ביקר במחירון הלידים שלנו יותר משלוש פעמים.</p><h3 style="font-size:20px;margin:30px 0 10px">3. שואל שאלות ספציפיות מאוד</h3><p>יתר על כן, שאלות כמו:</p><ul><li>"מה אחוז ההמרה הממוצע שלכם?"</li><li>"איך אתם מסננים את הלידים?"</li><li>"מתי אפשר להתחיל לעבוד?"</li></ul><h3 style="font-size:20px;margin:30px 0 10px">4. מזכיר לוח זמנים דחוף</h3><p>למעשה, אמירות כמו "צריך להתחיל עוד החודש" מעידות על דחיפות.</p><h3 style="font-size:20px;margin:30px 0 10px">5. מדבר על תקציב מוגדר</h3><p>כמו כן, "יש לי תקציב של 10,000 ₪ לחודש ללידים" זו אינדיקציה ברורה.</p><h3 style="font-size:20px;margin:30px 0 10px">6. הגיע מהמלצה חמה</h3><p>בנוסף לכך, "שמעתי עליכם מחבר שמאוד מרוצה" מעיד על אמון מוקדם.</p><h3 style="font-size:20px;margin:30px 0 10px">7. מחפש להחליף ספק</h3><p>לבסוף, "אני לא מרוצה מהספק הנוכחי" מראה צורך מיידי.</p><h2>טבלת השוואה מקיפה: לידים חמים מול קרים</h2><h2>אסטרטגיה מנצחת לטיפול בלידים חמים</h2><h3 style="font-size:20px;margin:30px 0 10px">חוק ה-5 דקות הקריטי</h3><p>ראשית ולפני הכל, תגיב תוך 5 דקות מרגע הפנייה. למה זה חשוב? מחקרים מראים שתגובה מהירה מעלה סיכויי סגירה ב-80%.</p><p>יתר על כן, הסיבות לכך:</p><ul><li>הליד עדיין "חם" מהעניין</li><li>אתה הראשון שעונה</li><li>יוצר רושם מקצועי</li></ul><h3 style="font-size:20px;margin:30px 0 10px">מתן ערך מיידי וממוקד</h3><p>בנוסף, תן ללקוח:</p><ul><li>הצעת מחיר ברורה ומפורטת</li><li>דוגמאות רלוונטיות מהתחום שלו</li><li>הוכחות הצלחה עדכניות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">יצירת דחיפות חיובית</h3><p>כמו כן, השתמש בטכניקות כמו:</p><ul><li>"המחיר המיוחד תקף ל-48 שעות"</li><li>"נותרו רק 50 לידים איכותיים החודש"</li><li>"בונוס בלעדי למצטרפים השבוע"</li></ul><h3 style="font-size:20px;margin:30px 0 10px">הוכחה חברתית ממוקדת</h3><p>לדוגמה, אם הליד מחפש לידים למשכנתאות:</p><p>ספר לו: "יועץ משכנתאות מהאזור שלך סגר 12 עסקאות בחודש האחרון עם הלידים שלנו."</p><h2>תוכנית מקיפה לחימום לידים קרים</h2><h3 style="font-size:20px;margin:30px 0 10px">מסע טיפוח ב-8 שבועות</h3><p>שבועות 1-2: בניית מודעות</p><ul><li>ראשית, שלח תוכן חינוכי כללי</li><li>בנוסף, "5 דרכים להגדיל מכירות בעסק"</li><li>כמו כן, טיפים בסיסיים לשיווק</li></ul><p>שבועות 3-4: העמקת הקשר</p><ul><li>לאחר מכן, תוכן ממוקד יותר</li><li>למשל, "למה לידים איכותיים משנים עסקים"</li><li>בנוסף לכך, סיפורי הצלחה כלליים</li></ul><p>שבועות 5-6: התאמה אישית</p><ul><li>כעת, תוכן ספציפי לתחום</li><li>יתרה מכך, מקרי בוחן מדויקים</li><li>כמו כן, נתונים רלוונטיים</li></ul><p>שבועות 7-8: המרה לפעולה</p><ul><li>לבסוף, הצעה אישית</li><li>בנוסף, פיילוט מוגבל</li><li>לסיום, שיחת ייעוץ חינם</li></ul><h3 style="font-size:20px;margin:30px 0 10px">מערכת ניקוד פשוטה ויעילה</h3><p>ראשית, הקצה נקודות לכל פעולה:</p><ul><li>פתח מייל: 1 נקודה</li><li>לחץ על קישור: 3 נקודות</li><li>הוריד מדריך: 5 נקודות</li><li>ביקר במחירון: 10 נקודות</li><li>מילא טופס: 20 נקודות</li></ul><p>לכן, כשליד צובר מעל 30 נקודות - הוא הופך לחם!</p><h2>5 טעויות קריטיות שחייבים להימנע מהן</h2><h3 style="font-size:20px;margin:30px 0 10px">טעות 1: טיפול אחיד לכל הלידים</h3><p>במקום זאת: התאם את הגישה לטמפרטורת הליד</p><h3 style="font-size:20px;margin:30px 0 10px">טעות 2: ויתור מהיר מדי</h3><p>זכור: ליד קר דורש 7-12 מגעים בממוצע</p><h3 style="font-size:20px;margin:30px 0 10px">טעות 3: דחיפה אגרסיבית למכירה</h3><p>הפתרון: תן ערך משמעותי לפני שאתה מוכר</p><h3 style="font-size:20px;margin:30px 0 10px">טעות 4: חוסר מעקב שיטתי</h3><p>לכן: השתמש ב-CRM עם תזכורות אוטומטיות</p><h3 style="font-size:20px;margin:30px 0 10px">טעות 5: התעלמות מסיבת הדחייה</h3><p>במקום זאת: שאל "מה מונע מכם להתקדם כרגע?"</p><h2>דוגמאות מעשיות לפי תחומים</h2><h3 style="font-size:20px;margin:30px 0 10px">תחום הביטוח</h3><p>ליד חם: "אני סוכן ביטוח וצריך 50 לידים לביטוח רכב באזור המרכז החודש"</p><p>ליד קר: "מעניין אותי לשמוע על אפשרויות שיווק בתחום הביטוח"</p><p>אסטרטגיית טיפול:</p><ul><li>לחם: הצעת מחיר מפורטת תוך שעה</li><li>לקר: שליחת מדריך "10 דרכים להגדיל תיק לקוחות בביטוח"</li></ul><h3 style="font-size:20px;margin:30px 0 10px">תחום המשכנתאות</h3><p>ליד חם: "אני יועץ משכנתאות חדש וצריך להתחיל עם לידים איכותיים מיד"</p><p>ליד קר: "שוקל להיכנס לתחום ייעוץ המשכנתאות"</p><p>אסטרטגיית טיפול:</p><ul><li>לחם: חבילת Start מיוחדת עם ליווי צמוד</li><li>לקר: הזמנה לוובינר "איך להצליח כיועץ משכנתאות"</li></ul><h3 style="font-size:20px;margin:30px 0 10px">תחום ההלוואות</h3><p>ליד חם: "מחפש לידים להלוואות עם סינון אשראי מקדים"</p><p>ליד קר: "קורא מאמרים על מגמות בשוק ההלוואות"</p><p>אסטרטגיית טיפול:</p><ul><li>לחם: הדגמת מערכת הסינון המתקדמת</li><li>לקר: מאמר "טרנדים חמים בשוק ההלוואות 2025"</li></ul><h2>כלים טכנולוגיים חיוניים לניהול לידים</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכות CRM מומלצות</h3><ul><li>HubSpot: מושלם למתחילים, גרסה חינמית זמינה</li><li>Monday.com: פשוט וידידותי לצוותים קטנים</li><li>Salesforce: לארגונים גדולים ומורכבים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">כלי אוטומציה שיווקית</h3><ul><li>Mailchimp: למיילים אוטומטיים בסיסיים</li><li>ActiveCampaign: למסעות מורכבים ומתקדמים</li><li>Marketo: לארגוני Enterprise</li></ul><h3 style="font-size:20px;margin:30px 0 10px">כלי מעקב וניתוח</h3><ul><li>Google Analytics 4: לניתוח התנהגות באתר</li><li>Hotjar: למפות חום והבנת משתמשים</li><li>CallRail: למעקב אחר שיחות טלפון</li></ul><h2>מדדי ביצוע קריטיים (KPIs)</h2><h3 style="font-size:20px;margin:30px 0 10px">ללידים חמים</h3><ul><li>זמן תגובה: פחות מ-5 דקות</li><li>אחוז סגירה: מעל 25%</li><li>מחזור מכירה: עד 7 ימים</li><li>ערך עסקה ממוצע: מעקב רבעוני</li></ul><h3 style="font-size:20px;margin:30px 0 10px">ללידים קרים</h3><ul><li>אחוז פתיחת מיילים: מעל 20%</li><li>שיעור הקלקות: מעל 3%</li><li>המרה לחמים: מעל 10%</li><li>עלות רכישת לקוח: מעקב חודשי</li></ul><h2>שיטת BANT המוכחת לסינון לידים</h2><p>לפני השקעת משאבים, בדוק ארבעה פרמטרים:</p><ul><li>Budget (תקציב): האם יש כסף זמין?</li><li>Authority (סמכות): האם מדובר במקבל החלטות?</li><li>Need (צורך): האם יש צורך אמיתי ודחוף?</li><li>Timeline (זמן): מה לוח הזמנים להחלטה?</li></ul><p>זכור: 3 מתוך 4 = ליד חם פוטנציאלי!</p><h2>סיכום: הצעדים הבאים שלך</h2><p>לסיכום, ניהול נכון של לידים חמים וקרים הוא המפתח להצלחה עסקית.</p><p>יתר על כן, הנה העקרונות החשובים:</p><ul><li>ללידים חמים: מהירות תגובה וערך מיידי</li><li>ללידים קרים: סבלנות וחינוך מתמשך</li></ul><p>בנוסף לכך, בBaliLead אנחנו מומחים באספקת לידים איכותיים בכל הטמפרטורות:</p><ul><li>לידים לביטוח מסוננים ואיכותיים</li><li>לידים למשכנתאות עם נתוני אימות</li><li>לידים להלוואות ממוקדי יעד</li><li>לידים להחזרי מס עם פוטנציאל גבוה</li></ul><h2>קריאה לפעולה ברורה</h2><p>אז מה הצעד הבא? רוצה להתחיל לקבל לידים שעובדים?</p><p>לחץ כאן לקבלת הצעה מותאמת אישית</p><p>זכור: כל ליד קר היום יכול להפוך ללקוח הכי רווחי שלך מחר!</p>
     </div>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

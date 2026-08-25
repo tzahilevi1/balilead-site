@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים</span></nav>
     <div class="art-meta reveal"><span class="am-cat">לידים</span><span>7 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">לידים לסוכני נדל״ן 2025: המדריך השלם להגדלת עסקאות וקיצור זמני מכירה</h1>
     <p class="p-sub reveal" style="--d:.16s">לידים איכותיים לסוכני נדל״ן עם אחוזי סגירה גבוהים. הגדילו עסקאות, חסכו זמן וקבלו רק קונים ומוכרים רציניים. התחילו היום!</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-leads.webp" alt="לידים לסוכני נדל״ן 2025: המדריך השלם להגדלת עסקאות וקיצור זמני מכירה - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-leads.webp" alt="לידים לסוכני נדל״ן 2025: המדריך השלם להגדלת עסקאות וקיצור זמני מכירה"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>בעידן הדיגיטלי, כשכל אחד יכול לחפש נכסים באינטרנט, הערך המוסף של סוכן נדל״ן מקצועי חייב להתבטא ביכולת למצוא את הלקוחות הנכונים, בזמן הנכון, עם הצרכים המדויקים.</p><h2>הכאבים המרכזיים של סוכני נדל״ן בישראל</h2><h3 style="font-size:20px;margin:30px 0 10px">1. תחרות אכזרית על כל לקוח</h3><p>עם למעלה מ-25,000 סוכני נדל״ן פעילים בישראל, התחרות על כל קונה או מוכר פוטנציאלי הפכה למלחמת הישרדות.</p><h3 style="font-size:20px;margin:30px 0 10px">2. השקעות ענק בפרסום ללא החזר</h3><p>סוכנים משקיעים אלפי שקלים בפרסום בפורטלים, עיתונים ורשתות חברתיות, אך רוב הפניות הן של "מציצים" ללא כוונה אמיתית.</p><h3 style="font-size:20px;margin:30px 0 10px">3. זמן מחזור ארוך ולא צפוי</h3><p>מהפגישה הראשונה ועד חתימה יכולים לעבור חודשים, כשהלקוח "נעלם" באמצע או עובר למתחרה.</p><h3 style="font-size:20px;margin:30px 0 10px">4. קושי בזיהוי לקוחות רציניים</h3><p>הבדל בין מי שבאמת מוכן לקנות/למכור לבין מי שרק "בודק את השוק" הוא קריטי לרווחיות.</p><h2>מה הופך ליד נדל״ן לאיכותי?</h2><h3 style="font-size:20px;margin:30px 0 10px">המאפיינים של ליד זהב בנדל״ן:</h3><ul><li>מוכנות פיננסית מאומתת - אישור עקרוני למשכנתא או הון עצמי זמין</li><li>לוח זמנים מוגדר - צורך לקנות/למכור תוך 3-6 חודשים</li><li>דרישות ברורות - יודע מה רוצה: אזור, גודל, תקציב</li><li>מוטיבציה אמיתית - שינוי משפחתי, עבודה, או צורך דחוף</li><li>בלעדיות - לא עובד כבר עם סוכן אחר</li></ul><h2>נתונים מפתיעים על שוק הלידים בנדל״ן</h2><h2>אסטרטגיות מנצחות לעבודה עם לידים חמים</h2><h3 style="font-size:20px;margin:30px 0 10px">1. מערכת תגובה מהירה - "חוק ה-15 דקות"</h3><p>הנתון המדהים: סוכן המגיב תוך 15 דקות מגדיל סיכויי סגירה ב-300%!</p><p>כלים ליישום:</p><ul><li>התראות SMS/WhatsApp בזמן אמת</li><li>מערכת CRM עם חלוקה אוטומטית</li><li>תבניות תגובה מהירה מוכנות מראש</li><li>זמינות טלפונית 7/24</li></ul><h3 style="font-size:20px;margin:30px 0 10px">2. סגמנטציה חכמה לפי פרופיל לקוח</h3><p>קונים - פילוח לפי שלב:</p><ul><li>ראשוני - רק מתחיל לחפש, זקוק להדרכה</li><li>מתקדם - ביקר בנכסים, יודע מה רוצה</li><li>החלטה - מוכן לקנות, צריך את הנכס הנכון</li></ul><p>מוכרים - פילוח לפי מוטיבציה:</p><ul><li>דחוף - גירושין, חובות, רילוקיישן</li><li>משפרים - רוצים נכס גדול/טוב יותר</li><li>משקיעים - מחפשים תשואה מקסימלית</li></ul><h3 style="font-size:20px;margin:30px 0 10px">3. בניית מסלול אמון מהיר</h3><h3 style="font-size:20px;margin:30px 0 10px">שלב 1: הרושם הראשון (0-24 שעות)</h3><ul><li>שיחת היכרות מקצועית</li><li>שליחת חומרים רלוונטיים</li><li>קביעת פגישה פרונטלית</li></ul><h3 style="font-size:20px;margin:30px 0 10px">שלב 2: הוכחת מקצועיות (יום 2-7)</h3><ul><li>הצגת נכסים מתאימים במדויק</li><li>ניתוח שוק מפורט לאזור</li><li>המלצות מלקוחות קודמים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">שלב 3: ליווי צמוד (שבוע 2 ואילך)</h3><ul><li>עדכונים יומיים על נכסים חדשים</li><li>ליווי בסיורים</li><li>ייעוץ במשא ומתן</li></ul><h2>טכנולוגיות מתקדמות שמשנות את המשחק</h2><h3 style="font-size:20px;margin:30px 0 10px">1. AI לחיזוי התנהגות לקוחות</h3><ul><li>ניתוח דפוסי חיפוש באתרי נדל״ן</li><li>זיהוי "חום" הליד לפי התנהגות דיגיטלית</li><li>חיזוי סבירות לסגירה תוך X ימים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">2. סיורים וירטואליים ו-AR</h3><ul><li>חיסכון בזמן - סינון ראשוני מהבית</li><li>הגדלת מעורבות הלקוח</li><li>אפשרות לסיורים בינלאומיים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">3. מערכות CRM ייעודיות לנדל״ן</h3><ul><li>ניהול נכסים ולקוחות במקום אחד</li><li>התאמות אוטומטיות נכס-לקוח</li><li>מעקב אחר כל שלב בתהליך</li></ul><h2>מקרי הצלחה מהשטח</h2><h3 style="font-size:20px;margin:30px 0 10px">משרד תיווך "נדל״ן הצפון" - חיפה</h3><ul><li>האתגר: 80% מהפניות היו "תיירי נדל״ן"</li><li>הפתרון: מעבר ללידים מסוננים ואיכותיים</li><li>התוצאה: עלייה של 250% בעסקאות</li><li>קיצור זמן מכירה ממוצע ב-60%</li><li>גידול של 180% בהכנסות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">סוכנת עצמאית - תל אביב</h3><ul><li>לפני: 50 פניות בחודש, 2 עסקאות</li><li>אחרי: 15 לידים איכותיים, 6 עסקאות</li><li>ROI: 400% תוך חצי שנה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">רשת תיווך ארצית</h3><ul><li>יישום: מערכת לידים מרכזית לכל הסניפים</li><li>חיסכון: 70% בעלויות פרסום</li><li>שיפור: 85% באחוזי סגירה</li></ul><h2>כלים מעשיים לחישוב השקעה בלידים</h2><h3 style="font-size:20px;margin:30px 0 10px">נוסחת ה-ROI המושלמת לסוכני נדל״ן:</h3><p>עמלה ממוצעת לעסקה: ₪40,000 אחוז סגירה מ<a href="../קניית-לידים/">לידים איכותיים</a>: 35% ערך ליד = ₪40,000 × 0.35 = ₪14,000 עלות מקסימלית מומלצת לליד = 20% מהערך = ₪2,800 טבלת השוואה - מקורות לידים שונים: מקור עלות לליד איכות אחוז המרה המלצה פורטלים ₪50-200 נמוכה 2-5% לא מומלץ פייסבוק ₪100-400 בינונית 5-15% תלוי מיקוד גוגל ₪200-800 גבוהה 10-25% מומלץ לידים מקצועיים ₪500-2,500 מעולה 25-50% מומלץ מאוד הטעויות הקטלניות שסוכנים עושים 1. "אני אטפל בכל פנייה" לא כל ליד שווה את הזמן שלך. למד לסנן ולמקד מאמצים.</p><h3 style="font-size:20px;margin:30px 0 10px">2. דחיית המעקב</h3><p>48 שעות ללא קשר = לקוח אבוד למתחרה.</p><h3 style="font-size:20px;margin:30px 0 10px">3. חוסר בבידול</h3><p>אם אתה נשמע כמו כל סוכן אחר, למה שיבחרו בך?</p><h3 style="font-size:20px;margin:30px 0 10px">4. התעלמות מטכנולוגיה</h3><p>סוכנים שלא מאמצים כלים דיגיטליים נשארים מאחור.</p><h3 style="font-size:20px;margin:30px 0 10px">5. מכירה במקום ייעוץ</h3><p>הלקוח רוצה יועץ אמין, לא מוכר אגרסיבי.</p><h2>איך BaliLead מספקת לידים מנצחים לסוכני נדל״ן</h2><h3 style="font-size:20px;margin:30px 0 10px">היתרונות הבלעדיים שלנו:</h3><h3 style="font-size:20px;margin:30px 0 10px">1. סינון 5 כוכבים</h3><ul><li>בדיקת מוכנות פיננסית</li><li>אימות זהות ורצינות</li><li>התאמה גיאוגרפית מדויקת</li><li>בדיקת היסטוריית פניות</li><li>ראיון טלפוני ראשוני</li></ul><h3 style="font-size:20px;margin:30px 0 10px">2. מידע עשיר ומפורט</h3><ul><li>פרטי קשר מלאים ומאומתים</li><li>דרישות מפורטות של הלקוח</li><li>תקציב ולוחות זמנים</li><li>מוטיבציה לקנייה/מכירה</li><li>העדפות ספציפיות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">3. תמיכה מקצועית מלאה</h3><ul><li>הדרכה לסגירת עסקאות</li><li>ניתוח ביצועים שוטף</li><li>טיפים מהשטח</li><li>קהילת סוכנים מצליחים</li></ul><p>למידע נוסף על מחירון לידים או <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> - תחום משלים מצוין לסוכני נדל״ן.</p><h2>12 טיפים פרקטיים להצלחה מיידית</h2><ul><li>צרו "חבילת פתיחה" - מצגת על עצמכם והשירות</li><li>בנו מאגר נכסים בלעדיים - יתרון על המתחרים</li><li>התמחו בנישה - אזור/סוג נכס ספציפי</li><li>צלמו וידאו אישי - בניית אמון מהירה</li><li>השתמשו ב-WhatsApp Business - תקשורת מקצועית</li><li>צרו תוכן שיווקי - מדריכים, טיפים, ניתוחי שוק</li><li>בנו רשת ממליצים - הלידים הטובים ביותר</li><li>השקיעו בנוכחות דיגיטלית - אתר, גוגל עסקים</li><li>למדו משא ומתן - המיומנות החשובה ביותר</li><li>הציעו שירותי ערך מוסף - ייעוץ משכנתאות, עו״ד</li><li>עבדו עם לוח זמנים מסודר - יעילות מקסימלית</li><li>מדדו כל פרמטר - מה עובד ומה לא</li></ul><h2>מגמות 2025 בשוק הנדל״ן הדיגיטלי</h2><ul><li>בלוקצ׳יין בעסקאות - חוזים חכמים ושקיפות מלאה</li><li>נדל״ן וירטואלי - מטאוורס וההשפעה על השוק הפיזי</li><li>קניית דירות אונליין - התהליך כולו דיגיטלי</li><li>AI לחיזוי מחירים - דיוק מקסימלי בהערכות</li><li>דור ה-Z נכנס לשוק - שינוי בדרישות ובהתנהגות</li></ul><h2>המספרים מדברים: למה להשקיע בלידים איכותיים</h2><ul><li>90% מהקונים מתחילים את החיפוש באינטרנט</li><li>73% עובדים רק עם סוכן אחד שפגשו</li><li>52% מצפים לתגובה תוך שעה</li><li>87% בוחרים סוכן לפי מקצועיות ומהירות</li><li>4X יותר סיכוי לסגור עם ליד איכותי</li></ul><h2>סיכום: העתיד שייך לסוכנים החכמים</h2><p>בשוק הנדל״ן המודרני, ההצלחה לא נמדדת בכמות הפרסומים או במספר הכרטיסיות שחילקתם. לידים איכותיים לסוכני נדל״ן הם המפתח להצלחה בת קיימא, לחיסכון בזמן ובכסף, ולבניית עסק רווחי לטווח ארוך.</p><p>זכרו:</p><ul><li>כל דקה שאתם מבזבזים על ליד לא איכותי = הפסד כפול</li><li>השקעה נכונה בלידים = החזר של פי 5-10</li><li>הטכנולוגיה היא חברתכם הטובה ביותר</li><li>מקצועיות ומהירות מנצחות תמיד</li></ul><h2>קריאה לפעולה - הזמן לפעול הוא עכשיו!</h2><p>סוכני נדל״ן מצליחים לא מחכים - הם פועלים!</p><p>קבלו הצעה בלעדית ללידים איכותיים שיהפכו את העסק שלכם:</p><h3 style="font-size:20px;margin:30px 0 10px">הטבה מיוחדת למצטרפים החודש:</h3><p>✅ 30% הנחה על 3 החודשים הראשונים ✅ 10 לידים לניסיון - תשלמו רק על מה שסוגרים ✅ ייעוץ עסקי אישי בשווי ₪2,500 - בחינם! ✅ אחריות 100% - לא מרוצים? מחזירים כסף</p><p>אל תתנו למתחרים לקחת את הלקוחות הטובים שלכם!</p>
     </div>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

@@ -221,6 +221,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -726,7 +736,10 @@ export function footer(root) {
 </div>`;
 }
 
-export function ctaSection(root, { title, sub } = {}) {
+const FORM_TOPICS = ['ביטוח', 'משכנתאות', 'הלוואות', 'החזרי מס', 'פיננסים והשקעות', 'עורכי דין', 'רואי חשבון', 'רפואה ואסתטיקה', 'בניית אתרים', 'שיווק דיגיטלי לעסק שלי', 'תחום אחר'];
+
+export function ctaSection(root, { title, sub, topic } = {}) {
+  const topics = FORM_TOPICS.includes(topic) || !topic ? FORM_TOPICS : [topic, ...FORM_TOPICS];
   return `
 <section class="sec contact" id="contact" style="padding-top:0">
   <div class="container">
@@ -754,20 +767,11 @@ export function ctaSection(root, { title, sub } = {}) {
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
-              <option>ביטוח</option>
-              <option>משכנתאות</option>
-              <option>הלוואות</option>
-              <option>החזרי מס</option>
-              <option>פיננסים והשקעות</option>
-              <option>עורכי דין</option>
-              <option>רואי חשבון</option>
-              <option>רפואה ואסתטיקה</option>
-              <option>שיווק דיגיטלי לעסק שלי</option>
-              <option>תחום אחר</option>
+              <option value=""${topic ? '' : ' selected'} disabled>בחרו תחום</option>
+              ${topics.map(t => `<option${t === topic ? ' selected' : ''}>${t}</option>`).join('\n              ')}
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic">${IC.send}</span>
             שולחים ומתחילים
@@ -820,8 +824,14 @@ export const js = `
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');
@@ -901,7 +911,7 @@ ${widgetsJs}</script>
 </html>`;
 }
 
-export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine }) {
+export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine, img, alt }) {
   const crumbHtml = crumbs
     ? `<nav class="crumbs reveal" aria-label="פירורי לחם">${crumbs.map((c, i) =>
         (i ? IC.crumb : '') + (c.href !== undefined ? `<a href="${root}${c.href}">${c.t}</a>` : `<span>${c.t}</span>`)
@@ -916,16 +926,28 @@ export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine }
         <a class="btn btn-ghost" href="${SITE.waText}" target="_blank" rel="noopener"><span class="btn-ic">${IC.wa}</span>דברו איתנו בוואטסאפ</a>
       </div>`
     : '';
-  return `
-<section class="p-hero">
-  <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  const inner = `
     ${crumbHtml}
     ${metaLine ? `<div class="art-meta reveal">${metaLine}</div>` : ''}
     <h1 class="reveal" style="--d:.08s">${h1}</h1>
     <p class="p-sub reveal" style="--d:.16s">${sub}</p>
     ${priceHtml}
-    ${ctasHtml}
+    ${ctasHtml}`;
+  if (img) {
+    return `
+<section class="p-hero">
+  <div class="hero-halo" aria-hidden="true"></div>
+  <div class="container p-hero-grid">
+    <div>${inner}</div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="${root}assets/${img}" alt="${alt || ''}" fetchpriority="high"></div>
+  </div>
+</section>`;
+  }
+  return `
+<section class="p-hero">
+  <div class="hero-halo" aria-hidden="true"></div>
+  <div class="container">
+    ${inner}
   </div>
 </section>`;
 }

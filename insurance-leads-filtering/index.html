@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>ביטוח</span></nav>
     <div class="art-meta reveal"><span class="am-cat">ביטוח</span><span>11 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">סינון לידים לביטוח: המפתח להגדלת מכירות ב-250%</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו איך סינון חכם של לידים לביטוח יכול להכפיל את אחוזי הסגירה. טכנולוגיה מתקדמת, התאמה מדויקת ותוצאות מוכחות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-insurance.webp" alt="סינון לידים לביטוח: המפתח להגדלת מכירות ב-250% - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-insurance.webp" alt="סינון לידים לביטוח: המפתח להגדלת מכירות ב-250%"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>סינון לידים לביטוח: המפתח להגדלת מכירות ב-250%</h2><p>ראשית, 83% מסוכני הביטוח מבזבזים מעל 60% מזמנם על לידים לא רלוונטיים. למעשה, הם מפסידים עסקאות בזמן שעוסקים בבזבוז.</p><p>יתר על כן, סינון <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> נכון יכול לשנות את התמונה לחלוטין.</p><p>בנוסף לכך, במדריך הזה תגלו בדיוק איך להפוך את הכאוס ל<a href="../קניית-לידים/">לידים איכותיים</a> שסוגרים עסקאות.</p><h2>הבעיה: ים של לידים, טיפה של איכות</h2><h3 style="font-size:20px;margin:30px 0 10px">המחיר האמיתי של לידים לא מסוננים</h3><p>ראשית, בואו נדבר על הפיל בחדר. למעשה, כל ליד לא איכותי עולה לכם יותר מסתם זמן.</p><p>העלויות הנסתרות:</p><ul><li>30 דקות שיחה עם מי שאין לו תקציב</li><li>חיוג חוזר למספרים לא נכונים</li><li>הצעות מחיר למי שרק סקרן</li><li>אנרגיה מנטלית שנשחקת</li></ul><p>במילים אחרות, אתם משלמים כפול - גם על הליד וגם על הזמן המבוזבז.</p><h3 style="font-size:20px;margin:30px 0 10px">התסכול שהורג מוטיבציה</h3><p>בנוסף לכך, יש מחיר נפשי כבד. יתרה מכך, הצוות שלכם נשחק.</p><p>הסימפטומים:</p><ul><li>ירידה במוטיבציה של הצוות</li><li>פחות אנרגיה לעסקאות אמיתיות</li><li>שחיקה ועזיבת עובדים</li><li>אובדן הזדמנויות אמיתיות</li></ul><p>לכן, סינון לידים לביטוח הוא לא מותרות - הוא הכרח. כפי שמוסבר במדריך שלנו לניהול לידים, יעילות מצילה עסקים.</p><h2>הפתרון: סינון חכם בטכנולוגיה מתקדמת</h2><h3 style="font-size:20px;margin:30px 0 10px">שלב 1: הגדרת קריטריונים ברורים</h3><p>ראשית ולפני הכל, צריך לדעת מה אתם מחפשים.</p><p>קריטריונים לסינון איכותי:</p><p>כתוצאה מכך, כל ליד שמגיע אליכם עבר כבר סינון ראשוני.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 2: טכנולוגיית סינון אוטומטית</h3><p>יתר על כן, הטכנולוגיה עושה את העבודה הקשה.</p><p>[תמונה: מערכת AI לסינון - Alt: "סינון לידים לביטוח עם בינה מלאכותית"]</p><p>מה הטכנולוגיה עושה:</p><ul><li>סורקת התנהגות דיגיטלית</li><li>מנתחת היסטוריית גלישה</li><li>בודקת נתונים דמוגרפיים</li><li>מחשבת ציון איכות</li><li>מסווגת לפי פוטנציאל</li></ul><p>בנוסף, הכל קורה בזמן אמת. ראו לידים לביטוח.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 3: אימות אנושי חכם</h3><p>כמו כן, השילוב האנושי קריטי.</p><p>תהליך האימות:</p><ul><li>שיחת סינון קצרה (2-3 דקות)</li><li>אימות פרטים בסיסיים</li><li>בדיקת רצינות וכוונה</li><li>הערכת פוטנציאל</li><li>העברה לסוכן המתאים</li></ul><p>למעשה, 5 דקות של סינון חוסכות שעות של תסכול.</p><h2>יתרונות מוכחים של סינון נכון</h2><h3 style="font-size:20px;margin:30px 0 10px">חיסכון של 80% מהזמן</h3><p>ראשית, הנתונים מדברים בעד עצמם.</p><p>לפני סינון:</p><ul><li>100 לידים = 100 שיחות</li><li>5% סגירה</li><li>95 שיחות מבוזבזות</li></ul><p>אחרי סינון:</p><ul><li>100 לידים → 20 איכותיים</li><li>25% סגירה</li><li>15 שיחות ממוקדות בלבד</li></ul><p>במילים אחרות, אותן 5 עסקאות עם 80% פחות עבודה.</p><h3 style="font-size:20px;margin:30px 0 10px">הגדלת אחוזי סגירה ב-250%</h3><p>יתר על כן, האיכות משנה הכל.</p><p>[תמונה: גרף עלייה במכירות - Alt: "סינון לידים לביטוח מגדיל מכירות"]</p><p>השיפור המדהים:</p><ul><li>מ-5% ל-25% סגירה</li><li>ערך עסקה ממוצע גבוה יותר</li><li>לקוחות מרוצים יותר</li><li>פחות ביטולים</li></ul><p>כתוצאה מכך, הרווחיות עולה דרמטית.</p><h3 style="font-size:20px;margin:30px 0 10px">שיפור במורל הצוות</h3><p>כמו כן, עובדים מאושרים = עסק מצליח.</p><p>ההשפעה על הצוות:</p><ul><li>יותר מוטיבציה לעבודה</li><li>תחושת הצלחה מתמדת</li><li>פחות שחיקה ועזיבות</li><li>יותר אנרגיה למכירות</li></ul><h2>טכניקות מתקדמות לסינון</h2><h3 style="font-size:20px;margin:30px 0 10px">סינון לפי סוג ביטוח</h3><p>ראשית, כל תחום דורש גישה שונה.</p><p>סינון ספציפי:</p><ul><li>ביטוח רכב: בדיקת רישיון, סוג רכב, היסטוריה</li><li>ביטוח חיים: גיל, מצב משפחתי, הכנסה</li><li>ביטוח דירה: בעלות/שכירות, גודל, מיקום</li><li>ביטוח עסקי: סוג עסק, מחזור, עובדים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">סינון התנהגותי מתקדם</h3><p>בנוסף לכך, התנהגות מנבאת כוונה.</p><p>סימנים חיוביים:</p><ul><li>בדיקת מספר עמודים באתר</li><li>הורדת חומרים</li><li>צפייה בסרטונים</li><li>חזרה לאתר</li><li>השוואת מחירים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">סינון לפי ערך פוטנציאלי</h3><p>יתר על כן, לא כל לקוח שווה אותו דבר.</p><p>חישוב LTV מהיר:</p><ul><li>סוג הביטוח המבוקש</li><li>פוטנציאל לביטוחים נוספים</li><li>יכולת כלכלית</li><li>נאמנות צפויה</li></ul><h2>מקרה בוחן: סוכנות מחיפה</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני סינון</h3><ul><li>500 לידים חודשיים</li><li>3% המרה</li><li>485 שיחות מבוזבזות</li><li>תסכול גבוה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי יישום סינון לידים לביטוח</h3><ul><li>150 לידים מסוננים</li><li>27% המרה</li><li>110 שיחות ממוקדות</li><li>40 עסקאות (במקום 15!)</li></ul><p>השינויים שיישמו:</p><ul><li>טופס מקדים מפורט</li><li>ניקוד אוטומטי</li><li>אימות טלפוני</li><li>חלוקה לפי פוטנציאל</li></ul><h2>כלים וטכנולוגיות לסינון</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכות סינון מומלצות</h3><h3 style="font-size:20px;margin:30px 0 10px">אינטגרציות חיוניות</h3><p>חיבורים שחוסכים זמן:</p><ul><li>CRM אוטומטי</li><li>מערכת חיוג</li><li>WhatsApp Business</li><li>ניתוח נתונים</li></ul><p>ראו גם <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> ולידים להלוואות.</p><h2>טעויות נפוצות בסינון</h2><h3 style="font-size:20px;margin:30px 0 10px">סינון רחב מדי</h3><p>ראשית, אל תהיו נוקשים מדי.</p><p>האיזון: מספיק לידים איכותיים, לא מעט מדי.</p><h3 style="font-size:20px;margin:30px 0 10px">התעלמות מפוטנציאל עתידי</h3><p>בנוסף, חשבו לטווח ארוך.</p><p>שיקולים: ליד "קר" היום יכול להיות "חם" בעוד חודש.</p><h3 style="font-size:20px;margin:30px 0 10px">חוסר מעקב</h3><p>יתר על כן, מדידה = שיפור.</p><p>מה למדוד: אחוזי סינון, איכות, המרות, ROI.</p><h2>החזר ההשקעה המדהים</h2><h3 style="font-size:20px;margin:30px 0 10px">חישוב פשוט</h3><p>נתונים לדוגמה:</p><ul><li>עלות סינון: 10 ₪ לליד</li><li>חיסכון זמן: 40 ₪ לליד</li><li>עלייה בסגירות: 60 ₪ לליד</li><li>ROI כולל: 1,000%</li></ul><h3 style="font-size:20px;margin:30px 0 10px">תוצאות ארוכות טווח</h3><p>היתרונות המצטברים:</p><ul><li>מוניטין טוב יותר</li><li>המלצות מלקוחות</li><li>צוות יעיל יותר</li><li>צמיחה מתמדת</li></ul><h2>הצעד הבא: התחילו לסנן חכם</h2><p>לסיכום, סינון לידים לביטוח הוא המפתח להצלחה בתחום.</p><p>יתר על כן, ההשקעה החכמה ביותר שתעשו לעסק.</p><p>ב-BaliLead אנחנו מומחים בסינון לידים:</p><ul><li>טכנולוגיה מתקדמת</li><li>צוות אימות מקצועי</li><li>התאמה אישית</li><li>תוצאות מוכחות</li></ul><h2>קריאה לפעולה: הזמן לשינוי הוא עכשיו</h2><p>אז מה אתם מחכים? כל יום בלי סינון = הפסד של עסקאות.</p><p>לחץ כאן לקבלת לידים מסוננים לביטוח</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם הביטוח, איכות מנצחת כמות. לכן, התחל לסנן היום!</p>
     </div>
@@ -835,8 +848,8 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
-              <option>ביטוח</option>
+              <option value="" disabled>בחרו תחום</option>
+              <option selected>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

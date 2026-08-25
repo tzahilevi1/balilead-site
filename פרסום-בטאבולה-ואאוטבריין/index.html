@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,7 +755,8 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../שיווק-דיגיטלי/">שיווק דיגיטלי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>טאבולה ואאוטבריין</span></nav>
     
     <h1 class="reveal" style="--d:.08s">טאבולה ואאוטבריין, <span class="gw">הלידים שמגיעים מהחדשות</span></h1>
@@ -752,7 +765,8 @@ html.acc-noanim .hero-media video{display:none}
     <div class="hero-ctas reveal" style="--d:.3s;margin-top:28px">
         <a class="btn btn-gold" href="#contact"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></span>מתחילים לקבל לידים</a>
         <a class="btn btn-ghost" href="https://wa.me/972584700706?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A0%D7%99%20%D7%9E%D7%A2%D7%95%D7%A0%D7%99%D7%99%D7%9F%20%D7%91%D7%9C%D7%99%D7%93%D7%99%D7%9D%20%D7%9C%D7%A2%D7%A1%D7%A7%20%D7%A9%D7%9C%D7%99" target="_blank" rel="noopener"><span class="btn-ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg></span>דברו איתנו בוואטסאפ</a>
-      </div>
+      </div></div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/hero-news.webp" alt="פרסום בטאבולה ואאוטבריין - כתבה זוהרת בעיתון" fetchpriority="high"></div>
   </div>
 </section>
 
@@ -832,7 +846,7 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
@@ -841,11 +855,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
-              <option>שיווק דיגיטלי לעסק שלי</option>
+              <option>בניית אתרים</option>
+              <option selected>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -957,7 +972,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1005,8 +1020,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

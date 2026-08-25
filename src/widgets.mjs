@@ -129,8 +129,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -181,7 +183,7 @@ export const widgetsHtml = root => `
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">

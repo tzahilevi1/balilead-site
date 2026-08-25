@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים</span></nav>
     <div class="art-meta reveal"><span class="am-cat">לידים</span><span>5 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">מה זה לידים איכותיים</h1>
     <p class="p-sub reveal" style="--d:.16s">82% מבעלי העסקים מתמודדים עם אותה בעיה: המון לידים, מעט מכירות. ככה מזהים ליד איכותי.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-leads.webp" alt="מה זה לידים איכותיים - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-leads.webp" alt="מה זה לידים איכותיים"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>מה זה לידים איכותיים - ההגדרה המלאה</h2><h3 style="font-size:20px;margin:30px 0 10px">לא כל ליד נולד שווה</h3><p>ראשית, בואו נבהיר את המושג. מה זה <a href="../קניית-לידים/">לידים איכותיים</a>? אלו לקוחות פוטנציאליים שעונים על קריטריונים ספציפיים שמנבאים סיכוי גבוה להמרה.</p><p>המאפיינים המרכזיים:</p><ul><li>✅ התאמה מלאה לקהל היעד שלכם</li><li>✅ צורך אמיתי ומוגדר במוצר/שירות</li><li>✅ יכולת כלכלית לרכישה</li><li>✅ סמכות לקבלת החלטות</li><li>✅ לוח זמנים ברור לפעולה</li></ul><p>במילים אחרות, ליד איכותי = פוטנציאל גבוה לעסקה.</p><h3 style="font-size:20px;margin:30px 0 10px">ההבדל בין איכות לכמות</h3><p>בנוסף לכך, חשוב להבין את ההבדל הקריטי.</p><p>[תמונה: השוואה גרפית בין לידים איכותיים לכמותיים - Alt: "מה זה לידים איכותיים לעומת כמות"]</p><p>השוואה מעשית:</p><ul><li>1,000 לידים רגילים: 2% המרה = 20 לקוחות</li><li>100 לידים איכותיים: 25% המרה = 25 לקוחות</li></ul><p>לכן, פחות יכול להיות יותר - אם זה איכותי. כפי שמוסבר במדריך שלנו לאופטימיזציה, איכות תמיד מנצחת.</p><h2>למה לידים איכותיים כל כך חשובים?</h2><h3 style="font-size:20px;margin:30px 0 10px">חיסכון דרמטי במשאבים</h3><p>ראשית ולפני הכל, זמן ועלויות.</p><p>הנתונים מדברים:</p><ul><li>75% פחות זמן בטיפול בלידים</li><li>60% חיסכון בעלויות שיווק</li><li>80% פחות תסכול בצוות המכירות</li><li>200% יותר ROI</li></ul><p>כתוצאה מכך, העסק רץ חלק יותר.</p><h3 style="font-size:20px;margin:30px 0 10px">שיפור חוויית הלקוח</h3><p>יתר על כן, לידים איכותיים מביאים לקוחות מרוצים יותר.</p><p>הסיבות:</p><ul><li>הם באמת צריכים את מה שאתם מציעים</li><li>התקשורת רלוונטית וממוקדת</li><li>התהליך מהיר וחלק יותר</li><li>שביעות רצון גבוהה יותר</li></ul><p>בנוסף, לקוחות מרוצים = המלצות = עוד לידים איכותיים.</p><h2>איך מזהים לידים איכותיים?</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכת ניקוד מתקדמת</h3><p>ראשית, צריך מערכת אובייקטיבית. מה זה לידים איכותיים במספרים?</p><p>[תמונה: טבלת ניקוד לידים - Alt: "מה זה לידים איכותיים - מערכת ניקוד"]</p><p>קריטריונים לניקוד:</p><p>ליד מעל 70 נקודות = איכותי מאוד!</p><h3 style="font-size:20px;margin:30px 0 10px">סימנים התנהגותיים</h3><p>בנוסף לכך, התנהגות מגלה כוונות.</p><p>סימנים חיוביים:</p><ul><li>ביקורים חוזרים באתר</li><li>הורדת חומרים מקצועיים</li><li>השתתפות בוובינרים</li><li>שאלות ספציפיות ומפורטות</li><li>בקשה ליצירת קשר יזומה</li></ul><p>למעשה, פעולות מדברות חזק יותר ממילים. ראו <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> כדוגמה.</p><h2>שיטות ליצירת לידים איכותיים</h2><h3 style="font-size:20px;margin:30px 0 10px">שיווק תוכן ממוקד</h3><p>ראשית, תוכן איכותי מושך לידים איכותיים.</p><p>סוגי תוכן שעובדים:</p><ul><li>מדריכים מעמיקים לפתרון בעיות</li><li>מחקרי מקרה עם תוצאות</li><li>כלים וטמפלייטים בחינם</li><li>וובינרים חינוכיים</li><li>ייעוץ ראשוני חינמי</li></ul><p>כתוצאה מכך, אתם מושכים אנשים שבאמת מתעניינים.</p><h3 style="font-size:20px;margin:30px 0 10px">טרגוט מדויק בפרסום</h3><p>יתר על כן, דיוק בפרסום = איכות בלידים.</p><p>טיפים לטרגוט:</p><ul><li>השתמשו ב-Lookalike Audiences</li><li>מקדו לפי התנהגות ולא רק דמוגרפיה</li><li>A/B Testing מתמיד</li><li>רימרקטינג חכם</li></ul><p>בנוסף, עקבו אחר ביצועים וייעלו. למידע על <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>.</p><h3 style="font-size:20px;margin:30px 0 10px">אוטומציה וסינון חכם</h3><p>כמו כן, טכנולוגיה חוסכת זמן ומשפרת איכות.</p><p>[תמונה: מערכת אוטומציה לסינון - Alt: "מה זה לידים איכותיים עם אוטומציה"]</p><p>תהליכים לאוטומציה:</p><ul><li>טפסים חכמים עם שאלות מסננות</li><li>צ'אטבוטים לקוואליפיקציה ראשונית</li><li>ניקוד אוטומטי בזמן אמת</li><li>הפניה אוטומטית לנציג המתאים</li></ul><p>למעשה, המכונה עושה את העבודה הקשה.</p><h2>טעויות נפוצות בניהול לידים</h2><h3 style="font-size:20px;margin:30px 0 10px">התמקדות בכמות בלבד</h3><p>ראשית, "עוד לידים" לא תמיד הפתרון.</p><p>הבעיה: רדיפה אחרי מספרים גבוהים הפתרון: מיקוד באיכות ובהתאמה</p><h3 style="font-size:20px;margin:30px 0 10px">חוסר מעקב ומדידה</h3><p>בנוסף, בלי נתונים אין שיפור.</p><p>מה למדוד:</p><ul><li>מקור הליד</li><li>זמן עד המרה</li><li>עלות לרכישה</li><li>ערך חיי לקוח</li></ul><h3 style="font-size:20px;margin:30px 0 10px">תהליך סינון לא מספיק</h3><p>יתר על כן, סינון חלש = בזבוז משאבים.</p><p>חובה: תהליך סינון רב-שלבי עם קריטריונים ברורים.</p><h2>מקרה בוחן: מהפך בחברת ביטוח</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני</h3><ul><li>500 לידים חודשיים</li><li>1% המרה</li><li>עלות גבוהה לעסקה</li><li>תסכול בצוות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי הבנת מה זה לידים איכותיים</h3><ul><li>150 לידים חודשיים</li><li>12% המרה</li><li>עלות נמוכה ב-70%</li><li>שביעות רצון גבוהה</li></ul><p>השינויים המרכזיים:</p><ul><li>הגדרת פרופיל לקוח מדויק</li><li>שינוי אסטרטגיית השיווק</li><li>הטמעת מערכת ניקוד</li><li>הכשרת הצוות</li></ul><h2>הטכנולוגיה מאחורי לידים איכותיים</h2><h3 style="font-size:20px;margin:30px 0 10px">כלי ניתוח וBI</h3><p>ראשית, נתונים הם הזהב החדש.</p><p>כלים מומלצים:</p><ul><li>Google Analytics לניתוח התנהגות</li><li>Hotjar למפות חום</li><li>Mixpanel לניתוח עמוק</li><li>Power BI לדוחות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">מערכות CRM מתקדמות</h3><p>בנוסף לכך, ניהול נכון הוא קריטי.</p><p>תכונות חיוניות:</p><ul><li>ניקוד אוטומטי</li><li>מעקב היסטוריה</li><li>אוטומציות חכמות</li><li>אינטגרציות מלאות</li></ul><p>ראו גם <a href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a> ולידים להחזרי מס.</p><h2>העתיד של לידים איכותיים</h2><h3 style="font-size:20px;margin:30px 0 10px">AI ולמידת מכונה</h3><p>ראשית, הטכנולוגיה מתקדמת.</p><p>מגמות עתידיות:</p><ul><li>חיזוי התנהגות מדויק יותר</li><li>פרסונליזציה אוטומטית</li><li>סינון בזמן אמת</li><li>אופטימיזציה רציפה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">חווית לקוח היפר-אישית</h3><p>בנוסף, הציפיות עולות.</p><p>מה צפוי:</p><ul><li>תקשורת מותאמת 100%</li><li>מענה מיידי 24/7</li><li>חוויה רב-ערוצית</li><li>שקיפות מלאה</li></ul><h2>הצעד הבא: התחילו לעבוד חכם</h2><p>לסיכום, עכשיו שהבנתם מה זה לידים איכותיים, הגיע הזמן ליישם.</p><p>יתר על כן, ההבדל בין הצלחה לכישלון טמון ביכולת למשוך ולנהל את הלידים הנכונים.</p><p>ב-BaliLead אנחנו מומחים בלידים איכותיים:</p><ul><li>מערכת סינון מתקדמת</li><li>ניקוד אוטומטי מדויק</li><li>התאמה אישית לעסק</li><li>תמיכה מלאה בתהליך</li></ul><h2>קריאה לפעולה: הזמן לשינוי הוא עכשיו</h2><p>אז מה אתם מחכים? כל יום עם לידים לא איכותיים = הפסד כספי.</p><p>לחץ כאן לקבלת ייעוץ על לידים איכותיים</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם העסקי, איכות תמיד מנצחת כמות. לכן, התחל לעבוד חכם היום!</p>
     </div>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

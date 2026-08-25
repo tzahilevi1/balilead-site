@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>ביטוח</span></nav>
     <div class="art-meta reveal"><span class="am-cat">ביטוח</span><span>10 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">הדרך למציאת לידים לביטוח שלך שלא תבזבז לך שקל אחד מיותר</h1>
     <p class="p-sub reveal" style="--d:.16s">גלה איך לנהל תהליך הפקת לידים לביטוח בצורה חכמה, להקטין עלויות ולשפר את אחוזי הסגירה בעסק שלך.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-insurance.webp" alt="הדרך למציאת לידים לביטוח שלך שלא תבזבז לך שקל אחד מיותר - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-insurance.webp" alt="הדרך למציאת לידים לביטוח שלך שלא תבזבז לך שקל אחד מיותר"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>למה תהליך הפקת לידים לביטוח יכול להיות מתסכל?</h2><p>בעלי עסקים רבים אשר עוסקים בתחום הביטוח יודעים כי הדרך למציאת <a href="../קניית-לידים/">לידים איכותיים</a> אינה פשוטה כפי שנראה. כמו בתחומים רבים אחרים, גם כאן יש אתגרים כגון תסכול מקבלת לידים לא רלוונטיים, בזבוז תקציב ושעות עבודה על מיון ובחירה, ואחוזי סגירה נמוכים. במקרים רבים, בעלי עסקים משקיעים אנרגיות אדירות במאמץ להביא לקוחות חדשים, אך לא תמיד מצליחים לקבל תוצאה מספקת.</p><h2>כיצד ממנפים את השיווק הדיגיטלי למציאת לידים איכותיים?</h2><p>אחת השיטות היעילות ביותר להשתלט על העלויות היא לנצל את הכלים הדיגיטליים הקיימים היום בשוק. כיום, יצירת אסטרטגיית <a href="../שיווק-דיגיטלי/">שיווק דיגיטלי</a>ת נכונה יכולה לחסוך זמן רב ולסייע למקד את הפניות אך ורק ללקוחות הפוטנציאליים שכדאי להתעסק איתם. תכנון נכון ושימוש בטכנולוגיה יכולים להבטיח שכל שקל שתשקיע יביא לתוצאות שם בחוץ.</p><h3 style="font-size:20px;margin:30px 0 10px">התאמה אישית של קמפיינים</h3><p>כדי להבטיח שתשקיע את כספך בלידים הטובים ביותר, חשוב להתאים את הקמפיינים שלך לקהלים ספציפיים. הכנת הודעות מותאמות אישית על פי מדדים דמוגרפיים אחרים כמו גיל, מקום מגורים ומקצוע יכולים להשפיע על מותאמות הלידים שתקבל. כאשר נעשים בירורים אודות מקומות מגורים, לדוגמה, זה יכול להוביל למיצוי טוב יותר של ההשקעה השיווקית שלך.</p><h2>שימוש בפלטפורמות חברתיות</h2><p>בעידן שבו כולם נמצאים ברשת, הפלטפורמות החברתיות הן כלי רב ערך שאסור לזלזל בו. פרסום ממוקד במדיות כמו פייסבוק, לינקדאין ואינסטגרם מסוגל להגיע בדיוק לאותם לקוחות פוטנציאליים שאתה מחפש. יצירת תוכן מרתק ואותנטי, שמעניק ערך לקוראים, יכולה להוביל ליצירת מעורבות משמעותית ולעזור במעבר לקוחות לידים להמרה.</p><h3 style="font-size:20px;margin:30px 0 10px">המלצות מהשטח</h3><p>חוות דעת אמיתיות מלקוחות קיימים יכולות להוות כלי שיווקי ממדרגה ראשונה. פרסום המלצות בעמודים ובקבוצות מקצועיות מגביר את הנאמנות למותג ויוצר תחושת אמינות. לקוחות מרוצים שממליצים לכלל יכולים לחולל שינוי בהיקף הפרנסה שלך על ידי הצטרפותם של לקוחות חדשים במעגלים שלהם.</p><h2>השקעה ב-SEO ובתוכן איכותי</h2><p>האם <a href="../קידום-אתרים-seo/">קידום אתרים</a> SEO עדיין רלוונטי? התשובה היא כן, וגם מאוד. הכנת תוכן איכותי ומותאם SEO תומכת בתהליך הפקת לידים מתמשך, אשר מביא תעבורה אורגנית ומוכוונת לאתר שלך. השקעה כזו שווה כל שקל – שכן היא יוצרת נכסים דיגיטליים שיישארו לאורך זמן.</p><h3 style="font-size:20px;margin:30px 0 10px">הקשר הישיר בין תוכן איכותי ללידים איכותיים</h3><p>שיפור תהליכי כתיבה ועריכת תוכן באתר יכול להבדיל אותך בתחרות מול המתחרים. לכל עסק יש את הסיפור שלו, והתוכן שלך צריך לשקף את היתרונות והתועלות הייחודיות שלך. שימו דגש על הסברת היתרונות של הלידים שאתה מספק, והמחשה ברורה של הערך המוסף שלך.</p><h2>סיכום ופעולה</h2><p>מציאת <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> שלא תבזבז לך שקל אחד מיותר דורשת הבנה מעמיקה, תכנון מקיף ושימוש בכלים המתאימים. בעזרת המתודולוגיות שדיברנו עליהן כאן, תוכל לשפר את תהליכי המכירה שלך ולמקסם את ההחזר על ההשקעה. אנו ב-BaliLead יודעים איך להעביר את לקוחותינו בראש שקט לאורך הסיפור הזה, כך שתוכל לקבל את הלידים המתאימים לפיתוח העסק שלך. בוא להגביר את איכות הלידים שלך עכשיו ולהשאיר את הפרטים שלך – הקלק כאן.</p>
     </div>
@@ -835,8 +848,8 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
-              <option>ביטוח</option>
+              <option value="" disabled>בחרו תחום</option>
+              <option selected>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

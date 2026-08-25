@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>החזרי מס</span></nav>
     <div class="art-meta reveal"><span class="am-cat">החזרי מס</span><span>9 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">איך לשפר את אחוזי הסגירה בלידים להחזרי מס באמצעות אופטימיזציה אישית</h1>
     <p class="p-sub reveal" style="--d:.16s">איך לבצע אופטימיזציה ללידים בהחזרי מס? ניתוח קהל, תוכן מותאם, CRM ושירות לקוחות מצוין שיגדילו את אחוזי הסגירה והרווחיות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-loans.webp" alt="איך לשפר את אחוזי הסגירה בלידים להחזרי מס באמצעות אופטימיזציה אישית - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-loans.webp" alt="איך לשפר את אחוזי הסגירה בלידים להחזרי מס באמצעות אופטימיזציה אישית"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>איך לשפר את אחוזי הסגירה בלידים להחזרי מס באמצעות אופטימיזציה אישית</h2><p>בעת ניתוח תהליכי עבודה, בעלי עסקים רבים מתמודדים עם תסכולים דומים: לידים לוהטים שלא נגמרים לתוצאות, בזבוז משאבים יקרים ואחוזי סגירה נמוכים. כל אלה פוגעים ביכולת להגדיל את בסיס הלקוחות ולהשיג את התוצאות הרצויות. איך נוכל לסייע לכם להתמודד עם האתגרים הללו?</p><h3 style="font-size:20px;margin:30px 0 10px">הכירו את הלקוח שלכם לעומק</h3><p>הידיעה שאתה מבין את תחום ההחזרי מס ולמי הם מתאימים היא בסיסית, אבל לדעת מעבר – כמו מה המטרות האישיות והעסקיות של הלקוחות הפוטנציאליים שלכם – יכולה לשנות משחק. חקירת צרכים פרטניים עוזרת לבעלי עסקים להציע פתרונות מותאמים אישית לכל לקוח, מה שמגדיל את הסיכוי לסגירת העסקה.</p><p>תהליך זה מתחיל בזיהוי מדויק של הקהל דרך ניתוח נתונים קיימים, כגון גיל, מקום מגורים, סוג העסק ורמת ההכנסה. בנוסף, חשוב לבדוק ולחקור את השוק בעזרת כלים מתקדמים לניתוח התנהגות הצרכנים.</p><h3 style="font-size:20px;margin:30px 0 10px">שימוש באסטרטגיות תוכן ממוקדות</h3><p>בעלי עסקים נוטים להתרכז ביצירת לידים, אך חשוב לא פחות לטפח את הקשרים עם הלקוחות הפוטנציאליים בצורה מכוונת וממוקדת. יצירת תכנים עשירים ומועילים שבאמת נותנים תשובות לשאלות המרכזיות של הלקוחות, עשויה לחזק את מעמדכם כאוטוריטה בתחום.</p><p>תוכן אינפורמטיבי כמו מאמרים מקצועיים, הדרכות מקוונות או סרטוני וידאו, אינם רק כלים לקידום אלא מאפשרים להגדיל את האמינות והקשר האישי בין המותג ללקוח. כך ניתן למקד את המסר באנרגיה ובליבה של הצרכים של הלקוח.</p><h3 style="font-size:20px;margin:30px 0 10px">ניהול נכון של הלידים</h3><p>לאחר שקיבלתם לידים איכותיים, חשוב לנהל אותם כהלכה. פלטפורמות כמו CRM מצוידות באפשרויות מתקדמות לניהול לידים, כולל אוטומציה שתעזור לכם להנחות את הלידים לסגירה בעדינות. כמה עולה <a href="../קניית-לידים/לידים-להחזרי-מס/">לידים להחזרי מס</a>?</p><p>מקפידים על תקשורת תדירה ומתוזמנת עם הלקוחות, וטיפול בהתנגדויות בזמן. שימוש בכלי ניתוח יוכל לזהות את החולשות בתהליך המכירה ולהציע תובנות לשיפור מתמיד.</p><h3 style="font-size:20px;margin:30px 0 10px">שיפור תהליכי שירות לקוחות</h3><p>שירות לקוחות איכותי הוא חלק בלתי נפרד מתהליך סגירת חוזים. חוויית לקוח מרשימה מתבטאת בזמינות, מקצועיות ויכולת להגיש פתרונות מידיים. יש להקפיד להפעיל צוות מומחים שידעו לתת מענה לשאלות הלקוחות ולזרז תהליכים משירות פשוט ועד להשלמת העסקה.</p><p>ביכולתנו לסייע לכם ביישום כל אחת מנקודות אלה בעזרת לידים ממוקדים ומותאמים אישית להחזרי מס. בקרו בעמוד שלנו על לידים להחזרי מס</p>
     </div>
@@ -835,20 +848,21 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
-              <option>החזרי מס</option>
+              <option selected>החזרי מס</option>
               <option>פיננסים והשקעות</option>
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

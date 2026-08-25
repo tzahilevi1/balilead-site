@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>הלוואות</span></nav>
     <div class="art-meta reveal"><span class="am-cat">הלוואות</span><span>9 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">איך להבטיח לידים איכותיים להלוואות</h1>
     <p class="p-sub reveal" style="--d:.16s">איך להבטיח לידים איכותיים להלוואות גלה איך לזהות ולסנן לידים איכותיים בתחום ההלוואות, לשפר את אחוזי הסגירה ולחסוך בעלויות שיווק מיותרות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-loans.webp" alt="איך להבטיח לידים איכותיים להלוואות - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-loans.webp" alt="איך להבטיח לידים איכותיים להלוואות"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>איך להבטיח לידים איכותיים להלוואות</h2><p>כשזה מגיע ל<a href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>, כל בעל עסק קטן או בינוני כבר מכיר את התסכול שעולה מקבלת לידים בלתי רלוונטיים. השיחה עם לקוחות לא מתאימים לא רק שמבזבזת את הזמן, אלא שהיא גם מנתקת אותך מהקהל שבאמת זקוק לשירותים שלך. במאמר זה, נבחן כיצד להבטיח שאתה מגיע ללקוח הנכון שיכול להניב לעסק שלך הכנסות במקום לבזבז משאבים על לידים חסרי תועלת.</p><h3 style="font-size:20px;margin:30px 0 10px">התמודדות עם נקודות הכאב של לידים לא רלוונטיים</h3><p>אחד מהאתגרים המרכזיים עבור בעלי עסקים הוא בזבוז המשאבים על לידים שאינם ממירים לכדי לקוחות. עלויות פרסום בלתי ממוקדות יכולות להמנע בעזרת מספר שיטות פשוטות:</p><ul><li>פלחי שוק ממוקדים: חשבו מי הלקוח המושלם לשירותי ההלוואות שלכם. האם מדובר בעסקים קטנים שמחפשים צמיחה מהירה או יחידים הזקוקים לעזרה פיננסית?</li><li>כיוונון מסרים שיווקיים: התאימו את המסרים שלכם לצרכים הפיננסיים של הלקוחות הפוטנציאליים. סוגי ההלוואות שאתם מציעים צריכים להתאים לאתגרים הספציפיים שהם חווים.</li><li>בקביעות ניתוח נתוני לידים: השתמשו בכלי אנליטיקה כדי לעקוב אחר איכות הלידים. אנחנו מציעים פתרונות מובנים לניהול נתוני לידים בצורה היעילה ביותר.</li></ul><h3 style="font-size:20px;margin:30px 0 10px">עקרונות לזיהוי הלידים הנכונים</h3><p>השגת <a href="../קניית-לידים/">לידים איכותיים</a> כרוכה בהבנה מעמיקה של קהל היעד שלך:</p><ul><li>בדיקת מאפייני לקוח: השתמש בפרופיל לקוח אופייני כדי לזהות מאפיינים חיוניים כגון גיל, מיקום גיאוגרפי וצרכים כלכליים.</li><li>קמפיינים ממוקדים: פעל להכוונת הקמפיינים שלך לקבוצות הקהל המתאימות ביותר, כגון לידים להלוואות למוצרים ספציפיים.</li><li>מעקב אחר אפיקי פנייה: דע מאיפה מגיעים רוב הלקוחות שלך והתמקד בפרסום שם.</li></ul><h3 style="font-size:20px;margin:30px 0 10px">שיפור תהליך ה-Sales Funnel באמצעות לידים איכותיים</h3><p>Sales Funnel מתאפיין בזרם תהליכים מובנים שנועדו להוביל את הלקוח מרגע השיחה הראשונית ועד לסיום העסקה. על ידי מיקוד נכון בלידים איכותיים, תוכל לקצר את התהליך ולשפר את אחוזי הסגירה:</p><ul><li>אוטומציה בתהליכי ניתוח: השתמש בתוכנות מתקדמות לניתוח מהיר של הצלחות וכישלונות. בעלי ליד מציעה שירותים נוספים לניתוחים ממוקדים.</li><li>קהילות ופורטלים: פתח רשתות קשרים בקהילות מקצועיות ובהלך מקצועי, כך שהלקוחות ימצאו אותך הודות למרות והכוונה ערכית.</li><li>שירות לקוחות יוצא דופן: סיפוק שירות לקוחות איכותי מהווה חלק בלתי נפרד והכרחי מהכנת הלקוח.</li></ul><p>לסיכום, לדבר עם הלקוח הנכון זו אמנות שדורשת הבנה ומיומנות, אך כאשר עושים את זה נכון, ניתן לא רק לשפר את העסק אלא ליצור תחושת סיפוק במתן שירות ערכי ללקוחותינו. לידים איכותיים יכולים לשדרג את הכליונים ודרכי העבודה שלך, לתת מענה לצרכים אמיתיים ולהועיל בכל יום עבודה. עכשיו, נותר לך לעשות את הצעד וללחוץ על הקישור כדי להצטרף לחווית BaliLead ולקבל לידים שמי באמת ייצר לך הכנסה. להצעת מחיר, בקר באתר שלנו עכשיו.</p>
     </div>
@@ -835,20 +848,21 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
               <option>משכנתאות</option>
-              <option>הלוואות</option>
+              <option selected>הלוואות</option>
               <option>החזרי מס</option>
               <option>פיננסים והשקעות</option>
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

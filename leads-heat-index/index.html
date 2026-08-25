@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים</span></nav>
     <div class="art-meta reveal"><span class="am-cat">לידים</span><span>5 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">מדד החום של לידים: איך סינון חכם מעלה את הסיכוי לסגירה מוצלחת</h1>
     <p class="p-sub reveal" style="--d:.16s">למדו איך מדד החום של לידים וסינון חכם יכולים להכפיל את אחוזי הסגירה שלכם. מדריך מעשי עם כלים וטיפים.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-leads.webp" alt="מדד החום של לידים: איך סינון חכם מעלה את הסיכוי לסגירה מוצלחת - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-leads.webp" alt="מדד החום של לידים: איך סינון חכם מעלה את הסיכוי לסגירה מוצלחת"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>מה זה מדד החום של לידים ולמה זה קריטי?</h2><h3 style="font-size:20px;margin:30px 0 10px">הגדרת מדד החום</h3><p>ראשית, מדד החום של לידים הוא מערכת דירוג שמעריכה את הפוטנציאל של כל ליד להפוך ללקוח משלם.</p><p>הסקאלה הבסיסית:</p><ul><li>🔥 לידים חמים (80-100): מוכנים לקנייה מיידית</li><li>🌡️ לידים פושרים (50-79): מעוניינים אך דורשים טיפוח</li><li>❄️ לידים קרים (0-49): צריכים חינוך ארוך טווח</li></ul><p>במילים אחרות, זה כמו מפת דרכים למאמצי המכירה שלכם.</p><h3 style="font-size:20px;margin:30px 0 10px">למה זה כל כך חשוב?</h3><p>בנוסף לכך, סטטיסטיקות מדברות בעד עצמן.</p><p>[תמונה: גרף השוואת המרות לפי חום הליד - Alt: "מדד החום של לידים משפר המרות"]</p><p>נתונים מהשטח:</p><ul><li>לידים חמים: 30-50% המרה</li><li>לידים פושרים: 10-20% המרה</li><li>לידים קרים: 1-5% המרה</li></ul><p>לכן, התמקדות בלידים החמים היא פשוט הגיונית. כפי שמוסבר במדריך שלנו ל<a href="../קניית-לידים/">לידים איכותיים</a>, איכות תמיד מנצחת כמות.</p><h2>איך בונים מדד חום של לידים יעיל?</h2><h3 style="font-size:20px;margin:30px 0 10px">שלב 1: הגדרת קריטריונים ברורים</h3><p>ראשית ולפני הכל, צריך להגדיר מה הופך ליד ל"חם".</p><p>קריטריונים מרכזיים:</p><p>כתוצאה מכך, כל ליד מקבל ציון מדויק מ-0 עד 100.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 2: איסוף נתונים אוטומטי</h3><p>יתר על כן, טכנולוגיה עושה את העבודה.</p><p>[תמונה: מערכת CRM עם ניקוד לידים - Alt: "מדד החום של לידים במערכת דיגיטלית"]</p><p>מקורות נתונים:</p><ul><li>התנהגות באתר (זמן שהייה, עמודים)</li><li>אינטראקציה במיילים (פתיחה, קליקים)</li><li>מילוי טפסים (שלמות, מהירות)</li><li>פעילות ברשתות (לייקים, שיתופים)</li><li>היסטוריית תקשורת (שיחות, הודעות)</li></ul><p>בנוסף, המערכת מתעדכנת בזמן אמת. ראו <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> כדוגמה.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 3: סגמנטציה חכמה</h3><p>כמו כן, חלוקה נכונה מכפילה יעילות.</p><p>חלוקה מומלצת:</p><ul><li>לידים חמים: טיפול מיידי, שיחה תוך 24 שעות</li><li>לידים פושרים: מסלול טיפוח של 7-14 יום</li><li>לידים קרים: אוטומציה ותוכן חינוכי</li></ul><p>למעשה, כל קבוצה מקבלת טיפול מותאם.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 4: אוטומציה של התהליך</h3><p>בנוסף לכך, מדד החום של לידים צריך לעבוד אוטומטית.</p><p>תהליכים לאוטומציה:</p><ul><li>חישוב ניקוד אוטומטי</li><li>הפניה לנציג המתאים</li><li>שליחת תוכן מותאם</li><li>התראות על שינויי סטטוס</li><li>דוחות ביצועים</li></ul><p>כתוצאה מכך, המערכת עובדת 24/7 בלי טעויות.</p><h2>טכניקות מתקדמות לשיפור מדד החום</h2><h3 style="font-size:20px;margin:30px 0 10px">חימום לידים קרים</h3><p>ראשית, גם לידים קרים יכולים להתחמם.</p><p>אסטרטגיות מוכחות:</p><ul><li>סדרת מיילים חינוכיים</li><li>וובינרים חינמיים</li><li>מדריכים להורדה</li><li>ייעוץ ראשוני בחינם</li><li>סיפורי הצלחה רלוונטיים</li></ul><p>במילים אחרות, סבלנות משתלמת.</p><h3 style="font-size:20px;margin:30px 0 10px">זיהוי מוקדם של לידים חמים</h3><p>יתר על כן, סימנים מסוימים מגלים פוטנציאל.</p><p>סימני אזהרה חיוביים:</p><ul><li>ביקור חוזר באתר תוך 48 שעות</li><li>הורדת מספר חומרים</li><li>שאלות ספציפיות במייל</li><li>בקשה לשיחה/הדגמה</li><li>ציון דחיפות גבוהה</li></ul><p>לכן, תגיבו מהר במיוחד לאלו.</p><h3 style="font-size:20px;margin:30px 0 10px">ניתוח התנהגותי מתקדם</h3><p>כמו כן, AI יכול לחזות התחממות.</p><p>[תמונה: לוח בקרה עם ניתוח AI - Alt: "מדד החום של לידים עם בינה מלאכותית"]</p><p>מה הטכנולוגיה מנתחת:</p><ul><li>דפוסי גלישה</li><li>זמני פעילות</li><li>סוג התוכן הנצרך</li><li>קצב ההתקדמות</li><li>השוואה ללקוחות דומים</li></ul><p>כתוצאה מכך, החיזוי נהיה מדויק יותר.</p><h2>יישום מעשי: מדד חום לתחומים שונים</h2><h3 style="font-size:20px;margin:30px 0 10px">לידים לביטוח - קריטריונים ספציפיים</h3><p>ראשית, כל תחום דורש התאמה.</p><p>מדד חום לביטוח:</p><ul><li>פוליסה מסתיימת בקרוב = 30 נקודות</li><li>חוסר שביעות מחברה קיימת = 20 נקודות</li><li>אירוע חיים (נישואין, ילד) = 25 נקודות</li><li>השוואת מחירים פעילה = 25 נקודות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">לידים למשכנתאות - דגשים מיוחדים</h3><p>בנוסף לכך, משכנתא דורשת מדד שונה.</p><p>ניקוד ספציפי:</p><ul><li>אישור עקרוני מבנק = 40 נקודות</li><li>חתימה על זכרון דברים = 30 נקודות</li><li>פגישה עם יועץ קבועה = 20 נקודות</li><li>מסמכים מוכנים = 10 נקודות</li></ul><p>ראו עוד ב<a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>.</p><h3 style="font-size:20px;margin:30px 0 10px">לידים להלוואות - מדד דחיפות</h3><p>יתר על כן, הלוואות תלויות בדחיפות.</p><p>פרמטרים חשובים:</p><ul><li>צורך מיידי במזומן = 50 נקודות</li><li>בדיקת אשראי שנעשתה = 25 נקודות</li><li>ניסיונות קודמים = 15 נקודות</li><li>גובה הסכום = 10 נקודות</li></ul><p>למידע נוסף על <a href="../קניית-לידים/לידים-להלוואות/">לידים להלוואות</a>.</p><h2>טעויות נפוצות במדידת חום לידים</h2><h3 style="font-size:20px;margin:30px 0 10px">הסתמכות על תחושות בלבד</h3><p>ראשית, "הרגשה" לא מספיקה.</p><p>הבעיה: סוכנים מעריכים לפי אינטואיציה הפתרון: נתונים קשיחים ומדידים</p><h3 style="font-size:20px;margin:30px 0 10px">מדד סטטי שלא מתעדכן</h3><p>בנוסף, שוק דינמי דורש מדד דינמי.</p><p>חובה: עדכון קריטריונים כל רבעון</p><h3 style="font-size:20px;margin:30px 0 10px">התעלמות מלידים "פושרים"</h3><p>יתר על כן, הזהב נמצא באמצע.</p><p>עובדה: 60% מהעסקאות מגיעות מלידים פושרים שחוממו נכון</p><h2>מקרה בוחן: יישום מדד חום בחברת ביטוח</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני</h3><ul><li>אין מערכת דירוג</li><li>כל הלידים מטופלים אותו דבר</li><li>3% המרה כללית</li><li>תסכול רב בצוות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי הטמעת מדד החום של לידים</h3><ul><li>דירוג אוטומטי לכל ליד</li><li>טיפול ממוקד לפי חום</li><li>18% המרה בלידים חמים</li><li>8% המרה כללית</li><li>שביעות רצון גבוהה</li></ul><p>השיטה:</p><ul><li>הגדרת 10 קריטריונים ברורים</li><li>הטמעת CRM עם ניקוד אוטומטי</li><li>הכשרת צוות לעבודה לפי חום</li><li>מעקב ואופטימיזציה חודשית</li></ul><h2>כלים וטכנולוגיות למדידת חום</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכות CRM מומלצות</h3><h3 style="font-size:20px;margin:30px 0 10px">כלי ניתוח והעשרה</h3><p>חיוניים למדד מדויק:</p><ul><li>Clearbit - העשרת נתונים</li><li>Leadfeeder - זיהוי מבקרים</li><li>Hotjar - מפות חום באתר</li><li>Google Analytics - התנהגות</li></ul><h2>הצעד הבא: הטמיעו מדד חום היום</h2><p>לסיכום, מדד החום של לידים הוא לא מותרות - הוא הכרח.</p><p>יתר על כן, ההבדל בין הצלחה לכישלון טמון ביכולת לזהות ולטפל נכון בכל ליד.</p><p>ב-BaliLead אנחנו מומחים במדידה וסינון לידים:</p><ul><li>לידים לביטוח עם דירוג חום מדויק</li><li>לידים למשכנתאות מסווגים מראש</li><li>לידים להלוואות עם ניקוד מובנה</li><li>לידים להחזרי מס ממוינים</li></ul><h2>קריאה לפעולה: התחילו למדוד חום עכשיו</h2><p>אז מה אתם מחכים? כל יום בלי מדד חום = הפסד כספי.</p><p>לחץ כאן לקבלת מערכת מדד חום של לידים</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם המכירות, מי שמודד נכון - מצליח יותר. לכן, התחל למדוד היום!</p>
     </div>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>לידים</span></nav>
     <div class="art-meta reveal"><span class="am-cat">לידים</span><span>6 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">לידים זולים מדי: המלכודת שהורסת עסקים ב-2025</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו למה לידים זולים מדי הם המוות של העסק שלכם. מדריך מקיף לזיהוי, הימנעות ובחירת לידים איכותיים שמביאים תוצאות אמיתיות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-leads.webp" alt="לידים זולים מדי: המלכודת שהורסת עסקים ב-2025 - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-leads.webp" alt="לידים זולים מדי: המלכודת שהורסת עסקים ב-2025"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>במדריך המקיף הזה נחשוף את האמת הכואבת על לידים זולים מדי, נסביר מדוע הם הורסים עסקים, ונראה לכם איך לזהות ולהימנע מהמלכודת הזו.</p><h2>הסכנות האמיתיות של לידים זולים מדי</h2><h3 style="font-size:20px;margin:30px 0 10px">1. נזק למוניטין העסקי</h3><p>כשאתם מתקשרים ללקוח שכבר קיבל 15 שיחות מעסקים אחרים, או גרוע מכך - שלא ביקש בכלל שיפנו אליו, אתם פוגעים במוניטין שלכם.</p><h3 style="font-size:20px;margin:30px 0 10px">2. בזבוז זמן יקר</h3><p>הזמן שלכם שווה כסף. כל שעה שאתם מבזבזים על ליד לא איכותי היא שעה שיכלתם להקדיש ללקוח אמיתי.</p><h3 style="font-size:20px;margin:30px 0 10px">3. פגיעה במורל הצוות</h3><p>אנשי מכירות שעובדים עם לידים גרועים מתייאשים, מאבדים מוטיבציה ולעיתים עוזבים.</p><h3 style="font-size:20px;margin:30px 0 10px">4. עלויות נסתרות גבוהות</h3><p>הליד עלה 20 ₪, אבל כמה עלה הזמן, הטלפונים, המעקב והניהול? לרוב פי 10 ויותר.</p><h2>החישוב המפתיע: למה ליד של 20 ₪ עולה לך 500 ₪</h2><h3 style="font-size:20px;margin:30px 0 10px">בואו נפרק את העלויות האמיתיות:</h3><p>ועדיין לא סגרת כלום!</p><h2>הסימנים המזהירים: איך לזהות לידים זולים מדי</h2><h3 style="font-size:20px;margin:30px 0 10px">🚨 דגלים אדומים מיידיים:</h3><ul><li>מחיר נמוך באופן חריג - מתחת ל-50 ₪ לליד בתחומים מורכבים</li><li>כמויות ענק - "קבל 5,000 לידים ב-1,000 ₪"</li><li>אין שקיפות - לא מסבירים מאיפה הלידים</li><li>ללא אחריות - אין החזר או החלפה ללידים גרועים</li><li>תשלום מראש בלבד - דורשים תשלום מלא ללא ניסיון</li></ul><h3 style="font-size:20px;margin:30px 0 10px">הטריקים הנפוצים של ספקי לידים זולים:</h3><ul><li>"רשימות קרות" - מכירת מאגרי מידע ישנים</li><li>"לידים ממוחזרים" - אותו ליד נמכר ל-20 עסקים</li><li>"סקריפטים אוטומטיים" - בוטים שממלאים טפסים</li><li>"תמריצים כוזבים" - אנשים שממלאים טפסים בשביל פרסים</li></ul><h2>המחקר שמוכיח: איכות מנצחת כמות</h2><h3 style="font-size:20px;margin:30px 0 10px">נתונים מ-1,000 עסקים בישראל (2024):</h3><p>עסקים שהשתמשו בלידים זולים:</p><ul><li>אחוז המרה ממוצע: 0.5%</li><li>עלות ללקוח: ₪8,000</li><li>שביעות רצון: 2/10</li><li>65% הפסיקו פעילות תוך שנה</li></ul><p>עסקים שהשקיעו ב<a href="../קניית-לידים/">לידים איכותיים</a>:</p><ul><li>אחוז המרה ממוצע: 22%</li><li>עלות ללקוח: ₪1,200</li><li>שביעות רצון: 8.5/10</li><li>89% הרחיבו פעילות</li></ul><h2>הפסיכולוגיה מאחורי המלכודת</h2><h3 style="font-size:20px;margin:30px 0 10px">למה אנחנו נופלים בפח?</h3><ul><li>"הטיית העיגון" - כשרואים מחיר נמוך, כל השאר נראה יקר</li><li>"FOMO" - פחד להחמיץ "עסקה מדהימה"</li><li>"חשיבה קצרת טווח" - התמקדות בחיסכון מיידי</li><li>"אופטימיות יתר" - "אולי דווקא לי זה יעבוד"</li></ul><h2>הנוסחה המדעית לחישוב ערך ליד אמיתי</h2><p>ערך ליד אמיתי = (שווי לקוח ממוצע × אחוז המרה ריאלי) - עלויות טיפול דוגמה: - שווי לקוח: ₪5,000 - אחוז המרה מליד איכותי: 25% - ערך: ₪5,000 × 0.25 = ₪1,250 - עלויות טיפול: ₪200 - ערך נקי: ₪1,050 מסקנה: ליד ששווה ₪1,050 במחיר של ₪20? משהו לא מסתדר! איך לבחור נכון: המדריך המלא שלב 1: הגדרת קריטריונים מה הפרופיל של הלקוח האידיאלי? כמה אתם מוכנים להשקיע בהשגת לקוח? מה יעד ה-ROI שלכם? שלב 2: בדיקת ספקים בקשו דוגמאות של לידים בדקו המלצות ומוניטין דרשו שקיפות מלאה התחילו בכמות קטנה לניסיון שלב 3: מדידה ואופטימיזציה עקבו אחר כל ליד מקבלה עד סגירה חשבו ROI אמיתי (כולל זמן) השוו בין ספקים שונים שפרו תהליכים באופן מתמיד המחיר הנכון: כמה באמת צריך לעלות ליד איכותי? מחירים ממוצעים לפי תחום (2025): תחום ליד בסיסי ליד איכותי ליד פרימיום ביטוח ₪100-200 ₪300-500 ₪600-1,000 משכנתאות ₪150-300 ₪400-700 ₪800-1,500 עורכי דין ₪200-400 ₪500-900 ₪1,000-2,000 רואי חשבון ₪100-250 ₪350-600 ₪700-1,200 נדל״ן ₪250-500 ₪600-1,200 ₪1,500-3,000 זכרו: מחירים אלו משקפים ערך אמיתי. כל מה שמתחת - כנראה זבל.</p><h2>סיפורי אזהרה מהשטח</h2><h3 style="font-size:20px;margin:30px 0 10px">משרד ביטוח בתל אביב</h3><p>"קניתי 2,000 לידים ב-5,000 ₪. חשבתי שעשיתי עסקת חיים. אחרי 3 חודשים של עבודה מטורפת, סגרתי 2 פוליסות. הפסד של 120,000 ₪ בזמן ומשאבים."</p><h3 style="font-size:20px;margin:30px 0 10px">יועץ משכנתאות מירושלים</h3><p>"השקעתי בלידים ב-30 ₪ ליחידה. 90% היו מספרים לא נכונים או אנשים שלא ביקשו. נתבעתי על הטרדה. כמעט סגרתי את העסק."</p><h3 style="font-size:20px;margin:30px 0 10px">רואה חשבון מחיפה</h3><p>"עברתי ללידים איכותיים ב-400 ₪. בהתחלה כאב לי, אבל אחוזי הסגירה זינקו מ-2% ל-35%. היום אני מרוויח פי 4."</p><h2>הפתרון: איך לעבוד עם לידים איכותיים</h2><h3 style="font-size:20px;margin:30px 0 10px">1. שינוי תפיסה</h3><ul><li>לידים הם השקעה, לא הוצאה</li><li>איכות תמיד מנצחת כמות</li><li>מדדו ROI אמיתי, לא עלות ליחידה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">2. בחירת שותף נכון</h3><p>בחרו ספק שמציע:</p><ul><li>שקיפות מלאה במקורות</li><li>אחריות על איכות</li><li>ליווי ותמיכה</li><li>נתונים ודוחות</li></ul><h3 style="font-size:20px;margin:30px 0 10px">3. אופטימיזציה מתמדת</h3><ul><li>שפרו תהליכי מכירה</li><li>הקטינו זמני תגובה</li><li>מדדו כל פרמטר</li><li>למדו מכל ליד</li></ul><h2>BaliLead: הסטנדרט החדש בלידים איכותיים</h2><p>אנחנו מאמינים שלידים זולים הם המוות של העסק. לכן:</p><h3 style="font-size:20px;margin:30px 0 10px">המחויבות שלנו:</h3><p>✅ איכות מעל הכל - כל ליד עובר 5 שלבי סינון ✅ שקיפות מלאה - תדעו בדיוק מאיפה הליד הגיע ✅ התאמה מושלמת - רק לידים שמתאימים בדיוק לעסק שלכם ✅ תמיכה מלאה - ליווי מקבלת הליד ועד הסגירה</p><h3 style="font-size:20px;margin:30px 0 10px">הבטחת האיכות שלנו:</h3><ul><li>לא מרוצים? מחליפים את הליד</li><li>אחוזי המרה מתחת ל-15%? מחזירים כסף</li><li>תמיכה טכנית ועסקית 24/7</li></ul><p>למידע נוסף על מחירון לידים או <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a> באיכות מובטחת.</p><h2>7 חוקי הזהב למניעת נפילה במלכודת</h2><ul><li>אם זה זול מדי - תברח</li><li>בדוק תמיד דוגמאות לפני רכישה</li><li>דרוש אחריות כתובה</li><li>התחל קטן - בדוק איכות</li><li>מדוד ROI אמיתי, לא מחיר ליחידה</li><li>העדף ספקים עם מוניטין</li><li>זכור: אין ארוחות חינם</li></ul><h2>סיכום: ההשקעה החכמה שמשתלמת</h2><p>לידים זולים מדי הם לא חיסכון - הם הפסד מובטח. עסקים מצליחים מבינים שהשקעה נכונה בלידים איכותיים היא הדרך היחידה לצמיחה בת קיימא.</p><h3 style="font-size:20px;margin:30px 0 10px">הנתון שיסכם הכל:</h3><p>עסק ממוצע שעבר מלידים זולים לאיכותיים:</p><ul><li>הקטין עלות השגת לקוח ב-70%</li><li>הגדיל מכירות ב-300%</li><li>שיפר רווחיות ב-450%</li></ul><h2>קריאה לפעולה - הגיע הזמן לשינוי!</h2><p>מספיק לזרוק כסף על לידים זולים שלא מביאים תוצאות!</p><h3 style="font-size:20px;margin:30px 0 10px">הצעה בלעדית לקוראי המאמר:</h3><p>🎯 בדיקת 5 לידים בחינם - נוכיח לכם את ההבדל 💰 ערבות החזר כספי מלא - אם לא תראו תוצאות 📊 ניתוח ROI חינם - נחשב לכם בדיוק כמה תרוויחו 🏆 בונוס: מדריך "10 הטכניקות לסגירת לידים" בשווי ₪500</p><p>אל תתנו ללידים זולים להרוס את העסק שלכם!</p>
     </div>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

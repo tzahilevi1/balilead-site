@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>משכנתאות</span></nav>
     <div class="art-meta reveal"><span class="am-cat">משכנתאות</span><span>6 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">סודות ההצלחה: איך להפוך לידים למשכנתא להלוואה לסגירת עסקה במינימום זמן ובמקסימום אפקטיביות</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו איך להאיץ עסקאות משכנתא ולהפוך לידים לעסקאות סגורות תוך שבוע. טיפים מעשיים ושיטות מוכחות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-mortgage.webp" alt="סודות ההצלחה: איך להפוך לידים למשכנתא להלוואה לסגירת עסקה במינימום זמן ובמקסימום אפקטיביות - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-mortgage.webp" alt="סודות ההצלחה: איך להפוך לידים למשכנתא להלוואה לסגירת עסקה במינימום זמן ובמקסימום אפקטיביות"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>ראשית, 73% מיועצי המשכנתאות מדווחים על תהליכים ארוכים מדי. למעשה, הזמן הממוצע מליד לסגירה הוא 45 ימים.</p><p>יתר על כן, בשוק התחרותי של היום, מהירות היא הכל. כתוצאה מכך, האצת עסקאות משכנתא הפכה לצורך קריטי.</p><p>בנוסף לכך, במדריך הזה תגלה בדיוק איך לקצר את התהליך ל-7 ימים בלבד.</p><h2>למה עסקאות משכנתא נתקעות?</h2><h3 style="font-size:20px;margin:30px 0 10px">חוסר מוכנות של הלקוחות</h3><p>ראשית, רוב הלקוחות מגיעים לא מוכנים. למעשה, הם לא יודעים מה צריך.</p><p>הבעיות הנפוצות:</p><ul><li>מסמכים חסרים או לא מעודכנים</li><li>חוסר הבנה של התהליך</li><li>ציפיות לא ריאליות</li><li>חוסר החלטיות</li></ul><p>במילים אחרות, זמן יקר מתבזבז על השלמות בסיסיות.</p><h3 style="font-size:20px;margin:30px 0 10px">תהליכים מסורבלים ומיושנים</h3><p>בנוסף לכך, רוב היועצים עובדים בשיטות ישנות. יתרה מכך, הם לא מנצלים טכנולוגיה.</p><p>[תמונה: השוואת תהליך ישן מול חדש - Alt: "האצת עסקאות משכנתא עם תהליכים חכמים"]</p><p>דוגמאות לבזבוז זמן:</p><ul><li>מילוי ידני של טפסים</li><li>תקשורת לא יעילה עם בנקים</li><li>חוסר מעקב שיטתי</li><li>ניהול לקוי של מסמכים</li></ul><p>לכן, האצת עסקאות משכנתא דורשת שינוי גישה מהותי. כפי שמוסבר במדריך שלנו לניהול לידים, יעילות היא המפתח.</p><h2>השיטה המוכחת להאצת עסקאות משכנתא</h2><h3 style="font-size:20px;margin:30px 0 10px">יום 1-2: סינון וקוואליפיקציה מהירה</h3><p>ראשית ולפני הכל, סננו את הלידים נכון מהרגע הראשון.</p><p>צ'ק ליסט לסינון מהיר:</p><ul><li>✓ הכנסה מוכחת מעל 12,000 ₪</li><li>✓ הון עצמי של לפחות 25%</li><li>✓ ללא עיקולים או הגבלות</li><li>✓ מוכנות להתחיל מיד</li></ul><p>כתוצאה מכך, תעבדו רק עם <a href="../קניית-לידים/">לידים איכותיים</a>.</p><p>כלים להאצת עסקאות משכנתא****:</p><ul><li>מחשבון זכאות דיגיטלי</li><li>טופס הקוואליפיקציה חכם</li><li>בדיקת נתוני אשראי מהירה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">יום 3-4: הכנת תיק מושלם</h3><p>יתר על כן, הכנה נכונה חוסכת שבועות של עיכובים.</p><p>[תמונה: רשימת מסמכים דיגיטלית - Alt: "האצת עסקאות משכנתא עם ניהול מסמכים חכם"]</p><p>מסמכים להכנה מראש:</p><p>בנוסף, השתמשו בכלי ניהול מסמכים דיגיטלי. לכן, הכל יהיה מסודר ונגיש.</p><h3 style="font-size:20px;margin:30px 0 10px">יום 5-6: משא ומתן ממוקד עם הבנקים</h3><p>כמו כן, האצת עסקאות משכנתא תלויה בתקשורת יעילה עם בנקים.</p><p>אסטרטגיות מנצחות:</p><ul><li>הגשה מקבילה ל-3 בנקים</li><li>שימוש בקשרים אישיים</li><li>הכנת תיק "מנצח" מראש</li><li>מעקב יומי אחר הבקשות</li></ul><p>למעשה, זה מקצר את זמן האישור ב-60%. ראו גם טיפים לעבודה מול בנקים.</p><h3 style="font-size:20px;margin:30px 0 10px">יום 7: סגירה ואישור סופי</h3><p>לבסוף, הגיעה השעה לסגור את העסקה.</p><p>צעדים לסגירה מהירה:</p><ul><li>וידוא כל המסמכים מוכנים</li><li>תיאום פגישת חתימה</li><li>הכנת הלקוח נפשית</li><li>ליווי צמוד עד הסוף</li></ul><p>כתוצאה מכך, האצת עסקאות משכנתא מושלמת תוך שבוע!</p><h2>טכנולוגיות חיוניות להאצת התהליך</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכת CRM ייעודית למשכנתאות</h3><p>ראשית, CRM טוב חוסך 50% מהזמן.</p><p>תכונות חיוניות:</p><ul><li>ניהול אוטומטי של לידים</li><li>תזכורות למעקב</li><li>שילוב עם מערכות בנקאיות</li><li>דוחות ביצועים</li></ul><p>בנוסף, המערכת מונעת טעויות אנוש. למידע על <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a>.</p><h3 style="font-size:20px;margin:30px 0 10px">כלי תקשורת מתקדמים</h3><p>יתר על כן, תקשורת מהירה היא קריטית להאצת עסקאות משכנתא.</p><p>[תמונה: אפליקציית תקשורת עם לקוחות - Alt: "כלים דיגיטליים להאצת עסקאות משכנתא"]</p><p>כלים מומלצים:</p><ul><li>WhatsApp Business לתקשורת מיידית</li><li>פורטל לקוחות לשיתוף מסמכים</li><li>חתימה דיגיטלית מרחוק</li><li>וידאו שיחות לייעוץ מהיר</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אוטומציה של תהליכים</h3><p>כמו כן, אוטומציה היא המפתח להאצת עסקאות משכנתא.</p><p>תהליכים לאוטומציה:</p><ul><li>מילוי טפסים אוטומטי</li><li>העברת נתונים בין מערכות</li><li>יצירת דוחות השוואה</li><li>תזכורות אוטומטיות ללקוחות</li></ul><p>במילים אחרות, הטכנולוגיה עובדת בשבילך 24/7.</p><h2>טיפים פסיכולוגיים להאצת החלטות</h2><h3 style="font-size:20px;margin:30px 0 10px">יצירת דחיפות חיובית</h3><p>ראשית, אנשים פועלים כשיש דחיפות.</p><p>טכניקות מוכחות:</p><ul><li>"הריבית עלולה לעלות בקרוב"</li><li>"יש רק 2 משכנתאות במבצע השבוע"</li><li>"הבנק מאשר מהר בתקופה זו"</li></ul><p>עם זאת, היו כנים ואתיים תמיד.</p><h3 style="font-size:20px;margin:30px 0 10px">פישוט ההחלטה</h3><p>בנוסף לכך, יותר מדי אופציות משתקות.</p><p>איך לפשט:</p><ul><li>הציגו מקסימום 3 הצעות</li><li>סכמו בטבלה ברורה</li><li>המליצו על האופציה הטובה ביותר</li><li>הסבירו בשפה פשוטה</li></ul><p>לכן, הלקוח מחליט מהר יותר.</p><h3 style="font-size:20px;margin:30px 0 10px">בניית אמון מיידית</h3><p>יתר על כן, אמון מאיץ החלטות.</p><p>דרכים לבנות אמון:</p><ul><li>שתפו סיפורי הצלחה</li><li>הציגו המלצות לקוחות</li><li>היו שקופים לגמרי</li><li>זמינות מלאה 24/7</li></ul><p>כתוצאה מכך, הלקוחות מרגישים בטוחים להתקדם מהר.</p><h2>מקרי הצלחה: האצת עסקאות משכנתא בפועל</h2><h3 style="font-size:20px;margin:30px 0 10px">מקרה 1: זוג צעיר מתל אביב</h3><p>הסיטואציה: חיפשו דירה ראשונה, מוגבלים בזמן.</p><p>האתגר: חששות מהתהליך, חוסר ניסיון.</p><p>הפתרון:</p><ul><li>סינון מהיר ביום הראשון</li><li>הכנת כל המסמכים דיגיטלית</li><li>3 הצעות בנק תוך 48 שעות</li><li>ליווי צמוד בווטסאפ</li></ul><p>התוצאה: אישור משכנתא תוך 6 ימים!</p><h3 style="font-size:20px;margin:30px 0 10px">מקרה 2: משפחה משדרגת</h3><p>הסיטואציה: מכירת דירה וקניית חדשה במקביל.</p><p>האתגר: תיאום זמנים, לחץ כפול.</p><p>הפתרון עם האצת עסקאות משכנתא:</p><ul><li>ניהול מקביל של שני תהליכים</li><li>תיאום מושלם בין כל הצדדים</li><li>שימוש בכלי ניהול משימות</li><li>יועץ ייעודי זמין כל היום</li></ul><p>התוצאה: שתי עסקאות הושלמו תוך 10 ימים!</p><h2>טעויות שעוצרות את האצת עסקאות משכנתא</h2><h3 style="font-size:20px;margin:30px 0 10px">חוסר הכנה של היועץ</h3><p>ראשית, יועץ לא מוכן = עיכובים.</p><p>מה להכין תמיד:</p><ul><li>רשימת בנקים מועדפים</li><li>קשרים ישירים בבנקים</li><li>תבניות מסמכים מוכנות</li><li>מערכת מעקב מסודרת</li></ul><h3 style="font-size:20px;margin:30px 0 10px">ציפיות לא ריאליות</h3><p>בנוסף, הבטחות ריקות פוגעות באמון.</p><p>היו ריאליים לגבי:</p><ul><li>זמנים אפשריים</li><li>סכומי אישור</li><li>עלויות נלוות</li><li>אתגרים צפויים</li></ul><h3 style="font-size:20px;margin:30px 0 10px">תקשורת לקויה</h3><p>יתר על כן, תקשורת גרועה = תהליך איטי.</p><p>כללי תקשורת להאצה:</p><ul><li>עדכון יומי ללקוח</li><li>זמינות בשעות קבועות</li><li>תשובות מהירות וברורות</li><li>שימוש בכל הערוצים</li></ul><h2>השוואת שיטות: מסורתית מול מואצת</h2><h2>הצעד הבא: התחילו להאיץ עסקאות היום</h2><p>לסיכום, האצת עסקאות משכנתא היא לא חלום - היא מציאות.</p><p>יתר על כן, עם הכלים והשיטות הנכונות, גם אתם יכולים להגיע לתוצאות מדהימות.</p><p>ב-BaliLead אנחנו מספקים לידים איכותיים שמוכנים להאצה:</p><ul><li>לידים למשכנתאות מסוננים ומוכנים</li><li>לידים לביטוח עם צורך דחוף</li><li>לידים להלוואות מאומתים</li><li>לידים להחזרי מס איכותיים</li></ul><h2>קריאה לפעולה: הזמן להאיץ הוא עכשיו</h2><p>אז מה אתם מחכים? כל יום של עיכוב = הפסד של עסקאות.</p><p>לחץ כאן לקבלת לידים מוכנים להאצת עסקאות משכנתא</p><p>או התקשר: 058-470-0706</p><p>זכור: בשוק של היום, המהיר מנצח את האיטי. לכן, תתחיל להאיץ עכשיו!</p>
     </div>
@@ -835,20 +848,21 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
-              <option>משכנתאות</option>
+              <option selected>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
               <option>פיננסים והשקעות</option>
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>ביטוח</span></nav>
     <div class="art-meta reveal"><span class="am-cat">ביטוח</span><span>6 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">הסוד לאיתור לידים לביטוח שמתחילים שיחות ולא מסיימים בשקט</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו איך למצוא לידים לביטוח שנשארים בקשר ולא נעלמים אחרי השיחה הראשונה. טיפים מעשיים להגדלת אחוזי סגירה.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-insurance.webp" alt="הסוד לאיתור לידים לביטוח שמתחילים שיחות ולא מסיימים בשקט - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-insurance.webp" alt="הסוד לאיתור לידים לביטוח שמתחילים שיחות ולא מסיימים בשקט"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>יתר על כן, זה קורה שוב ושוב. כתוצאה מכך, 70% מהסוכנים מדווחים על תסכול מלידים שלא נעלמים אלא פשוט נמוגים כמו עשן.</p><p>למרבה המזל, יש דרך למנוע את זה. בנוסף לכך, במדריך הזה תגלה בדיוק איך למצוא לידים שנשארים איתך עד סוף התהליך.</p><h2>למה לידים נעלמים? האמת הכואבת</h2><h3 style="font-size:20px;margin:30px 0 10px">הם לא באמת היו מעוניינים</h3><p>ראשית, בואו נהיה כנים. למעשה, רוב הלידים שנעלמים לא באמת חיפשו ביטוח.</p><p>הסיבות האמיתיות:</p><ul><li>רצו רק לדעת כמה זה עולה</li><li>בדקו בשביל מישהו אחר</li><li>סתם השוו מחירים</li><li>לחצו בטעות על מודעה</li></ul><p>כתוצאה מכך, אתה מבזבז זמן יקר על אנשים שמעולם לא היו לקוחות פוטנציאליים.</p><h3 style="font-size:20px;margin:30px 0 10px">חוויית השיחה הראשונית מרתיעה</h3><p>בנוסף לכך, לפעמים אנחנו מפחידים אותם.</p><p>טעויות נפוצות:</p><ul><li>יותר מדי שאלות בשיחה הראשונה</li><li>דחיפה למכירה מהירה מדי</li><li>חוסר הקשבה לצרכים האמיתיים</li><li>מידע טכני מסובך מדי</li></ul><p>במילים אחרות, הם בורחים כי לא הרגישו בנוח.</p><h3 style="font-size:20px;margin:30px 0 10px">אין להם צורך דחוף</h3><p>יתר על כן, לידים רבים מתקשרים "לעתיד".</p><p>לדוגמה:</p><ul><li>הביטוח מסתיים בעוד 6 חודשים</li><li>רק רצו לבדוק אופציות</li><li>אין תקציב כרגע</li><li>מחכים לבונוס השנתי</li></ul><p>לכן, הם נעלמים כי אין להם סיבה להישאר.</p><h2>הפתרון: איך למצוא לידים שלא נעלמים</h2><h3 style="font-size:20px;margin:30px 0 10px">1. בניית פרופיל מדויק של לקוח איכותי</h3><p>ראשית ולפני הכל, הגדר בדיוק את מי אתה מחפש.</p><p>פרופיל לקוח שלא נעלם - ביטוח רכב:</p><ul><li>ביטוח מסתיים ב-30 יום הקרובים</li><li>כבר קיבל חידוש מחברת הביטוח</li><li>לא מרוצה מהמחיר הנוכחי</li><li>יש לו זמן לטפל בזה עכשיו</li></ul><p>לעומת זאת, פרופיל לביטוח חיים:</p><ul><li>אירוע חיים משמעותי (ילד, משכנתא)</li><li>הבין את החשיבות של ביטוח</li><li>יש לו יציבות כלכלית</li><li>מחפש יועץ לטווח ארוך</li></ul><p>לכן, כשהפרופיל מדויק, הלידים נשארים.</p><h3 style="font-size:20px;margin:30px 0 10px">2. שאלות סינון שחושפות כוונה אמיתית</h3><p>בנוסף לכך, השתמש בשאלות חכמות בטופס הליד.</p><p>שאלות שחושפות לידים שלא נעלמים:</p><ul><li>"מדוע אתה מחפש ביטוח חדש כרגע?"</li><li>"מתי בדיוק מסתיים הביטוח הנוכחי?"</li><li>"מה הכי חשוב לך בביטוח החדש?"</li><li>"כמה דחוף לך לסגור ביטוח?"</li></ul><p>כתוצאה מכך, תסנן החוצה את הסקרנים בלבד.</p><h3 style="font-size:20px;margin:30px 0 10px">3. יצירת ערך מיידי בשיחה הראשונה</h3><p>יתר על כן, תן להם סיבה להישאר.</p><p>טכניקות מנצחות:</p><ul><li>התחל בהטבה מיידית ("יש לי הנחה בלעדית השבוע")</li><li>שתף טיפ חיסכון שרלוונטי להם</li><li>הסבר משהו שלא ידעו על הכיסוי</li><li>תן להם תחושה שהם בידיים טובות</li></ul><p>במילים אחרות, הפוך את השיחה לחוויה חיובית.</p><h2>שיפור תהליכי המכירה למניעת נשירה</h2><h3 style="font-size:20px;margin:30px 0 10px">בניית קשר אישי מהרגע הראשון</h3><p>ראשית, זכור - אנשים קונים מאנשים.</p><p>איך לבנות קשר:</p><ul><li>השתמש בשמם בשיחה</li><li>גלה עניין אמיתי במצבם</li><li>שתף סיפור אישי רלוונטי</li><li>תן להם להרגיש מיוחדים</li></ul><p>כתוצאה מכך, הם ירצו להמשיך איתך.</p><h3 style="font-size:20px;margin:30px 0 10px">הגדרת ציפיות ברורות</h3><p>בנוסף לכך, אנשים לא אוהבים אי-ודאות.</p><p>מה להגדיר מראש:</p><ul><li>כמה זמן התהליך ייקח</li><li>מה השלבים הבאים</li><li>מתי תחזור אליהם</li><li>מה הם צריכים להכין</li></ul><p>לכן, כשהם יודעים למה לצפות, הם נשארים.</p><h3 style="font-size:20px;margin:30px 0 10px">מעקב חכם ולא דוחף</h3><p>יתר על כן, יש אמנות במעקב נכון.</p><p>לוח זמנים מנצח:</p><ul><li>יום 1: מייל תודה עם סיכום</li><li>יום 3: הודעה עם טיפ רלוונטי</li><li>יום 7: שיחת בדיקת מצב</li><li>יום 14: הצעה מיוחדת</li></ul><p>במילים אחרות, תהיה נוכח בלי להיות טרדן.</p><h2>טכנולוגיות וכלים למניעת היעלמות לידים</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכת CRM עם התראות חכמות</h3><p>ראשית, אוטומציה מונעת שכחה.</p><p>מה המערכת צריכה:</p><ul><li>התראה על ליד שלא ענה 24 שעות</li><li>תזכורות למעקב אוטומטיות</li><li>ניקוד לידים לפי פעילות</li><li>דוחות על לידים "קרים"</li></ul><p>כתוצאה מכך, אף ליד לא נופל בין הכיסאות.</p><h3 style="font-size:20px;margin:30px 0 10px">שימוש בווטסאפ ביזנס</h3><p>בנוסף לכך, ווטסאפ משנה את המשחק.</p><p>למה זה עובד:</p><ul><li>98% פותחים הודעות ווטסאפ</li><li>מאפשר תקשורת מהירה</li><li>נוח יותר ללקוחות</li><li>מרגיש אישי יותר</li></ul><p>לכן, לידים נשארים בקשר יותר זמן.</p><h3 style="font-size:20px;margin:30px 0 10px">טופס חכם עם שאלות מותנות</h3><p>יתר על כן, טופס חכם מסנן טוב יותר.</p><p>דוגמה:</p><ul><li>אם בחר "ביטוח מסתיים בעוד חודש" ← הצג "רוצה לקבל תזכורת?"</li><li>אם בחר "לא דחוף" ← הצג "מתי נוח לך שנחזור?"</li></ul><p>במילים אחרות, אתה מקבל מידע טוב יותר.</p><h2>מקרי בוחן: מה עובד בשטח</h2><h3 style="font-size:20px;margin:30px 0 10px">סוכנות "כל ביטוח" - הצלחה עם לידים שלא נעלמים</h3><p>הבעיה: 80% מהלידים נעלמו אחרי שיחה ראשונה.</p><p>הפתרון:</p><ul><li>שינו את הטופס לכלול "מדוע עכשיו?"</li><li>התחילו לשלוח ווטסאפ תוך 5 דקות</li><li>יצרו מסלול VIP ללידים דחופים</li><li>הוסיפו בונוס למי שסוגר תוך שבוע</li></ul><p>התוצאה: ירידה של 60% בנשירת לידים!</p><h3 style="font-size:20px;margin:30px 0 10px">סוכן עצמאי - מהפך בגישה</h3><p>הבעיה: השקיע המון בלידים שנעלמו.</p><p>הפתרון:</p><ul><li>עבר ללידים איכותיים יותר (יקרים אך ממוקדים)</li><li>שינה את השיחה הראשונה לייעוץ ולא מכירה</li><li>יצר קשר אישי לפני דיבור על ביטוח</li><li>הוסיף ערך בכל אינטראקציה</li></ul><p>התוצאה: 40% יותר סגירות עם 50% פחות לידים!</p><h2>טעויות קריטיות שגורמות ללידים להיעלם</h2><h3 style="font-size:20px;margin:30px 0 10px">דחיפה למכירה מהירה מדי</h3><p>ראשית, אתה לא מוכר - אתה יועץ.</p><p>במקום: "מתי נוכל לסגור?" תגיד: "בוא נבין יחד מה הכי מתאים לך"</p><h3 style="font-size:20px;margin:30px 0 10px">חוסר מעקב שיטתי</h3><p>בנוסף, לידים נעלמים כי שוכחים מהם.</p><p>הפתרון: מערכת מעקב ברורה עם תאריכים ופעולות.</p><h3 style="font-size:20px;margin:30px 0 10px">הבטחות לא מציאותיות</h3><p>יתר על כן, אמון נבנה על כנות.</p><p>לכן: היה ריאלי לגבי מחירים וכיסויים.</p><h2>מדדי הצלחה למעקב</h2><h3 style="font-size:20px;margin:30px 0 10px">אחוז לידים שנשארים בתהליך</h3><p>היעד: לפחות 40% ממשיכים לשלב הצעה</p><h3 style="font-size:20px;margin:30px 0 10px">זמן ממוצע מליד לסגירה</h3><p>היעד: פחות מ-14 יום ל<a href="../קניית-לידים/">לידים חמים</a></p><h3 style="font-size:20px;margin:30px 0 10px">מספר אינטראקציות לסגירה</h3><p>היעד: 3-5 אינטראקציות איכותיות</p><h2>הצעד הבא: מערכת שעובדת</h2><p>לסיכום, לידים שלא נעלמים הם לא מיתוס - הם תוצאה של עבודה נכונה.</p><p>יתר על כן, עם השיטה הנכונה והכלים המתאימים, גם אתה יכול להגיע לשם.</p><p>ב-BaliLead אנחנו מתמחים באספקת לידים איכותיים שנשארים:</p><ul><li>לידים לביטוח עם אחוזי המרה גבוהים</li><li>לידים למשכנתאות מאומתים ומוכנים</li><li>לידים להלוואות עם צורך אמיתי</li><li>לידים להחזרי מס ממוקדי תוצאה</li></ul><h2>קריאה לפעולה: הזמן להפסיק לרדוף</h2><p>אז מה אתה מחכה? הגיע הזמן לעבוד עם לידים שבאמת רוצים ביטוח.</p><p>לחץ כאן לקבלת לידים שנשארים איתך</p><p>או התקשר: 058-470-0706</p><p>זכור: כל יום עם לידים שנעלמים הוא יום מבוזבז. לכן, הזמן לשינוי הוא עכשיו.</p>
     </div>
@@ -835,8 +848,8 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
-              <option>ביטוח</option>
+              <option value="" disabled>בחרו תחום</option>
+              <option selected>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

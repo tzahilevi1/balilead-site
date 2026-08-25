@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>ביטוח</span></nav>
     <div class="art-meta reveal"><span class="am-cat">ביטוח</span><span>5 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">לידים רותחים לביטוחA</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו איך לידים רותחים לביטוח יכולים לשנות את העסק שלכם. אסטרטגיות מוכחות להגדלת מכירות ושיפור ROI - balilead.co.il</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-insurance.webp" alt="לידים רותחים לביטוחA - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-insurance.webp" alt="לידים רותחים לביטוחA"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <h2>מה הופך ליד לביטוח ל"רותח"?</h2><h3 style="font-size:20px;margin:30px 0 10px">ההגדרה המדויקת</h3><p>ראשית, לידים רותחים לביטוח הם לקוחות פוטנציאליים שנמצאים בנקודת הכרעה מיידית.</p><p>המאפיינים המרכזיים:</p><ul><li>🔥 צורך דחוף ומוגדר (תוך 7-14 יום)</li><li>🔥 השוואת מחירים אקטיבית</li><li>🔥 תקציב מאושר וזמין</li><li>🔥 סמכות החלטה מלאה</li><li>🔥 מוכנות לפעולה מיידית</li></ul><p>במילים אחרות, הם מוכנים לחתום - רק צריך להציע נכון.</p><h3 style="font-size:20px;margin:30px 0 10px">ההבדל בין חם, רותח וקר</h3><p>בנוסף לכך, חשוב להבין את ההיררכיה.</p><p>[תמונה: סקאלת חום לידים - Alt: "לידים רותחים לביטוח בראש הפירמידה"]</p><p>טבלת השוואה:</p><p>לכן, התמקדות בלידים רותחים = מקסימום תוצאות. כפי שמוסבר במדריך שלנו לאופטימיזציה, יעילות היא המפתח.</p><h2>איך מזהים לידים רותחים לביטוח?</h2><h3 style="font-size:20px;margin:30px 0 10px">סימנים התנהגותיים ברורים</h3><p>ראשית ולפני הכל, התנהגות מגלה כוונות.</p><p>סימני זיהוי מיידיים:</p><ul><li>✅ מילוי טופס מפורט עם כל הפרטים</li><li>✅ בקשה לשיחה דחופה/מיידית</li><li>✅ שאלות ספציפיות על מחיר וכיסויים</li><li>✅ ציון תאריך יעד להתחלת ביטוח</li><li>✅ השוואה אקטיבית בין הצעות</li></ul><p>כתוצאה מכך, אתם יודעים בדיוק עם מי לדבר קודם.</p><h3 style="font-size:20px;margin:30px 0 10px">טריגרים חיצוניים שיוצרים דחיפות</h3><p>יתר על כן, אירועי חיים מייצרים לידים רותחים.</p><p>[תמונה: לוח זמנים של אירועי חיים - Alt: "לידים רותחים לביטוח מאירועי חיים"]</p><p>אירועים מרכזיים:</p><ul><li>🏠 רכישת דירה/רכב חדש (ביטוח תוך שבוע)</li><li>💍 נישואין או לידה (שינוי פוליסות)</li><li>🚗 תאונה או נזק (החלפת חברה)</li><li>📅 סיום פוליסה קרוב (30 יום לפני)</li><li>💼 פתיחת עסק (ביטוח מיידי)</li></ul><p>בנוסף, כל אירוע = הזדמנות זהב. ראו <a href="../קניית-לידים/לידים-לביטוח/">לידים לביטוח</a>.</p><h2>אסטרטגיות להשגת לידים רותחים</h2><h3 style="font-size:20px;margin:30px 0 10px">מיקוד בנקודות כאב דחופות</h3><p>ראשית, פנו ישר לכאב.</p><p>מסרים שעובדים:</p><ul><li>"ביטוח הרכב שלך מסתיים השבוע?"</li><li>"משלם יותר מדי? קבל הצעה תוך 5 דקות"</li><li>"פוליסה חדשה מחר בבוקר"</li><li>"חסכון מיידי של 40% - מובטח"</li></ul><p>למעשה, דחיפות יוצרת פעולה.</p><h3 style="font-size:20px;margin:30px 0 10px">ערוצי שיווק למיקוד מיידי</h3><p>יתר על כן, בחרו ערוצים מהירים.</p><p>ערוצים מומלצים ללידים רותחים לביטוח****:</p><ul><li>Google Ads - מילות מפתח דחופות</li><li>פייסבוק - טרגוט לפי אירועי חיים</li><li>WhatsApp Business - תגובה מיידית</li><li>Landing Pages - המרה תוך 60 שניות</li><li>Click-to-Call - שיחה ישירה</li></ul><p>כתוצאה מכך, תופסים אותם ברגע הנכון.</p><h3 style="font-size:20px;margin:30px 0 10px">מערך תגובה מהירה</h3><p>כמו כן, מהירות קריטית.</p><p>[תמונה: מערכת תגובה מהירה - Alt: "לידים רותחים לביטוח דורשים תגובה מיידית"]</p><p>מבנה התגובה האידיאלי:</p><ul><li>⏱️ תוך 5 דקות - SMS/WhatsApp אוטומטי</li><li>⏱️ תוך 30 דקות - שיחת טלפון ראשונה</li><li>⏱️ תוך שעה - הצעת מחיר ראשונית</li><li>⏱️ תוך 24 שעות - הצעה מלאה</li><li>⏱️ תוך 48 שעות - סגירה</li></ul><p>במילים אחרות, מהירות = מכירות.</p><h2>טכניקות מתקדמות להמרת לידים רותחים</h2><h3 style="font-size:20px;margin:30px 0 10px">פרסונליזציה מקסימלית</h3><p>ראשית, כל ליד רותח הוא ייחודי.</p><p>התאמות נדרשות:</p><ul><li>שם האדם בכל תקשורת</li><li>התייחסות לצורך הספציפי</li><li>הצעה מותאמת למצב</li><li>השוואה למה שיש לו היום</li><li>המלצות אישיות</li></ul><p>בנוסף, אישי = אמין = סגירה.</p><h3 style="font-size:20px;margin:30px 0 10px">יצירת דחיפות נוספת</h3><p>יתר על כן, הגבירו את הלהבה.</p><p>טקטיקות מוכחות:</p><ul><li>"המחיר תקף ל-24 שעות"</li><li>"נשארו 3 מקומות במבצע"</li><li>"העלאת תעריפים ב-1.1"</li><li>"בונוס למצטרפים היום"</li></ul><p>עם זאת, היו כנים ואתיים תמיד.</p><h3 style="font-size:20px;margin:30px 0 10px">מעקב אגרסיבי (אך מכבד)</h3><p>כמו כן, אל תוותרו מהר.</p><p>תוכנית מעקב אופטימלית:</p><ul><li>יום 1: 3 נקודות מגע</li><li>יום 2-3: 2 נקודות מגע ליום</li><li>יום 4-7: נקודת מגע יומית</li><li>שבוע 2: 3 נקודות מגע</li><li>לאחר מכן: מעבר למסלול חם רגיל</li></ul><p>כתוצאה מכך, 85% מהעסקאות נסגרות תוך שבוע.</p><h2>מקרה בוחן: סוכנות ביטוח מהצפון</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני</h3><ul><li>200 לידים חודשיים מעורבים</li><li>4% המרה כללית</li><li>זמן ממוצע לסגירה: 45 ימים</li><li>רווחיות נמוכה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי מיקוד בלידים רותחים לביטוח</h3><ul><li>50 לידים רותחים חודשיים</li><li>45% המרה (!!)</li><li>זמן ממוצע לסגירה: 3 ימים</li><li>רווחיות גדלה ב-320%</li></ul><p>השינויים המרכזיים:</p><ul><li>הפסיקו לרדוף אחרי כל ליד</li><li>מיקוד בטריגרים של דחיפות</li><li>מערך תגובה תוך 5 דקות</li><li>צוות ייעודי ללידים רותחים</li></ul><h2>כלים טכנולוגיים חיוניים</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכות זיהוי וניקוד</h3><p>ראשית, טכנולוגיה מזהה רותחים.</p><h3 style="font-size:20px;margin:30px 0 10px">אוטומציה להאצת תהליכים</h3><p>בנוסף לכך, אוטומציה = מהירות.</p><p>תהליכים לאוטומציה:</p><ul><li>הודעות אוטומטיות מיידיות</li><li>חישוב הצעות מחיר</li><li>שליחת חוזים דיגיטליים</li><li>תזכורות למעקב</li><li>דוחות ביצועים</li></ul><p>ראו גם <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> ולידים להלוואות.</p><h2>טעויות קריטיות להימנע מהן</h2><h3 style="font-size:20px;margin:30px 0 10px">איחור בתגובה</h3><p>ראשית, זמן = כסף.</p><p>הנתון המדהים: אחרי 5 דקות, סיכויי הסגירה יורדים ב-80%!</p><h3 style="font-size:20px;margin:30px 0 10px">טיפול כמו בליד רגיל</h3><p>בנוסף, לידים רותחים דורשים VIP.</p><p>חובה: צוות ייעודי, תהליך מקוצר, עדיפות מוחלטת.</p><h3 style="font-size:20px;margin:30px 0 10px">הצעה גנרית</h3><p>יתר על כן, גנרי = דחייה.</p><p>הכלל: כל הצעה מותאמת 100% לצורך הספציפי.</p><h2>מדידה ואופטימיזציה</h2><h3 style="font-size:20px;margin:30px 0 10px">KPIs למעקב</h3><p>ראשית, מדדים = שיפור.</p><p>מדדים חיוניים:</p><ul><li>זמן תגובה ממוצע</li><li>אחוז המרה לפי מקור</li><li>ערך עסקה ממוצע</li><li>LTV של לקוח רותח</li><li>עלות לרכישה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">בדיקות A/B מתמידות</h3><p>בנוסף, תמיד יש מקום לשיפור.</p><p>מה לבדוק:</p><ul><li>מסרים ראשוניים</li><li>זמני תגובה</li><li>ערוצי תקשורת</li><li>הצעות מחיר</li><li>תהליכי סגירה</li></ul><h2>הצעד הבא: התחילו לעבוד רותח</h2><p>לסיכום, לידים רותחים לביטוח הם ההזדמנות הגדולה ביותר שלכם לצמיחה מיידית.</p><p>יתר על כן, עם האסטרטגיה הנכונה, אתם יכולים להכפיל את הרווחים תוך 90 ימים.</p><p>ב-BaliLead אנחנו מומחים בלידים רותחים:</p><ul><li>מערכת זיהוי מתקדמת</li><li>סינון ב-Real Time</li><li>העברה מיידית אליכם</li><li>תמיכה מלאה בתהליך</li></ul><h2>קריאה לפעולה: הזמן לפעול הוא עכשיו</h2><p>אז מה אתם מחכים? כל דקה = לידים רותחים שהולכים למתחרים.</p><p>לחץ כאן לקבלת לידים רותחים לביטוח</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם הביטוח, המהיר תופס את הרותח. לכן, תתחיל עכשיו!</p>
     </div>
@@ -835,8 +848,8 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
-              <option>ביטוח</option>
+              <option value="" disabled>בחרו תחום</option>
+              <option selected>ביטוח</option>
               <option>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
@@ -844,11 +857,12 @@ html.acc-noanim .hero-media video{display:none}
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

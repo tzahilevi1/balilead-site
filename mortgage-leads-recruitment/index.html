@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>משכנתאות</span></nav>
     <div class="art-meta reveal"><span class="am-cat">משכנתאות</span><span>5 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">הסוד לגיוס לידים למשכנתאות שישנו את כללי המשחק בעסק שלך</h1>
     <p class="p-sub reveal" style="--d:.16s">גלו את הסודות לגיוס לידים למשכנתאות איכותיים שמובילים לעסקאות. מדריך מעשי עם טיפים ואסטרטגיות מוכחות.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-mortgage.webp" alt="הסוד לגיוס לידים למשכנתאות שישנו את כללי המשחק בעסק שלך - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-mortgage.webp" alt="הסוד לגיוס לידים למשכנתאות שישנו את כללי המשחק בעסק שלך"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>ראשית, 71% מיועצי המשכנתאות נאבקים למצוא <a href="../קניית-לידים/">לידים איכותיים</a>. למעשה, רובם מבזבזים אלפי שקלים על לידים חסרי ערך.</p><p>יתר על כן, בשוק רווי של היום, גיוס <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> נכון הוא ההבדל בין הצלחה לכישלון.</p><p>בנוסף לכך, במדריך הזה תגלה את השיטות המוכחות שישנו את העסק שלך מהיסוד.</p><h2>האתגרים המרכזיים בגיוס לידים למשכנתאות</h2><h3 style="font-size:20px;margin:30px 0 10px">לידים לא רלוונטיים שמבזבזים זמן</h3><p>ראשית, רוב הלידים שמגיעים פשוט לא מתאימים. למעשה, הם מחפשים משהו אחר לגמרי.</p><p>דוגמאות נפוצות:</p><ul><li>אנשים שרק רוצים מידע כללי</li><li>כאלה שאין להם יכולת כלכלית</li><li>מי שכבר בתהליך עם יועץ אחר</li><li>סקרנים בלבד ללא כוונה אמיתית</li></ul><p>במילים אחרות, אתה עובד קשה בשביל כלום.</p><h3 style="font-size:20px;margin:30px 0 10px">בזבוז תקציבי שיווק ענק</h3><p>בנוסף לכך, העלויות רק עולות. יתרה מכך, ה-ROI יורד כל הזמן.</p><p>[תמונה: גרף עלויות מול תוצאות - Alt: "גיוס לידים למשכנתאות - ניתוח עלויות"]</p><p>היכן הכסף מתבזבז:</p><ul><li>פרסום לא ממוקד בגוגל ופייסבוק</li><li>קניית לידים ממוחזרים מספקים</li><li>קמפיינים ללא אסטרטגיה ברורה</li><li>חוסר מעקב אחר ביצועים</li></ul><p>לכן, גיוס לידים למשכנתאות חכם הוא קריטי. כפי שמוסבר במדריך שלנו לאופטימיזציה, יעילות מביאה תוצאות.</p><h2>השיטה המוכחת: 6 צעדים לגיוס לידים מנצח</h2><h3 style="font-size:20px;margin:30px 0 10px">צעד 1: הגדרת פרופיל לקוח אידיאלי מדויק</h3><p>ראשית ולפני הכל, תדעו בדיוק את מי אתם מחפשים.</p><p>פרופיל לדוגמה:</p><ul><li>גיל: 28-45</li><li>הכנסה משותפת: 20,000+ ₪</li><li>מצב: נשואים או זוגות יציבים</li><li>מיקום: אזורי ביקוש</li><li>מטרה: דירה ראשונה או שדרוג</li></ul><p>כתוצאה מכך, כל מאמץ השיווק ממוקד.</p><h3 style="font-size:20px;margin:30px 0 10px">צעד 2: בניית נוכחות דיגיטלית חזקה</h3><p>יתר על כן, נוכחות מקצועית מושכת לידים איכותיים.</p><p>[תמונה: אתר מקצועי ליועץ משכנתאות - Alt: "גיוס לידים למשכנתאות דרך נוכחות דיגיטלית"]</p><p>מרכיבים חיוניים:</p><ul><li>אתר מקצועי עם מידע ערכי</li><li>דף נחיתה ממיר עם טופס חכם</li><li>פרופילים פעילים ברשתות חברתיות</li><li>ביקורות והמלצות לקוחות</li></ul><p>בנוסף, תוכן איכותי בונה אמון. ראו לידים למשכנתאות.</p><h3 style="font-size:20px;margin:30px 0 10px">צעד 3: אסטרטגיית תוכן ממוקדת</h3><p>כמו כן, תוכן טוב מושך לידים טובים.</p><p>סוגי תוכן שעובדים לגיוס לידים למשכנתאות****:</p><h3 style="font-size:20px;margin:30px 0 10px">צעד 4: שיווק ממומן חכם</h3><p>בנוסף לכך, פרסום ממוקד חוסך כסף ומביא תוצאות.</p><p>טיפים לקמפיינים מנצחים:</p><ul><li>Google Ads עם מילות מפתח ארוכות</li><li>פייסבוק עם טרגוט לפי אירועי חיים</li><li>לינקדאין לקהל מקצועי</li><li>רימרקטינג למבקרים באתר</li></ul><p>למעשה, כל שקל מושקע חכם יותר.</p><h3 style="font-size:20px;margin:30px 0 10px">צעד 5: אוטומציה ומערכות חכמות</h3><p>יתר על כן, טכנולוגיה מאיצה את התהליך.</p><p>כלים חיוניים:</p><ul><li>CRM לניהול לידים</li><li>צ'אטבוט לסינון ראשוני</li><li>אוטומציה של מיילים</li><li>מערכת ניקוד לידים</li></ul><p>כתוצאה מכך, יותר זמן למכירות אמיתיות.</p><h3 style="font-size:20px;margin:30px 0 10px">צעד 6: מעקב ואופטימיזציה מתמדת</h3><p>לבסוף, מדידה מביאה לשיפור.</p><p>מדדים למעקב:</p><ul><li>עלות לליד (CPL)</li><li>אחוז המרה לפגישה</li><li>אחוז סגירה לעסקה</li><li>ערך חיי לקוח (LTV)</li></ul><p>במילים אחרות, נתונים מובילים להחלטות חכמות.</p><h2>טכניקות מתקדמות לגיוס לידים איכותיים</h2><h3 style="font-size:20px;margin:30px 0 10px">שיווק מבוסס המלצות</h3><p>ראשית, לקוחות מרוצים הם הנכס הגדול ביותר.</p><p>תוכנית המלצות מנצחת:</p><ul><li>בונוס כספי על כל הפניה</li><li>הנחה בעמלה להממליץ</li><li>מתנה סמלית למופנה</li><li>תחרות חודשית</li></ul><p>בנוסף, המלצות מביאות לידים חמים במיוחד.</p><h3 style="font-size:20px;margin:30px 0 10px">שותפויות אסטרטגיות</h3><p>יתר על כן, שותפויות נכונות מכפילות תוצאות.</p><p>[תמונה: פגישת שותפות עסקית - Alt: "גיוס לידים למשכנתאות דרך שותפויות"]</p><p>שותפים פוטנציאליים:</p><ul><li>עורכי דין בנדל"ן</li><li>קבלנים ויזמים</li><li>סוכני נדל"ן</li><li>רואי חשבון</li></ul><p>לכן, רשת קשרים = יותר לידים איכותיים.</p><h3 style="font-size:20px;margin:30px 0 10px">שיווק מקומי ממוקד</h3><p>כמו כן, נוכחות מקומית יוצרת אמון.</p><p>פעילויות מומלצות:</p><ul><li>הרצאות בקהילה</li><li>נוכחות בירידי דיור</li><li>חסויות מקומיות</li><li>קבוצות פייסבוק אזוריות</li></ul><p>כתוצאה מכך, גיוס לידים למשכנתאות הופך טבעי יותר.</p><h2>מקרה בוחן: מהפך בגיוס לידים</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני</h3><ul><li>100 לידים חודשיים</li><li>5% המרה לפגישה</li><li>1% סגירה לעסקה</li><li>הפסד חודשי</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי יישום השיטה</h3><ul><li>50 לידים חודשיים (איכותיים)</li><li>40% המרה לפגישה</li><li>15% סגירה לעסקה</li><li>רווח של 300%</li></ul><p>איך זה קרה:</p><ul><li>מיקוד בזוגות צעירים באזור המרכז</li><li>יצירת מדריך דיגיטלי בחינם</li><li>קמפיין ממומן ממוקד</li><li>מערכת מעקב אוטומטית</li></ul><h2>טעויות קריטיות להימנע מהן</h2><h3 style="font-size:20px;margin:30px 0 10px">רדיפה אחרי כמות במקום איכות</h3><p>ראשית, יותר לידים ≠ יותר עסקאות.</p><p>התמקדו ב: 20 לידים מעולים &gt; 200 לידים גרועים</p><h3 style="font-size:20px;margin:30px 0 10px">חוסר התמדה ועקביות</h3><p>בנוסף, הצלחה דורשת זמן.</p><p>כלל הזהב: לפחות 90 יום לכל אסטרטגיה</p><h3 style="font-size:20px;margin:30px 0 10px">התעלמות מטכנולוגיה</h3><p>יתר על כן, מי שלא מתקדם - נשאר מאחור.</p><p>חובה: CRM, אוטומציה, ניתוח נתונים</p><h2>כלים וטכנולוגיות לגיוס לידים למשכנתאות</h2><h3 style="font-size:20px;margin:30px 0 10px">פלטפורמות מומלצות</h3><h3 style="font-size:20px;margin:30px 0 10px">אינטגרציות חכמות</h3><p>חיבורים שחוסכים זמן:</p><ul><li>CRM + WhatsApp</li><li>פייסבוק + טפסים</li><li>גוגל + אנליטיקס</li><li>אתר + צ'אטבוט</li></ul><h2>הצעד הבא: התחילו לגייס נכון</h2><p>לסיכום, גיוס לידים למשכנתאות מוצלח הוא אומנות ומדע.</p><p>יתר על כן, עם האסטרטגיה הנכונה, התוצאות מדברות בעד עצמן.</p><p>ב-BaliLead אנחנו מומחים בגיוס לידים איכותיים:</p><ul><li>לידים למשכנתאות מסוננים ומוכנים</li><li>לידים לביטוח ממוקדי יעד</li><li>לידים להלוואות עם פוטנציאל גבוה</li><li>לידים להחזרי מס איכותיים</li></ul><h2>קריאה לפעולה: הזמן לשנות את המשחק</h2><p>אז מה אתם מחכים? המתחרים כבר משתמשים בשיטות האלה.</p><p>לחץ כאן לייעוץ חינם על גיוס לידים למשכנתאות</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם המשכנתאות, מי שמגייס חכם - מצליח יותר. לכן, התחל עכשיו!</p>
     </div>
@@ -835,20 +848,21 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
-              <option>משכנתאות</option>
+              <option selected>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
               <option>פיננסים והשקעות</option>
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');

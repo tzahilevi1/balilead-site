@@ -198,6 +198,16 @@ section{position:relative}
 /* ===== Inner page hero ===== */
 .p-hero{padding:clamp(150px,19vh,200px) 0 clamp(40px,6vw,70px);overflow:hidden}
 .p-hero .hero-halo{opacity:.32}
+.p-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(30px,5vw,70px);align-items:center}
+.p-hero-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);position:relative}
+.p-hero-img::after{content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.12);pointer-events:none}
+.p-hero-img img{width:100%;height:100%;object-fit:cover;aspect-ratio:16/10;display:block}
+@media (max-width:860px){
+  .p-hero-grid{grid-template-columns:1fr}
+  .p-hero-img img{aspect-ratio:16/9}
+}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
 .crumbs a{color:var(--muted);transition:color .4s var(--ease)}
 .crumbs a:hover{color:var(--gold2)}
@@ -686,8 +696,10 @@ html.acc-noanim .hero-media video{display:none}
 @media (max-width:860px){.toast{bottom:86px}}
 
 /* Consent checkbox */
-.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);line-height:1.5;cursor:pointer}
-.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;margin-top:2px;border-radius:5px;cursor:pointer;
+.consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
+.consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){.consent > span{white-space:normal}}
+.consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
 .consent input:checked::after{content:"";position:absolute;inset:2px 4.5px;border:solid #1c1206;border-width:0 0 2.2px 2.2px;transform:rotate(-45deg) translateY(-1.5px)}
@@ -743,19 +755,20 @@ html.acc-noanim .hero-media video{display:none}
 
 <section class="p-hero">
   <div class="hero-halo" aria-hidden="true"></div>
-  <div class="container">
+  <div class="container p-hero-grid">
+    <div>
     <nav class="crumbs reveal" aria-label="פירורי לחם"><a href="../">ראשי</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><a href="../עדכונים-חמים/">המגזין</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg><span>משכנתאות</span></nav>
     <div class="art-meta reveal"><span class="am-cat">משכנתאות</span><span>5 דקות קריאה</span></div>
     <h1 class="reveal" style="--d:.08s">אמנות סינון לידים במשכנתאות איך לגלות המועמדים המובילים בקלות</h1>
     <p class="p-sub reveal" style="--d:.16s">למדו איך לבצע סינון לידים למשכנתאות ולזהות לקוחות פוטנציאליים איכותיים. טיפים מעשיים וכלים דיגיטליים.</p>
     
-    
+    </div>
+    <div class="p-hero-img reveal" style="--d:.22s"><img src="../assets/cover-mortgage.webp" alt="אמנות סינון לידים במשכנתאות איך לגלות המועמדים המובילים בקלות - מאמר במגזין באלי ליד" fetchpriority="high"></div>
   </div>
 </section>
 
 <section class="sec-tight">
   <div class="container">
-    <div class="art-cover reveal"><img src="../assets/cover-mortgage.webp" alt="אמנות סינון לידים במשכנתאות איך לגלות המועמדים המובילים בקלות"></div>
     <div class="prose art-body reveal" style="--d:.08s">
       <p>ראשית, 67% מיועצי המשכנתאות מבזבזים מעל 40% מזמנם על לידים לא רלוונטיים. למעשה, זה אומר שכמעט חצי יום עבודה הולך לפח.</p><p>יתר על כן, בשוק תחרותי כמו המשכנתאות, סינון <a href="../קניית-לידים/לידים-למשכנתאות/">לידים למשכנתאות</a> נכון הוא ההבדל בין הצלחה לכישלון.</p><p>בנוסף לכך, במדריך הזה תגלה שיטות מוכחות לזיהוי המועמדים האיכותיים ביותר.</p><h2>הבעיה: למה רוב הלידים למשכנתאות לא מתאימים?</h2><h3 style="font-size:20px;margin:30px 0 10px">חוסר התאמה כלכלית בסיסית</h3><p>ראשית, רבים פונים בלי להבין את הדרישות הבסיסיות. למעשה, הם לא מודעים למגבלות.</p><p>דוגמאות נפוצות:</p><ul><li>הכנסה נמוכה מדי לסכום המבוקש</li><li>היסטוריית אשראי בעייתית</li><li>חוסר הון עצמי מספיק</li><li>חובות קיימים גבוהים</li></ul><p>במילים אחרות, הם פשוט לא יכולים לקבל משכנתא כרגע.</p><h3 style="font-size:20px;margin:30px 0 10px">ציפיות לא מציאותיות</h3><p>בנוסף לכך, רבים מגיעים עם ציפיות מנותקות. יתרה מכך, הם לא מבינים את השוק.</p><p>[תמונה: גרף השוואת ציפיות מול מציאות - Alt: "סינון לידים למשכנתאות - ניהול ציפיות"]</p><p>ציפיות בעייתיות:</p><ul><li>"רוצה 100% מימון בלי הון עצמי"</li><li>"מחפש ריבית אפס"</li><li>"צריך אישור תוך יום"</li><li>"רוצה דירה ב-500 אלף עם הכנסה של 8,000"</li></ul><p>לכן, סינון לידים למשכנתאות מוקדם חוסך אכזבות. כפי שמוסבר במדריך שלנו ל<a href="../קניית-לידים/">לידים איכותיים</a>, הגדרת קריטריונים ברורים היא קריטית.</p><h2>שיטת הסינון המוכחת: 5 שלבים להצלחה</h2><h3 style="font-size:20px;margin:30px 0 10px">שלב 1: סינון ראשוני אוטומטי</h3><p>ראשית ולפני הכל, השתמשו בטופס חכם שמסנן אוטומטית.</p><p>שאלות מפתח לטופס:</p><ul><li>מהי ההכנסה החודשית המשותפת?</li><li>כמה הון עצמי זמין?</li><li>האם יש הלוואות פעילות?</li><li>מה מטרת הרכישה?</li></ul><p>כתוצאה מכך, 50% מהלידים הלא רלוונטיים נפסלים מיד.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 2: ניקוד לידים אוטומטי</h3><p>יתר על כן, השתמשו במערכת ניקוד לסינון לידים למשכנתאות.</p><p>[תמונה: מערכת ניקוד לידים - Alt: "סינון לידים למשכנתאות עם ניקוד אוטומטי"]</p><p>טבלת ניקוד מומלצת:</p><p>ליד מעל 40 נקודות = פוטנציאל מעולה!</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 3: שיחת סינון מהירה</h3><p>כמו כן, שיחה של 5 דקות יכולה לחסוך שעות.</p><p>מבנה השיחה האידיאלי:</p><ul><li>דקה 1: אימות נתונים בסיסיים</li><li>דקה 2-3: הבנת הצורך והדחיפות</li><li>דקה 4: בדיקת מוכנות לתהליך</li><li>דקה 5: קביעת פגישה או סיום מנומס</li></ul><p>בנוסף, תעדו הכל ב-CRM. ראו לידים למשכנתאות למידע נוסף.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 4: בדיקת מסמכים דיגיטלית</h3><p>בנוסף לכך, בקשו מסמכים בסיסיים לפני הפגישה.</p><p>מסמכים לבדיקה מהירה:</p><ul><li>3 תלושי שכר אחרונים</li><li>אישור יתרה בבנק</li><li>דוח נכסים ממס הכנסה</li><li>צילום תעודת זהות</li></ul><p>למעשה, זה מסנן את מי שלא רציני. סינון לידים למשכנתאות יעיל מתחיל כאן.</p><h3 style="font-size:20px;margin:30px 0 10px">שלב 5: פגישת הערכה סופית</h3><p>לבסוף, רק לידים שעברו את כל השלבים מגיעים לפגישה.</p><p>מה לבדוק בפגישה:</p><ul><li>התאמה אישית וכימיה</li><li>הבנת התהליך</li><li>מחויבות לטווח ארוך</li><li>יכולת קבלת החלטות</li></ul><p>כתוצאה מכך, 90% מהפגישות מובילות לעסקה!</p><h2>כלים דיגיטליים מתקדמים לסינון</h2><h3 style="font-size:20px;margin:30px 0 10px">מערכות CRM ייעודיות</h3><p>ראשית, CRM טוב הוא הבסיס לסינון לידים למשכנתאות יעיל.</p><p>תכונות חיוניות:</p><ul><li>סינון אוטומטי לפי קריטריונים</li><li>ניקוד לידים מובנה</li><li>אוטומציה של תהליכים</li><li>דוחות ביצועים מפורטים</li></ul><p>המלצות: HubSpot, Salesforce, או Monday.com</p><h3 style="font-size:20px;margin:30px 0 10px">כלי אימות וסינון אוטומטיים</h3><p>יתר על כן, טכנולוגיה חוסכת זמן יקר.</p><p>[תמונה: לוח בקרה של מערכת סינון - Alt: "כלי דיגיטלי לסינון לידים למשכנתאות"]</p><p>כלים מומלצים:</p><ul><li>אימות טלפון: TrueCaller API</li><li>בדיקת דוא"ל: EmailListVerify</li><li>ניתוח כלכלי: API של בנק ישראל</li><li>סינון גיאוגרפי: Google Maps API</li></ul><h3 style="font-size:20px;margin:30px 0 10px">בוטים וצ'אטים חכמים</h3><p>כמו כן, בוטים יכולים לבצע סינון ראשוני 24/7.</p><p>יתרונות:</p><ul><li>זמינות מלאה</li><li>סינון עקבי</li><li>איסוף נתונים אוטומטי</li><li>חיסכון בכוח אדם</li></ul><p>במילים אחרות, הטכנולוגיה עובדת בשבילך.</p><h2>טעויות נפוצות בסינון לידים למשכנתאות</h2><h3 style="font-size:20px;margin:30px 0 10px">סינון קשיח מדי</h3><p>ראשית, אל תדחו לידים טובים בגלל קריטריונים נוקשים.</p><p>פתרון: השאירו מרווח גמישות של 10-15%.</p><h3 style="font-size:20px;margin:30px 0 10px">התעלמות מפוטנציאל עתידי</h3><p>בנוסף, לפעמים ליד "חלש" היום יהיה מעולה בעוד חודשיים.</p><p>מה לעשות:</p><ul><li>צרו מאגר "לעתיד"</li><li>עשו מעקב רבעוני</li><li>הציעו טיפים לשיפור</li><li>שמרו על קשר חם</li></ul><h3 style="font-size:20px;margin:30px 0 10px">חוסר מעקב אחר נתונים</h3><p>יתר על כן, בלי מדידה אין שיפור.</p><p>מדדים למעקב:</p><ul><li>אחוז המרה בכל שלב</li><li>זמן ממוצע לסינון</li><li>עלות לליד איכותי</li><li>ROI לפי מקור</li></ul><h2>מקרה בוחן: יועץ משכנתאות מירושלים</h2><h3 style="font-size:20px;margin:30px 0 10px">המצב לפני</h3><ul><li>200 לידים בחודש</li><li>15% פגישות</li><li>3% סגירות</li><li>הרבה זמן מבוזבז</li></ul><h3 style="font-size:20px;margin:30px 0 10px">אחרי יישום סינון לידים למשכנתאות מתקדם</h3><ul><li>80 לידים בחודש (מסוננים)</li><li>60% פגישות</li><li>25% סגירות</li><li>חיסכון של 60% בזמן</li></ul><p>התוצאה: הכנסה גדלה ב-300% עם פחות עבודה!</p><h2>טיפים פסיכולוגיים לסינון אנושי</h2><h3 style="font-size:20px;margin:30px 0 10px">קריאת שפת גוף בשיחות וידאו</h3><p>ראשית, שימו לב לסימנים לא מילוליים.</p><p>מה לחפש:</p><ul><li>קשר עין ישיר = רצינות</li><li>הכנת מסמכים מראש = מוכנות</li><li>שאלות ספציפיות = עניין אמיתי</li><li>משפחה מעורבת = תמיכה</li></ul><h3 style="font-size:20px;margin:30px 0 10px">שאלות פתוחות חושפות</h3><p>בנוסף לכך, תנו ללידים לדבר.</p><p>שאלות מנצחות:</p><ul><li>"ספר לי על החלום שלך"</li><li>"מה הכי חשוב לך בתהליך?"</li><li>"איפה אתה רואה את עצמך בעוד 5 שנים?"</li></ul><p>כתוצאה מכך, תבינו את המוטיבציה האמיתית.</p><h2>הצעד הבא: הטמיעו סינון חכם היום</h2><p>לסיכום, סינון לידים למשכנתאות נכון הוא האומנות שמפרידה בין הצלחה לכישלון.</p><p>יתר על כן, עם השיטות והכלים הנכונים, תוכלו להכפיל את היעילות.</p><p>ב-BaliLead אנחנו מומחים בסינון וסיפוק לידים איכותיים:</p><ul><li>לידים למשכנתאות מסוננים מראש</li><li>לידים לביטוח מאומתים</li><li>לידים להלוואות איכותיים</li><li>לידים להחזרי מס ממוקדים</li></ul><h2>קריאה לפעולה: הפסיקו לבזבז זמן על לידים לא רלוונטיים</h2><p>אז מה אתם מחכים? כל יום בלי סינון נכון = כסף שנזרק.</p><p>לחץ כאן לקבלת לידים מסוננים למשכנתאות</p><p>או התקשר: 058-470-0706</p><p>זכור: בעולם המשכנתאות, איכות תמיד מנצחת כמות. לכן, התחל לסנן חכם עכשיו!</p>
     </div>
@@ -835,20 +848,21 @@ html.acc-noanim .hero-media video{display:none}
           <div class="field">
             <label for="f-topic">איזה לידים אתם צריכים?</label>
             <select id="f-topic" name="topic" required>
-              <option value="" selected disabled>בחרו תחום</option>
+              <option value="" disabled>בחרו תחום</option>
               <option>ביטוח</option>
-              <option>משכנתאות</option>
+              <option selected>משכנתאות</option>
               <option>הלוואות</option>
               <option>החזרי מס</option>
               <option>פיננסים והשקעות</option>
               <option>עורכי דין</option>
               <option>רואי חשבון</option>
               <option>רפואה ואסתטיקה</option>
+              <option>בניית אתרים</option>
               <option>שיווק דיגיטלי לעסק שלי</option>
               <option>תחום אחר</option>
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required> קראתי ואני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a>, כולל העברת פרטיי לגורם צד ג' רלוונטי לצורך מתן השירות</label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg></span>
             שולחים ומתחילים
@@ -960,7 +974,7 @@ html.acc-noanim .hero-media video{display:none}
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked> אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ואת העברת פרטיי לגורם רלוונטי</label>
+    <label class="consent"><input type="checkbox" checked><span>אני מאשר/ת את <a href="../מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
@@ -1008,8 +1022,14 @@ html.acc-noanim .hero-media video{display:none}
     entries.forEach(function(e){
       if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:.18, rootMargin:'0px 0px -40px 0px'});
+  }, {threshold:0, rootMargin:'0px 0px -60px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  /* safety: never leave content hidden if the observer misses */
+  setTimeout(function(){
+    document.querySelectorAll('.reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+    });
+  }, 1500);
 
   var counted = false;
   var statsEl = document.querySelector('.stats-grid');
