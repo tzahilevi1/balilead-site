@@ -75,7 +75,7 @@ function deepSection(root, slug, title, withSidebar = false) {
 
 const OUT = '.';
 const canon = path => 'https://balilead.co.il/' + (path ? encodeURI(path) + '/' : '');
-const GH = 'https://tzahilevi1.github.io/balilead-site/';
+const GH = 'https://balilead.co.il/';
 
 /* ---------- SEO structured data helpers ---------- */
 const crumbsLd = crumbs => ({

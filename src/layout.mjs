@@ -1104,7 +1104,7 @@ ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escAttr(title)}">
 <meta property="og:description" content="${escAttr(desc)}">
-<meta property="og:image" content="${ogImage || 'https://tzahilevi1.github.io/balilead-site/assets/hero-poster.jpg'}">
+<meta property="og:image" content="${ogImage || 'https://balilead.co.il/assets/hero-poster.jpg'}">
 <meta name="theme-color" content="#080606">
 <link rel="icon" type="image/png" sizes="64x64" href="${root}assets/favicon-64.png">
 <link rel="apple-touch-icon" href="${root}assets/apple-touch-icon.png">
