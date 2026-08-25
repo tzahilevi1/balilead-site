@@ -24,13 +24,20 @@ const LINK_MAP = [
   ['קידום אתרים', 'קידום-אתרים-seo/'],
   ['בניית אתרים', 'בניית-אתרים/'],
   ['דפי נחיתה', 'דפי-נחיתה/'],
+  ['דף נחיתה', 'דפי-נחיתה/'],
+  ['מודל CPL', 'חברת-לידים/'],
+  ['החזר על ההשקעה', 'מחשבון-roi-ללידים/'],
+  ['ROI', 'מחשבון-roi-ללידים/'],
+  ['ניהול לידים', 'מערכת-ניהול-לידים/'],
+  ['מערכת CRM', 'מערכת-ניהול-לידים/'],
+  ['אוטומציות', 'אוטומציות-שיווק/'],
 ];
 function autolink(html, root, selfPath) {
   const used = new Set();
   return html.replace(/<p>([\s\S]*?)<\/p>/g, (m, inner) => {
     if (inner.includes('<a ')) return m;
     for (const [phrase, target] of LINK_MAP) {
-      if (used.has(target) || target === selfPath + '/' || used.size >= 4) continue;
+      if (used.has(target) || target === selfPath + '/' || used.size >= 6) continue;
       const i = inner.indexOf(phrase);
       if (i < 0) continue;
       used.add(target);

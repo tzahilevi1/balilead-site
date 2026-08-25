@@ -238,6 +238,11 @@ section{position:relative}
 
 /* Prose */
 .prose{max-width:780px}
+.prose a{color:var(--gold2);font-weight:700;text-decoration:underline;
+  text-decoration-color:rgba(217,164,91,.45);text-decoration-thickness:1.5px;text-underline-offset:3px;
+  border-radius:5px;padding:1px 3px;margin:-1px -3px;
+  transition:color .35s var(--ease),background .35s var(--ease),text-decoration-color .35s var(--ease)}
+.prose a:hover{color:#f6d9a0;background:rgba(217,164,91,.1);text-decoration-color:var(--gold2)}
 .prose h2{font-size:clamp(24px,2.6vw,34px);margin:44px 0 16px}
 .prose h2:first-child{margin-top:0}
 .prose h2 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
