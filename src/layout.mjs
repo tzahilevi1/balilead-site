@@ -2,8 +2,8 @@
 // All URLs are root-relative via the `root` prefix ('' | '../' | '../../').
 import { widgetsCss, widgetsHtml, widgetsJs } from './widgets.mjs';
 
-/* כתובת ה-Web App של Google Apps Script (לכידת לידים לשיטס + מייל). ריק = כבוי */
-export const LEADS_WEBHOOK = '';
+/* כתובת ה-webhook של Make (לכידת לידים → Google Sheets + מייל). ריק = כבוי */
+export const LEADS_WEBHOOK = 'https://hook.us1.make.com/9md8hnpw76ww181bsnfd3ofeyfiq2fh0';
 
 export const SITE = {
   phone: '058-4700706',
@@ -977,7 +977,7 @@ export const js = `
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
       var send = function(){
-        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(function(){});
+        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) }).catch(function(){});
       };
       fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
         .then(function(j){ data.ip = (j && j.ip) || ''; send(); })

@@ -4,7 +4,7 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ===== lead capture: attribution + webhook ===== */
-  var LEADS_URL = '';
+  var LEADS_URL = 'https://hook.us1.make.com/9md8hnpw76ww181bsnfd3ofeyfiq2fh0';
   try {
     if(!sessionStorage.getItem('bl_entry')){
       sessionStorage.setItem('bl_entry', location.href);
@@ -28,7 +28,7 @@
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
       var send = function(){
-        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(function(){});
+        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) }).catch(function(){});
       };
       fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
         .then(function(j){ data.ip = (j && j.ip) || ''; send(); })
