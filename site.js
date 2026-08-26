@@ -3,6 +3,39 @@
   "use strict";
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ===== lead capture: attribution + webhook ===== */
+  var LEADS_URL = '';
+  try {
+    if(!sessionStorage.getItem('bl_entry')){
+      sessionStorage.setItem('bl_entry', location.href);
+      sessionStorage.setItem('bl_ref', document.referrer || 'כניסה ישירה');
+      var usp = new URLSearchParams(location.search);
+      var utm = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid']
+        .map(function(k){ var v = usp.get(k); return v ? k + '=' + v : ''; })
+        .filter(Boolean).join(' | ');
+      sessionStorage.setItem('bl_utm', utm);
+    }
+  } catch(e){}
+  window.blSendLead = function(data){
+    if(!LEADS_URL) return;
+    try {
+      data.secret = 'bl2026';
+      data.page = location.href;
+      data.pageTitle = (document.title || '').split('|')[0].split(' - ')[0].trim();
+      data.entry = sessionStorage.getItem('bl_entry') || location.href;
+      data.referrer = sessionStorage.getItem('bl_ref') || document.referrer || 'כניסה ישירה';
+      data.utm = sessionStorage.getItem('bl_utm') || '';
+      data.ua = navigator.userAgent;
+      data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
+      var send = function(){
+        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(function(){});
+      };
+      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
+        .then(function(j){ data.ip = (j && j.ip) || ''; send(); })
+        .catch(function(){ data.ip = ''; send(); });
+    } catch(e){}
+  };
+
   var header = document.getElementById('header');
   var sentinel = document.querySelector('.hero-eyebrow') || document.querySelector('.crumbs') || document.body;
   var lastState = false;
@@ -120,6 +153,7 @@
       var topic = form.topic.value;
       if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
       err.classList.remove('show');
+      window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic });
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
     });
@@ -221,6 +255,7 @@
     var pr = findPrice(low);
     var phoneMatch = t.replace(/[^0-9]/g, '');
     if (phoneMatch.length >= 9 && phoneMatch.length <= 13) {
+      if(window.blSendLead) window.blSendLead({ type: 'צ׳אט באלי', phone: t.trim() });
       var wamsg = 'היי, השארתי את המספר שלי בצ׳אט באתר: ' + t + '. אשמח שתחזרו אליי לגבי לידים.';
       return { html: 'מעולה! לוחצים על הקישור ואנחנו כבר מדברים 👇<br><a href="' + WA + '?text=' + encodeURIComponent(wamsg) + '" target="_blank" rel="noopener"><b>שליחת הפרטים בוואטסאפ ←</b></a>', chips: ['איך זה עובד?', 'כמה עולה ליד?'] };
     }
@@ -334,6 +369,7 @@
     if(consent && !consent.checked){ consent.focus(); return; }
     var ph = document.getElementById('popPhone').value.replace(/[^0-9+]/g, '');
     if(ph.length < 9) return;
+    if(window.blSendLead) window.blSendLead({ type: 'פופאפ יציאה', phone: document.getElementById('popPhone').value.trim() });
     var msg = 'היי, השארתי טלפון באתר (' + document.getElementById('popPhone').value.trim() + '). אשמח לשמוע על פיילוט לידים לעסק שלי.';
     window.open(WA + '?text=' + encodeURIComponent(msg), '_blank');
     closeModal();

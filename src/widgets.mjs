@@ -291,6 +291,7 @@ export const widgetsJs = `
     var pr = findPrice(low);
     var phoneMatch = t.replace(/[^0-9]/g, '');
     if (phoneMatch.length >= 9 && phoneMatch.length <= 13) {
+      if(window.blSendLead) window.blSendLead({ type: 'צ׳אט באלי', phone: t.trim() });
       var wamsg = 'היי, השארתי את המספר שלי בצ׳אט באתר: ' + t + '. אשמח שתחזרו אליי לגבי לידים.';
       return { html: 'מעולה! לוחצים על הקישור ואנחנו כבר מדברים 👇<br><a href="' + WA + '?text=' + encodeURIComponent(wamsg) + '" target="_blank" rel="noopener"><b>שליחת הפרטים בוואטסאפ ←</b></a>', chips: ['איך זה עובד?', 'כמה עולה ליד?'] };
     }
@@ -404,6 +405,7 @@ export const widgetsJs = `
     if(consent && !consent.checked){ consent.focus(); return; }
     var ph = document.getElementById('popPhone').value.replace(/[^0-9+]/g, '');
     if(ph.length < 9) return;
+    if(window.blSendLead) window.blSendLead({ type: 'פופאפ יציאה', phone: document.getElementById('popPhone').value.trim() });
     var msg = 'היי, השארתי טלפון באתר (' + document.getElementById('popPhone').value.trim() + '). אשמח לשמוע על פיילוט לידים לעסק שלי.';
     window.open(WA + '?text=' + encodeURIComponent(msg), '_blank');
     closeModal();

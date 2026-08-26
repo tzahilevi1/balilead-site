@@ -2,6 +2,9 @@
 // All URLs are root-relative via the `root` prefix ('' | '../' | '../../').
 import { widgetsCss, widgetsHtml, widgetsJs } from './widgets.mjs';
 
+/* כתובת ה-Web App של Google Apps Script (לכידת לידים לשיטס + מייל). ריק = כבוי */
+export const LEADS_WEBHOOK = '';
+
 export const SITE = {
   phone: '058-4700706',
   phoneHref: 'tel:0584700706',
@@ -949,6 +952,39 @@ export const js = `
   "use strict";
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ===== lead capture: attribution + webhook ===== */
+  var LEADS_URL = '${LEADS_WEBHOOK}';
+  try {
+    if(!sessionStorage.getItem('bl_entry')){
+      sessionStorage.setItem('bl_entry', location.href);
+      sessionStorage.setItem('bl_ref', document.referrer || 'כניסה ישירה');
+      var usp = new URLSearchParams(location.search);
+      var utm = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid']
+        .map(function(k){ var v = usp.get(k); return v ? k + '=' + v : ''; })
+        .filter(Boolean).join(' | ');
+      sessionStorage.setItem('bl_utm', utm);
+    }
+  } catch(e){}
+  window.blSendLead = function(data){
+    if(!LEADS_URL) return;
+    try {
+      data.secret = 'bl2026';
+      data.page = location.href;
+      data.pageTitle = (document.title || '').split('|')[0].split(' - ')[0].trim();
+      data.entry = sessionStorage.getItem('bl_entry') || location.href;
+      data.referrer = sessionStorage.getItem('bl_ref') || document.referrer || 'כניסה ישירה';
+      data.utm = sessionStorage.getItem('bl_utm') || '';
+      data.ua = navigator.userAgent;
+      data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
+      var send = function(){
+        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(data) }).catch(function(){});
+      };
+      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
+        .then(function(j){ data.ip = (j && j.ip) || ''; send(); })
+        .catch(function(){ data.ip = ''; send(); });
+    } catch(e){}
+  };
+
   var header = document.getElementById('header');
   var sentinel = document.querySelector('.hero-eyebrow') || document.querySelector('.crumbs') || document.body;
   var lastState = false;
@@ -1066,6 +1102,7 @@ export const js = `
       var topic = form.topic.value;
       if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
       err.classList.remove('show');
+      window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic });
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
     });
