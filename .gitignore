@@ -3,3 +3,6 @@ shots/
 dist/
 package-lock.json
 .env
+cf-audit.mjs
+cf-apply.mjs
+cf-caa.mjs

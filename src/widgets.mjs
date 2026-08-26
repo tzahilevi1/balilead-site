@@ -241,7 +241,6 @@ export const widgetsJs = `
   var input = document.getElementById('chatInput');
   var started = false;
 
-  function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
   function addMsg(txt, who, isHtml){
     var el = document.createElement('div');
     el.className = 'cmsg ' + who;
@@ -401,6 +400,8 @@ export const widgetsJs = `
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); toast.classList.remove('open'); } });
   document.getElementById('popForm').addEventListener('submit', function(e){
     e.preventDefault();
+    var consent = document.querySelector('#popOv .consent input');
+    if(consent && !consent.checked){ consent.focus(); return; }
     var ph = document.getElementById('popPhone').value.replace(/[^0-9+]/g, '');
     if(ph.length < 9) return;
     var msg = 'היי, השארתי טלפון באתר (' + document.getElementById('popPhone').value.trim() + '). אשמח לשמוע על פיילוט לידים לעסק שלי.';
