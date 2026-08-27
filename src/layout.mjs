@@ -933,7 +933,7 @@ export function ctaSection(root, { title, sub, topic } = {}) {
               ${topics.map(t => `<option${t === topic ? ' selected' : ''}>${t}</option>`).join('\n              ')}
             </select>
           </div>
-          <label class="consent"><input type="checkbox" name="consent" checked required><span>אני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> והעברת פרטיי לצד ג׳ רלוונטי</span></label>
+          <label class="consent"><input type="checkbox" name="consent" checked required><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic">${IC.send}</span>
             שולחים ומתחילים
