@@ -15,6 +15,11 @@
         .filter(Boolean).join(' | ');
       sessionStorage.setItem('bl_utm', utm);
     }
+    /* IP נשלף מראש פעם בסשן — כדי שהשליחה בזמן submit תהיה מיידית */
+    if(LEADS_URL && !sessionStorage.getItem('bl_ip')){
+      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
+        .then(function(j){ if(j && j.ip) sessionStorage.setItem('bl_ip', j.ip); }).catch(function(){});
+    }
   } catch(e){}
   window.blSendLead = function(data){
     if(!LEADS_URL) return;
@@ -27,12 +32,9 @@
       data.utm = sessionStorage.getItem('bl_utm') || '';
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
-      var send = function(){
-        fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) }).catch(function(){});
-      };
-      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
-        .then(function(j){ data.ip = (j && j.ip) || ''; send(); })
-        .catch(function(){ data.ip = ''; send(); });
+      data.ip = sessionStorage.getItem('bl_ip') || '';
+      /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */
+      fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
     } catch(e){}
   };
 
@@ -153,7 +155,7 @@
       var topic = form.topic.value;
       if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
       err.classList.remove('show');
-      window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic });
+      window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic, consent: 'כן' });
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
       window.open('https://wa.me/972584700706?text=' + encodeURIComponent(msg), '_blank');
     });
@@ -255,7 +257,7 @@
     var pr = findPrice(low);
     var phoneMatch = t.replace(/[^0-9]/g, '');
     if (phoneMatch.length >= 9 && phoneMatch.length <= 13) {
-      if(window.blSendLead) window.blSendLead({ type: 'צ׳אט באלי', phone: t.trim() });
+      if(window.blSendLead) window.blSendLead({ type: 'צ׳אט באלי', phone: t.trim(), consent: 'כן (מסר טלפון בצ׳אט)' });
       var wamsg = 'היי, השארתי את המספר שלי בצ׳אט באתר: ' + t + '. אשמח שתחזרו אליי לגבי לידים.';
       return { html: 'מעולה! לוחצים על הקישור ואנחנו כבר מדברים 👇<br><a href="' + WA + '?text=' + encodeURIComponent(wamsg) + '" target="_blank" rel="noopener"><b>שליחת הפרטים בוואטסאפ ←</b></a>', chips: ['איך זה עובד?', 'כמה עולה ליד?'] };
     }
@@ -369,7 +371,7 @@
     if(consent && !consent.checked){ consent.focus(); return; }
     var ph = document.getElementById('popPhone').value.replace(/[^0-9+]/g, '');
     if(ph.length < 9) return;
-    if(window.blSendLead) window.blSendLead({ type: 'פופאפ יציאה', phone: document.getElementById('popPhone').value.trim() });
+    if(window.blSendLead) window.blSendLead({ type: 'פופאפ יציאה', phone: document.getElementById('popPhone').value.trim(), consent: 'כן' });
     var msg = 'היי, השארתי טלפון באתר (' + document.getElementById('popPhone').value.trim() + '). אשמח לשמוע על פיילוט לידים לעסק שלי.';
     window.open(WA + '?text=' + encodeURIComponent(msg), '_blank');
     closeModal();
