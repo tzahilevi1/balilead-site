@@ -752,7 +752,7 @@ export function header(root, active = '') {
   </div>
 </header>
 
-<div class="mnav" id="mnav">
+<nav class="mnav" id="mnav" aria-label="ניווט נייד">
   <a class="m-main" href="${root}">ראשי</a>
   <a class="m-main" href="${root}מחירון-לידים/">מחירון 2026</a>
   <a class="m-main" href="${root}עדכונים-חמים/">מגזין</a>
@@ -762,7 +762,7 @@ export function header(root, active = '') {
   <div class="m-group">שיווק דיגיטלי</div>
   <div>${NAV_DIGITAL.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
   <div class="mnav-contact">${SITE.phone} · ${SITE.email}</div>
-</div>`;
+</nav>`;
 }
 
 export function footer(root) {
@@ -1130,7 +1130,7 @@ function analyticsHtml() {
 export const siteCss = () => css + widgetsCss;
 export const siteJs = () => js + '\n' + widgetsJs;
 
-export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage }) {
+export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage, robots }) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
@@ -1138,6 +1138,7 @@ export function shell({ root, title, desc, canonical, active, body, ldjson, extr
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${escText(title)}</title>
 <meta name="description" content="${escAttr(desc)}">
+${robots ? `<meta name="robots" content="${escAttr(robots)}">` : ''}
 ${canonical ? `<link rel="canonical" href="${canonical}">` : ''}
 <meta property="og:locale" content="he_IL">
 <meta property="og:type" content="website">

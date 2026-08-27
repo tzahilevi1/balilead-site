@@ -31,6 +31,13 @@ const LINK_MAP = [
   ['ניהול לידים', 'מערכת-ניהול-לידים/'],
   ['מערכת CRM', 'מערכת-ניהול-לידים/'],
   ['אוטומציות', 'אוטומציות-שיווק/'],
+  /* Added because the crawl found these earning no editorial link at all —
+     they were reachable only from the menu, which search engines discount. */
+  ['פיתוח אפליקציות', 'פיתוח-אפליקציות/'],
+  ['אפליקציה לעסק', 'פיתוח-אפליקציות/'],
+  ['סוכני AI', 'סוכני-ai/'],
+  ['סוכן AI', 'סוכני-ai/'],
+  ['בינה מלאכותית', 'סוכני-ai/'],
 ];
 function autolink(html, root, selfPath) {
   const used = new Set();
@@ -108,10 +115,16 @@ function write(path, html) {
 }
 
 const BUILT = [];
+/* Pages that carry a noindex directive. Listing a noindexed URL in the sitemap
+   tells Google two opposite things about the same page, so the sitemap is built
+   from BUILT minus this set. */
+const NOINDEX = new Set();
+
 function page(path, opts) {
   const depth = path ? path.split('/').length : 0;
   const root = '../'.repeat(depth);
   BUILT.push(path);
+  if (opts.robots && /noindex/i.test(opts.robots)) NOINDEX.add(path);
   const body = opts.body(root);
   // auto og:image from the page's hero image (shared previews per page)
   let ogImage = opts.ogImage;
@@ -1858,6 +1871,11 @@ for (const [path, label, match] of TAG_DEFS) {
   if (!items.length) continue;
   const archCrumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: label }];
   page(path, {
+    /* Archive pages exist to preserve the old WordPress URLs, not to rank:
+       each is a list of teasers that already appear on the articles themselves.
+       `follow` keeps their links working; `noindex` stops them competing with
+       the pages they point to. */
+    robots: 'noindex, follow',
     title: label + ' - מאמרים ומדריכים | BaliLead',
     desc: 'כל המאמרים והמדריכים של BaliLead בנושא ' + label + ': ידע מהשטח על לידים, המרות ושיווק דיגיטלי.',
     active: 'magazine',
@@ -1890,7 +1908,7 @@ writeFileSync(join(OUT, 'site.js'), siteJs());
 console.log('style.css + site.js written');
 writeFileSync(join(OUT, 'sitemap.xml'),
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-  BUILT.map(p => `  <url><loc>${canon(p)}</loc><lastmod>${LASTMOD[p] || today}</lastmod><changefreq>${p === '' || p === 'מחירון-לידים' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
+  BUILT.filter(p => !NOINDEX.has(p)).map(p => `  <url><loc>${canon(p)}</loc><lastmod>${LASTMOD[p] || today}</lastmod><changefreq>${p === '' || p === 'מחירון-לידים' ? 'weekly' : 'monthly'}</changefreq></url>`).join('\n') +
   `\n</urlset>`);
 writeFileSync(join(OUT, 'robots.txt'),
   `User-agent: *\nAllow: /\n\nSitemap: https://balilead.co.il/sitemap.xml\n`);
