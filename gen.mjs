@@ -339,19 +339,12 @@ page('', {
       </div>
     </div>
     <div class="cascade reveal" style="--d:.35s" aria-label="דוגמאות לתחומי לידים ומחירים">
-      <a class="lead-card" href="${root}קניית-לידים/לידים-לביטוח/">
+      <a class="lead-card" href="${root}קניית-לידים/לידים-להלוואות/">
         <span class="lc-tag">הכי מבוקש</span>
         <div class="lead-card-in">
-          <div class="lc-ic">${IC.shield}</div>
-          <div class="lc-body"><div class="lc-title">לידים לביטוח</div><div class="lc-meta">ממוקדים לפי סוג פוליסה</div></div>
+          <div class="lc-ic">${IC.bank}</div>
+          <div class="lc-body"><div class="lc-title">לידים להלוואות</div><div class="lc-meta">מי שצריך מימון עכשיו</div></div>
           <div class="lc-price">₪10 עד ₪100</div>
-        </div>
-      </a>
-      <a class="lead-card" href="${root}קניית-לידים/לידים-למשכנתאות/">
-        <div class="lead-card-in">
-          <div class="lc-ic">${IC.house}</div>
-          <div class="lc-body"><div class="lc-title">לידים למשכנתאות</div><div class="lc-meta">לקוחות בתהליך החלטה</div></div>
-          <div class="lc-price">₪50 עד ₪150</div>
         </div>
       </a>
       <a class="lead-card" href="${root}קניית-לידים/לידים-להחזרי-מס/">
@@ -359,6 +352,13 @@ page('', {
           <div class="lc-ic">${IC.shekel}</div>
           <div class="lc-body"><div class="lc-title">לידים להחזרי מס</div><div class="lc-meta">שכירים עם זכאות</div></div>
           <div class="lc-price">₪15 עד ₪45</div>
+        </div>
+      </a>
+      <a class="lead-card" href="${root}קניית-לידים/לידים-לביטוח/">
+        <div class="lead-card-in">
+          <div class="lc-ic">${IC.shield}</div>
+          <div class="lc-body"><div class="lc-title">לידים לביטוח</div><div class="lc-meta">ממוקדים לפי סוג פוליסה</div></div>
+          <div class="lc-price">₪10 עד ₪100</div>
         </div>
       </a>
     </div>
