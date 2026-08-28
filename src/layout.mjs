@@ -298,7 +298,8 @@ section{position:relative}
 .p-hero.has-media .crumbs a,.p-hero.has-media .crumbs span{text-shadow:0 1px 10px rgba(0,0,0,.7)}
 @media (prefers-reduced-motion:reduce){.p-hero-media img{animation:none}}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
-.crumbs a{color:var(--muted);transition:color .4s var(--ease)}
+.crumbs a{color:var(--muted);transition:color .4s var(--ease);
+  display:inline-block;padding-block:11px;margin-block:-11px}
 .crumbs a:hover{color:var(--gold2)}
 .crumbs svg{width:12px;height:12px;transform:scaleX(-1)}
 .p-hero h1{font-size:clamp(34px,4.4vw,56px);margin-bottom:16px;max-width:20ch}
@@ -582,7 +583,11 @@ section{position:relative}
 .contact-copy h2 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
 .contact-copy p{color:var(--muted);margin-bottom:22px}
 .contact-lines{display:flex;flex-direction:column;gap:12px;font-weight:600}
-.contact-lines a,.contact-lines span{display:inline-flex;align-items:center;gap:12px;color:var(--muted);transition:color .4s var(--ease)}
+/* The phone number and the email address are the two most important things a
+   visitor can tap on the whole page. At 27px they were under the size a thumb
+   reliably hits, which is a lead lost to a mis-tap. */
+.contact-lines a,.contact-lines span{display:inline-flex;align-items:center;gap:12px;
+  min-height:44px;color:var(--muted);transition:color .4s var(--ease)}
 .contact-lines a:hover{color:var(--gold2)}
 .contact-lines svg{width:18px;height:18px;color:var(--gold);flex:0 0 auto}
 .form{display:flex;flex-direction:column;gap:16px}

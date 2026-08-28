@@ -738,6 +738,34 @@ function proseHtml(blocks) {
   return out.join('');
 }
 
+/**
+ * Gives a generated heading the site's own accent.
+ *
+ * Every hand-written heading here carries gold on part of itself. A generated
+ * heading rendered plain reads as a different page's typography sitting inside
+ * this one — the exact seam this whole layer exists to remove.
+ *
+ * The accent falls on the last two words, or the last one when the heading is
+ * short, which is where the site puts it. Nothing is rewritten: the same words
+ * come out, wrapped.
+ */
+function accentHeading(heading) {
+  const text = String(heading || '').trim();
+  if (!text || /<span/.test(text)) return text;
+  const words = text.split(/\s+/);
+  if (words.length < 3) return text;
+
+  /* A possessive or preposition on its own carries no meaning to accent —
+     "המעטפת <שלנו>" highlights the wrong half, so the word before it joins. */
+  const WEAK = /^(שלנו|שלכם|שלך|שלו|שלה|שלהם|לכם|לנו|בו|בה|בהם|זה|זאת|הזה|הזאת)[?!.,]?$/;
+  let take = words.length >= 5 ? 2 : 1;
+  if (WEAK.test(words.at(-1)) && words.length > take + 1) take += 1;
+
+  const head = words.slice(0, -take).join(' ');
+  const tail = words.slice(-take).join(' ');
+  return `${head} <span class="gw">${tail}</span>`;
+}
+
 const SECTION_RENDERERS = {
   /* A run of text: still the right choice for anything that is explanation. */
   prose: sec => {
@@ -749,7 +777,7 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
     <div class="prose">${html}</div>
   </div>
 </section>`;
@@ -762,7 +790,7 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    ${sec.heading ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
     <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
   </div>
 </section>`;
@@ -788,7 +816,7 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
     <div class="gen-grid">
       <div class="prose">${html}</div>
       <figure class="gen-media reveal">
