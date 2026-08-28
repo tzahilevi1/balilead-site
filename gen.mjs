@@ -642,29 +642,101 @@ function extrasFor(path, o) {
   return PAGE_EXTRAS[path];
 }
 
-/* Renders nothing at all when there is nothing to add, so a page with an empty
-   extras entry builds byte for byte as it did before. */
-function extraBlocks(blocks) {
-  if (!Array.isArray(blocks) || !blocks.length) return '';
-  const html = [];
+/* ── how a generated section is presented ─────────────────────────────────────
+   A closed set. The design agent picks from these and nothing else, because
+   each is built from classes the site already styles — a component it invented
+   would land on the page unstyled. An empty plan renders nothing at all, so a
+   page without generated content builds byte for byte as it did before.
+   ------------------------------------------------------------------------- */
+
+/* gen.mjs does not import the layout escapers, and alt text is the only
+   attribute built from generated content, so one local escape covers it. */
+const attr = t => String(t == null ? '' : t)
+  .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+/** Paragraphs, headings and list items — the plain reading lane. */
+function proseHtml(blocks) {
+  const out = [];
   let list = [];
-  const flushList = () => {
-    if (list.length) { html.push('<ul>' + list.join('') + '</ul>'); list = []; }
-  };
-  for (const b of blocks) {
+  const flush = () => { if (list.length) { out.push('<ul>' + list.join('') + '</ul>'); list = []; } };
+  for (const b of blocks || []) {
     if (!Array.isArray(b) || typeof b[1] !== 'string') continue;
     if (b[0] === 'li') { list.push('<li>' + b[1] + '</li>'); continue; }
-    flushList();
-    if (['p', 'h2', 'h3'].includes(b[0])) html.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
+    flush();
+    if (['p', 'h2', 'h3'].includes(b[0])) out.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
   }
-  flushList();
-  if (!html.length) return '';
-  return `
+  flush();
+  return out.join('');
+}
+
+const SECTION_RENDERERS = {
+  /* A run of text: still the right choice for anything that is explanation. */
+  prose: sec => {
+    const html = proseHtml(sec.blocks);
+    return html ? `
+<section class="sec-tight">
+  <div class="container"><div class="prose">${html}</div></div>
+</section>` : '';
+  },
+
+  /* Short points that are read by scanning rather than by reading. */
+  checks: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 2) return '';
+    return `
 <section class="sec-tight">
   <div class="container">
-    <div class="prose">${html.join('')}</div>
+    ${sec.heading ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    <div class="checks">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
   </div>
 </section>`;
+  },
+
+  /* Questions people actually ask, in the accordion the site already uses. */
+  faq: sec => {
+    const items = (sec.items || []).filter(i => i && i.q && i.a).map(i => [i.q, i.a]);
+    return items.length ? faqBlock(items) : '';
+  },
+
+  /* One sentence that deserves to stop the eye. */
+  callout: sec => sec.text ? `
+<section class="sec-tight" style="padding-top:0">
+  <div class="container"><p class="price-note reveal">${IC.info} ${sec.text}</p></div>
+</section>` : '',
+
+  /* Text beside a picture, where the image carries part of the meaning. */
+  media: sec => {
+    const html = proseHtml(sec.blocks);
+    if (!html || !sec.image) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    <div class="deep-grid">
+      <div class="prose">${html}</div>
+      <div class="p-hero-media reveal">
+        <img src="${sec.root || ''}assets/${attr(sec.image)}" alt="${attr(sec.alt)}"
+             loading="lazy" width="640" height="420">
+      </div>
+    </div>
+  </div>
+</section>`;
+  },
+};
+
+/**
+ * Renders a layout plan, falling back to prose for anything unrecognised —
+ * showing a paragraph plainly beats dropping it without a trace.
+ */
+function extraBlocks(plan, root = '') {
+  /* A flat block array is the older shape; read it as one prose run. */
+  const sections = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
+    ? [{ type: 'prose', blocks: plan }]
+    : (Array.isArray(plan) ? plan : []);
+  if (!sections.length) return '';
+
+  return sections
+    .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
+    .filter(Boolean).join('');
 }
 
 function leadPage(path, o) {
@@ -675,7 +747,7 @@ function leadPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path), ...(o.faq ? [faqLd(o.faq)] : [])],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks)}
+${o.sections(root)}${extraBlocks(x.blocks, root)}
 ${clientsStrip(root)}
 ${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
@@ -1020,7 +1092,7 @@ function digitalPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path)],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks)}
+${o.sections(root)}${extraBlocks(x.blocks, root)}
 ${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
