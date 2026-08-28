@@ -451,7 +451,7 @@ ${clientsStrip(root)}
 <section class="sec" id="pricing" style="padding-top:0">
   <div class="container">
     <div class="contact-shell reveal" style="border-radius:var(--r-card)">
-      <div class="contact-in" style="grid-template-columns:1fr auto;align-items:center;padding:clamp(26px,4vw,44px)">
+      <div class="contact-in contact-in--split">
         <div>
           <h2 style="font-size:clamp(24px,2.8vw,36px);margin-bottom:10px">מחירון שקוף. <span class="gw" style="background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent">בלי הפתעות.</span></h2>
           <p style="color:var(--muted)">אנחנו מהיחידים בענף שמפרסמים מחירון מלא. כל 29 התחומים, מעודכן לשנת 2026.</p>

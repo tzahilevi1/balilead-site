@@ -38,6 +38,30 @@
     } catch(e){}
   };
 
+  /* The floating call-to-actions stay out of the way until someone has read
+     a little. Arriving to two buttons covering the hero reads as a pop-up;
+     offering them once the page has been engaged with reads as help. */
+  (function(){
+    var floats = document.querySelectorAll('.mcta, .wa-float, .chat-btn');
+    if(!floats.length) return;
+    var shown = false;
+    function check(){
+      var doc = document.documentElement;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      /* A quarter of the page, but never more than one screen of scrolling —
+         on a very long article a quarter would hide them far too long. */
+      var trigger = Math.min(max * 0.25, window.innerHeight);
+      var past = window.scrollY > trigger;
+      if(past === shown) return;
+      shown = past;
+      for(var i=0;i<floats.length;i++) floats[i].classList.toggle('is-visible', past);
+    }
+    for(var i=0;i<floats.length;i++) floats[i].classList.add('float-cta');
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check, { passive: true });
+    check();
+  })();
+
   var header = document.getElementById('header');
   var sentinel = document.querySelector('.hero-eyebrow') || document.querySelector('.crumbs') || document.body;
   var lastState = false;
