@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync, readFileSync } from 'fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { shell, pageHero, ctaSection, clientsStrip, sideMenu, siteCss, siteJs, SITE, IC } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
@@ -617,14 +617,65 @@ ${ctaSection(root)}`,
 /* =================================================================
    Lead vertical pages
 ================================================================= */
+
+/* =================================================================
+   אזור נתונים לעמודים המסחריים
+
+   העמודים האלה כתובים ביד: מבנה סקשנים, prose, הדגשות. חילוץ שלהם
+   לבלוקים היה הורס את העיצוב. במקום זה כל עמוד כזה מקבל אזור אחד
+   שמגיע מ-data/page-extras.json — הכותרת, התיאור, ופרקים שאפשר
+   להוסיף לסוף. החלק המעוצב נשאר בקוד ואיש אינו נוגע בו.
+
+   הקובץ נזרע מעצמו בבנייה הראשונה מהערכים שכבר קיימים כאן, כדי
+   שלא תהיה העתקה ידנית של עשרים כותרות ותיאורים.
+================================================================= */
+const EXTRAS_PATH = 'data/page-extras.json';
+const PAGE_EXTRAS = existsSync(EXTRAS_PATH)
+  ? JSON.parse(readFileSync(EXTRAS_PATH, 'utf8')) : {};
+let extrasDirty = false;
+
+function extrasFor(path, o) {
+  if (!PAGE_EXTRAS[path]) {
+    PAGE_EXTRAS[path] = { url: canon(path), title: o.title, desc: o.desc, blocks: [] };
+    extrasDirty = true;
+  }
+  return PAGE_EXTRAS[path];
+}
+
+/* Renders nothing at all when there is nothing to add, so a page with an empty
+   extras entry builds byte for byte as it did before. */
+function extraBlocks(blocks) {
+  if (!Array.isArray(blocks) || !blocks.length) return '';
+  const html = [];
+  let list = [];
+  const flushList = () => {
+    if (list.length) { html.push('<ul>' + list.join('') + '</ul>'); list = []; }
+  };
+  for (const b of blocks) {
+    if (!Array.isArray(b) || typeof b[1] !== 'string') continue;
+    if (b[0] === 'li') { list.push('<li>' + b[1] + '</li>'); continue; }
+    flushList();
+    if (['p', 'h2', 'h3'].includes(b[0])) html.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
+  }
+  flushList();
+  if (!html.length) return '';
+  return `
+<section class="sec-tight">
+  <div class="container">
+    <div class="prose">${html.join('')}</div>
+  </div>
+</section>`;
+}
+
 function leadPage(path, o) {
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'קניית-לידים/', t: 'קניית לידים' }, { t: o.crumb }];
+  const x = extrasFor(path, o);
   page(path, {
-    title: o.title, desc: o.desc, active: 'leads',
+    title: x.title || o.title, desc: x.desc || o.desc, active: 'leads',
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path), ...(o.faq ? [faqLd(o.faq)] : [])],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
-${o.sections(root)}
+${o.sections(root)}${extraBlocks(x.blocks)}
 ${clientsStrip(root)}
 ${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
@@ -963,12 +1014,13 @@ ${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמבי
 
 function digitalPage(path, o) {
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'שיווק-דיגיטלי/', t: 'שיווק דיגיטלי' }, { t: o.crumb }];
+  const x = extrasFor(path, o);
   page(path, {
-    title: o.title, desc: o.desc, active: 'digital',
+    title: x.title || o.title, desc: x.desc || o.desc, active: 'digital',
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path)],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, img: o.img, alt: o.alt })}
-${o.sections(root)}
+${o.sections(root)}${extraBlocks(x.blocks)}
 ${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
@@ -1950,5 +2002,9 @@ document.getElementById('l-home').href = base;
 document.getElementById('l-mag').href = base + encodeURIComponent('עדכונים-חמים') + '/';
 document.getElementById('l-price').href = base + encodeURIComponent('מחירון-לידים') + '/';
 </script></body></html>`);
+if (extrasDirty) {
+  writeFileSync(EXTRAS_PATH, JSON.stringify(PAGE_EXTRAS, null, 1) + String.fromCharCode(10));
+  console.log('data/page-extras.json seeded for', Object.keys(PAGE_EXTRAS).length, 'commercial pages');
+}
 console.log('sitemap.xml + robots.txt + 404.html written,', BUILT.length, 'pages');
 console.log('ALL PAGES BUILT');
