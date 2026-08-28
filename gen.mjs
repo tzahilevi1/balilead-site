@@ -339,6 +339,66 @@ const ART_META = {
   'insurance-leads-closing-rates': { cat: 'ביטוח', cover: 'cover-insurance.webp', teaser: 'הקפיצה הגדולה: מהליד הראשון ועד אחוזי סגירה גבוהים מאי פעם בענף הביטוח.', services: [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']] },
 };
 
+/**
+ * Pulls a questions-and-answers run out of an article body.
+ *
+ * The site has an accordion for questions — rounded cards with a plus that
+ * opens — and articles were not using it. Their questions came through as bold
+ * text inside a paragraph, which reads as a wall and looks nothing like the
+ * same questions on a service page.
+ *
+ * Two shapes are recognised, because the articles came from two places: a
+ * WordPress import that used H3 per question, and generated drafts that put the
+ * question in bold at the head of a paragraph.
+ *
+ * @returns {{blocks: Array, faq: Array<[string,string]>}} the body without the
+ *   questions, and the questions themselves.
+ */
+function splitFaq(blocks) {
+  const heads = /^(שאלות|שאלות נפוצות|שאלות ותשובות|שו"ת)/;
+  const at = blocks.findIndex(([t, txt]) =>
+    (t === 'h2' || t === 'h3') && heads.test(String(txt).replace(/<[^>]+>/g, '').trim()));
+  if (at === -1) return { blocks, faq: [] };
+
+  const faq = [];
+  let i = at + 1;
+  let pending = null;
+
+  for (; i < blocks.length; i++) {
+    const [tag, raw] = blocks[i];
+    const txt = String(raw);
+
+    /* A new H2 ends the questions; anything else at this level belongs to it. */
+    if (tag === 'h2') break;
+
+    const bold = /^<strong>(.+?)<\/strong>\s*(.*)$/s.exec(txt.trim());
+    if (tag === 'p' && bold && /\?\s*$/.test(bold[1].trim())) {
+      if (pending && pending.a) faq.push([pending.q, pending.a]);
+      pending = { q: bold[1].trim(), a: bold[2].trim() };
+      continue;
+    }
+    if (tag === 'h3' && /\?\s*$/.test(txt.replace(/<[^>]+>/g, '').trim())) {
+      if (pending && pending.a) faq.push([pending.q, pending.a]);
+      pending = { q: txt.replace(/<[^>]+>/g, '').trim(), a: '' };
+      continue;
+    }
+    if (pending && tag === 'p') {
+      pending.a = pending.a ? `${pending.a} ${txt}` : txt;
+      continue;
+    }
+    /* Something that is not part of a question-and-answer run: the run is over,
+       and whatever follows stays in the body. */
+    break;
+  }
+  if (pending && pending.a) faq.push([pending.q, pending.a]);
+
+  /* Fewer than three is not a section; leaving them in the prose is better than
+     an accordion with two rows in it. */
+  if (faq.length < 3) return { blocks, faq: [] };
+
+  return { blocks: [...blocks.slice(0, at), ...blocks.slice(i)], faq };
+}
+
 function cleanArticleBlocks(blocks) {
   let start = blocks.findIndex(b => b[0] === 'h2' || (b[0] === 'p' && b[1].length > 90));
   if (start < 0) start = 0;
@@ -766,6 +826,18 @@ function accentHeading(heading) {
   return `${head} <span class="gw">${tail}</span>`;
 }
 
+/**
+ * The heading of a generated section, with the line under it.
+ *
+ * Every hand-written section on this site introduces itself twice: a title with
+ * gold on part of it, and one sentence saying what the reader is about to see.
+ * Generated sections had only the title, and the missing sentence is most of
+ * why they read as thinner than the rest of the page.
+ */
+const secHead = (heading, sub) => (heading
+  ? `<div class="sec-head reveal"><h2>${accentHeading(heading)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>`
+  : '');
+
 const SECTION_RENDERERS = {
   /* A run of text: still the right choice for anything that is explanation. */
   prose: sec => {
@@ -777,7 +849,7 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
     <div class="prose">${html}</div>
   </div>
 </section>`;
@@ -790,8 +862,142 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
+    ${secHead(sec.heading, sec.sub)}
     <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * The card grid the site uses for "what we offer": an icon per card, the
+   * first one given more room and a lit background, and an optional figure in
+   * its corner. This is the shape the owner points at when asked what a good
+   * section looks like, so generated content should be able to reach it.
+   */
+  bento: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
+    if (items.length < 3) return '';
+    /* Two wide, then thirds — the proportions the hand-written grids use. */
+    const span = i => (items.length <= 4 ? 6 : i < 2 ? 6 : 3);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="bento">
+      ${items.map((it, i) => `
+      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${i ? ` style="--d:.${i * 6}s"` : ''}><div class="v-in">
+        <div class="v-top"><div class="v-ic">${IC.check}</div>${it.note ? `<span class="v-range">${it.note}</span>` : ''}</div>
+        <div><h3>${it.title}</h3><p class="v-desc">${it.text || ''}</p></div>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A compact list of points, each opening with the phrase it is about. Lighter
+   * than the card grid, and the right shape when the points are sentences
+   * rather than headings.
+   */
+  checklist: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    <div class="prose">
+      ${sec.heading ? `<h2>${accentHeading(sec.heading)}</h2>` : ''}
+      ${sec.sub ? `<p>${sec.sub}</p>` : ''}
+      <ul>
+        ${items.map(i => `<li><b>${i.title}${/[.!?:]$/.test(i.title) ? '' : '.'}</b> ${i.text || ''}</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Numbered steps. The site draws them as a row divided by hairlines with an
+   * ordinal above each, which makes a sequence read as a sequence rather than
+   * as four cards that happen to be adjacent.
+   */
+  process: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 5);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="process-grid">
+      ${items.map((it, i) => `
+      <div class="step reveal"${i ? ` style="--d:.${i}s"` : ''}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Figures, large, with a line saying what each one counts. Only ever built
+   * from numbers already in the draft — a statistics band is the one component
+   * where an invented number would look most like a fact.
+   */
+  stats: sec => {
+    const items = (sec.items || [])
+      .filter(i => i && i.title && /\d/.test(String(i.title)))
+      .slice(0, 4);
+    if (items.length < 2) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="stats-grid">
+      ${items.map(it => `
+      <div class="stat reveal"><div class="stat-num">${it.title}</div><div class="stat-label">${it.text || ''}</div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Cards that open with a one-word label above the title — the shape the site
+   * uses for reasons to choose it. The label is what separates this from the
+   * plain card grid: it gives each card a category before it is read.
+   */
+  reasons: sec => {
+    const items = (sec.items || []).filter(i => i && i.title && i.note).slice(0, 4);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="why-grid">
+      ${items.map((it, i) => `
+      <div class="why-card reveal"${i ? ` style="--d:.${i}s"` : ''}><div class="why-in">
+        <span class="why-num">${it.note}</span><h3>${it.title}</h3>
+        <p>${it.text || ''}</p>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A row of pills. For a list of names with nothing to say about each — the
+   * channels a service covers, the sectors it serves — where a card grid would
+   * give five words the weight of a paragraph.
+   */
+  pills: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 8);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="dig-row reveal" style="--d:.1s">
+      ${items.map(i => (i.href
+    ? `<a class="dig-pill" href="${sec.root || ''}${i.href}">${IC.check}${i.title}</a>`
+    : `<span class="dig-pill">${IC.check}${i.title}</span>`)).join('')}
+    </div>
   </div>
 </section>`;
   },
@@ -816,7 +1022,7 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${accentHeading(sec.heading)}</h2></div>` : ''}
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
     <div class="gen-grid">
       <div class="prose">${html}</div>
       <figure class="gen-media reveal">
@@ -1610,6 +1816,7 @@ ${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw
 const HOME_TITLE = 'לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads';
 for (const art of RAW_ARTICLES) {
   const m = getMeta(art.slug);
+  const artBody = splitFaq(art.blocks);
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: m.cat }];
   const mins = readMinutes(art.blocks);
   const artDate = LASTMOD[art.slug] || '2025-04-27';
@@ -1621,6 +1828,7 @@ for (const art of RAW_ARTICLES) {
     ogImage: GH + 'assets/' + m.cover,
     extraLd: [
       crumbsLd(crumbs),
+      ...(artBody.faq.length ? [faqLd(artBody.faq)] : []),
       {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: artTitle(art), description: (art.desc && art.desc.length > 20) ? art.desc : m.teaser,
@@ -1642,12 +1850,14 @@ ${pageHero(root, {
     })}
 
 <section class="sec-tight">
-  <div class="container">
+  <div class="container deep-grid">
     <div class="prose art-body reveal" style="--d:.08s">
-      ${autolink(cleanArticleBlocks(art.blocks), root, art.slug)}
+      ${autolink(cleanArticleBlocks(artBody.blocks), root, art.slug)}
     </div>
+    ${sideMenu(root, art.slug)}
   </div>
 </section>
+${artBody.faq.length ? faqBlock(artBody.faq) : ''}
 
 ${articlesStrip(root, LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat === m.cat).slice(0, 3).concat(LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat !== m.cat)).slice(0, 3), 'עוד מהמגזין')}
 ${relatedBlock(root, m.services.concat([['מחירון-לידים/', 'מחירון 2026']]))}

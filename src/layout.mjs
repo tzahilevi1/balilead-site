@@ -503,7 +503,7 @@ section{position:relative}
 .sm-stat .st-sub{font-size:13px;font-weight:700;color:#4a3210}
 .sm-actions{display:flex;gap:8px;margin-top:12px}
 .sm-actions button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:999px;
-  padding:9px 8px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;
+  min-height:44px;padding:9px 8px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;
   background:rgba(20,12,4,.18);border:1px solid rgba(20,12,4,.25);color:#1c1206;
   transition:background .35s var(--ease),transform .35s var(--ease)}
 .sm-actions button:hover{background:rgba(20,12,4,.28)}
@@ -528,7 +528,7 @@ section{position:relative}
   box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
 .sm-in h4{font-family:'Secular One';font-size:15.5px;color:var(--gold2);margin-bottom:10px;padding-bottom:9px;
   border-bottom:1px solid rgba(217,164,91,.22)}
-.sm-in a{display:block;padding:7px 10px;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--muted);
+.sm-in a{display:flex;align-items:center;min-height:44px;padding:7px 10px;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--muted);
   transition:color .35s var(--ease),background .35s var(--ease)}
 .sm-in a:hover{color:var(--gold2);background:rgba(217,164,91,.07)}
 .sm-in a.on{color:var(--gold2);background:rgba(217,164,91,.13)}
@@ -539,12 +539,20 @@ section{position:relative}
 .sm-cta .btn{width:100%;justify-content:center;padding:11px 18px;font-size:15px;margin-bottom:8px}
 @media (max-width:1024px){
   .deep-grid{grid-template-columns:1fr}
-  .side-menu{position:static}
+  .side-menu{position:static;max-height:none;overflow:visible}
+}
+
+/* On a phone the side menu stops being a sidebar and becomes more page to
+   scroll. Its two navigation cards list exactly what the footer lists a moment
+   later, so they go — the parts that are not repeated anywhere stay. */
+@media (max-width:760px){
+  .side-menu .sm-nav-dup{display:none}
 }
 
 /* Related */
 .related{display:flex;flex-wrap:wrap;gap:12px}
-.related a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:10px 20px;font-size:15px;font-weight:600;
+.related a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;
+  min-height:44px;padding:10px 20px;font-size:15px;font-weight:600;
   border:1px solid var(--line-strong);color:var(--muted);transition:color .4s var(--ease),border-color .4s var(--ease)}
 .related a:hover{color:var(--gold2);border-color:rgba(217,164,91,.4)}
 
@@ -947,11 +955,11 @@ export function sideMenu(root, activePath) {
           </button>
         </div>
       </div></div>
-      <div class="sm-card"><div class="sm-in">
+      <div class="sm-card sm-nav-dup"><div class="sm-in">
         <h4>לידים חמים</h4>
         ${NAV_LEADS.map(link).join('')}
       </div></div>
-      <div class="sm-card"><div class="sm-in">
+      <div class="sm-card sm-nav-dup"><div class="sm-in">
         <h4>שיווק דיגיטלי</h4>
         ${NAV_DIGITAL.map(link).join('')}
       </div></div>
