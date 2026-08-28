@@ -39,11 +39,25 @@ const LINK_MAP = [
   ['סוכן AI', 'סוכני-ai/'],
   ['בינה מלאכותית', 'סוכני-ai/'],
 ];
+/* Destinations that the crawl found starved of editorial links. They are tried
+   before the rest, because the six-link budget on a page was always being spent
+   on the lead pages — which already have more inbound links than they need —
+   before these were ever reached. */
+const LINK_PRIORITY = new Set([
+  'שיווק-דיגיטלי/',
+  'פיתוח-אפליקציות/',
+  'סוכני-ai/',
+]);
+
 function autolink(html, root, selfPath) {
   const used = new Set();
+  const order = [
+    ...LINK_MAP.filter(([, t]) => LINK_PRIORITY.has(t)),
+    ...LINK_MAP.filter(([, t]) => !LINK_PRIORITY.has(t)),
+  ];
   return html.replace(/<p>([\s\S]*?)<\/p>/g, (m, inner) => {
     if (inner.includes('<a ')) return m;
-    for (const [phrase, target] of LINK_MAP) {
+    for (const [phrase, target] of order) {
       if (used.has(target) || target === selfPath + '/' || used.size >= 6) continue;
       const i = inner.indexOf(phrase);
       if (i < 0) continue;
