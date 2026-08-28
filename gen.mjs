@@ -1021,9 +1021,14 @@ leadPage('מכירת-תיק-לרואי-חשבון', {
 /* =================================================================
    Digital hub + service pages
 ================================================================= */
-page('שיווק-דיגיטלי', {
+const digitalHubExtras = extrasFor('שיווק-דיגיטלי', {
   title: 'שיווק דיגיטלי - פתרונות מתקדמים להגדלת מכירות | BaliLead',
   desc: 'שירותי שיווק דיגיטלי מקצועיים לעסקים: קידום ממומן, SEO, רשתות חברתיות וכתבות ממירות. אסטרטגיה מותאמת ותוצאות מדידות.',
+});
+
+page('שיווק-דיגיטלי', {
+  title: digitalHubExtras.title,
+  desc: digitalHubExtras.desc,
   active: 'digital',
   extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'שיווק דיגיטלי' }])],
   body: root => `
@@ -1081,7 +1086,7 @@ ${pageHero(root, {
   </div>
 </section>
 
-${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמביא לקוחות?</span>' })}`,
+${extraBlocks(digitalHubExtras.blocks, root)}${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמביא לקוחות?</span>' })}`,
 });
 
 function digitalPage(path, o) {
