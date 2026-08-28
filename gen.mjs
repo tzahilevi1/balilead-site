@@ -673,10 +673,17 @@ const SECTION_RENDERERS = {
   /* A run of text: still the right choice for anything that is explanation. */
   prose: sec => {
     const html = proseHtml(sec.blocks);
-    return html ? `
+    if (!html) return '';
+    /* A heading is only added when the text does not already open with one —
+       otherwise the section would announce itself twice. */
+    const owns = /^<h[23]>/.test(html);
+    return `
 <section class="sec-tight">
-  <div class="container"><div class="prose">${html}</div></div>
-</section>` : '';
+  <div class="container">
+    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    <div class="prose">${html}</div>
+  </div>
+</section>`;
   },
 
   /* Short points that are read by scanning rather than by reading. */
@@ -708,9 +715,11 @@ const SECTION_RENDERERS = {
   media: sec => {
     const html = proseHtml(sec.blocks);
     if (!html || !sec.image) return '';
+    const owns = /^<h[23]>/.test(html);
     return `
 <section class="sec-tight">
   <div class="container">
+    ${sec.heading && !owns ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
     <div class="gen-grid">
       <div class="prose">${html}</div>
       <figure class="gen-media reveal">
@@ -743,11 +752,15 @@ function extraBlocks(plan, root = '') {
   for (const sec of raw) {
     const isProse = !sec || !sec.type || sec.type === 'prose';
     const last = sections[sections.length - 1];
-    if (isProse && last && last.type === 'prose') {
+    /* Only an untitled run is a continuation. A section that announces itself
+       is a section, and merging it would silently drop its heading. */
+    if (isProse && !sec?.heading && last && last.type === 'prose') {
       last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
       continue;
     }
-    sections.push(isProse ? { type: 'prose', blocks: (sec && sec.blocks) || [] } : sec);
+    sections.push(isProse
+      ? { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] }
+      : sec);
   }
 
   return sections
