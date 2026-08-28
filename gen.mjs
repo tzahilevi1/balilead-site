@@ -134,12 +134,105 @@ const BUILT = [];
    from BUILT minus this set. */
 const NOINDEX = new Set();
 
+/* =================================================================
+   אזור נתונים לעמודים המסחריים
+
+   העמודים האלה כתובים ביד: מבנה סקשנים, prose, הדגשות. חילוץ שלהם
+   לבלוקים היה הורס את העיצוב. במקום זה כל עמוד כזה מקבל אזור אחד
+   שמגיע מ-data/page-extras.json — הכותרת, התיאור, ופרקים שאפשר
+   להוסיף לסוף. החלק המעוצב נשאר בקוד ואיש אינו נוגע בו.
+
+   הקובץ נזרע מעצמו בבנייה הראשונה מהערכים שכבר קיימים כאן, כדי
+   שלא תהיה העתקה ידנית של עשרים כותרות ותיאורים.
+================================================================= */
+const EXTRAS_PATH = 'data/page-extras.json';
+const PAGE_EXTRAS = existsSync(EXTRAS_PATH)
+  ? JSON.parse(readFileSync(EXTRAS_PATH, 'utf8')) : {};
+let extrasDirty = false;
+
+function extrasFor(path, o) {
+  if (!PAGE_EXTRAS[path]) {
+    PAGE_EXTRAS[path] = { url: canon(path), title: o.title, desc: o.desc, blocks: [] };
+    extrasDirty = true;
+  }
+  return PAGE_EXTRAS[path];
+}
+
+/**
+ * Puts each planned section at the position it was planned for.
+ *
+ * Every page here is a string of `<section>` elements, whether it came from a
+ * template or was written by hand, so the positions are found by anchoring on
+ * the markup the page already contains: the hero, the questions, the closing
+ * form. That makes one mechanism cover all 140 pages — including the ones
+ * written before any of this existed, which is most of them.
+ *
+ * A slot with nothing planned inserts nothing at all, so a page with no extras
+ * is byte-for-byte what it was.
+ */
+function injectSlots(body, plan, root) {
+  if (!Array.isArray(plan) || !plan.length) return body;
+
+  /* Where each position lives in the markup, in the order the reader meets
+     them. Each anchor returns the index the HTML is spliced in at. */
+  const anchors = {
+    after_intro: html => {
+      const hero = html.indexOf('<section class="p-hero');
+      if (hero === -1) return -1;
+      const close = html.indexOf('</section>', hero);
+      return close === -1 ? -1 : close + '</section>'.length;
+    },
+    /* Halfway through, at a real section boundary rather than a character
+       count — landing inside a grid would break the page. */
+    mid: html => {
+      const bounds = [];
+      for (let i = html.indexOf('<section'); i !== -1; i = html.indexOf('<section', i + 1)) bounds.push(i);
+      const usable = bounds.filter(i => i > (anchors.after_intro(html) || 0));
+      return usable.length ? usable[Math.floor(usable.length / 2)] : -1;
+    },
+    before_faq: html => {
+      const faq = html.indexOf('class="faq reveal"');
+      if (faq === -1) return -1;
+      return html.lastIndexOf('<section', faq);
+    },
+    end: html => {
+      const cta = html.indexOf('<section class="sec contact"');
+      return cta === -1 ? html.length : cta;
+    },
+  };
+
+  /* Applied from the bottom up, so an earlier insertion cannot shift the index
+     a later one was measured against. */
+  const order = ['after_intro', 'mid', 'before_faq', 'end'];
+  const placed = order
+    .map(slot => ({ slot, html: extraBlocks(plan, root, slot) }))
+    .filter(x => x.html)
+    .map(x => ({ ...x, at: anchors[x.slot](body) }))
+    .filter(x => x.at >= 0)
+    .sort((a, b) => b.at - a.at);
+
+  let out = body;
+  for (const { html, at } of placed) out = out.slice(0, at) + html + out.slice(at);
+
+  /* A section whose position could not be found still belongs on the page;
+     dropping it silently would leave data that renders nowhere. */
+  const missing = order
+    .filter(slot => extraBlocks(plan, root, slot) && !placed.some(p => p.slot === slot))
+    .map(slot => extraBlocks(plan, root, slot));
+  if (missing.length) {
+    const cta = out.indexOf('<section class="sec contact"');
+    const at = cta === -1 ? out.length : cta;
+    out = out.slice(0, at) + missing.join('') + out.slice(at);
+  }
+  return out;
+}
+
 function page(path, opts) {
   const depth = path ? path.split('/').length : 0;
   const root = '../'.repeat(depth);
   BUILT.push(path);
   if (opts.robots && /noindex/i.test(opts.robots)) NOINDEX.add(path);
-  const body = opts.body(root);
+  const body = injectSlots(opts.body(root), extrasFor(path, opts).blocks, root);
   // auto og:image from the page's hero image (shared previews per page)
   let ogImage = opts.ogImage;
   if (!ogImage) {
@@ -618,30 +711,6 @@ ${ctaSection(root)}`,
    Lead vertical pages
 ================================================================= */
 
-/* =================================================================
-   אזור נתונים לעמודים המסחריים
-
-   העמודים האלה כתובים ביד: מבנה סקשנים, prose, הדגשות. חילוץ שלהם
-   לבלוקים היה הורס את העיצוב. במקום זה כל עמוד כזה מקבל אזור אחד
-   שמגיע מ-data/page-extras.json — הכותרת, התיאור, ופרקים שאפשר
-   להוסיף לסוף. החלק המעוצב נשאר בקוד ואיש אינו נוגע בו.
-
-   הקובץ נזרע מעצמו בבנייה הראשונה מהערכים שכבר קיימים כאן, כדי
-   שלא תהיה העתקה ידנית של עשרים כותרות ותיאורים.
-================================================================= */
-const EXTRAS_PATH = 'data/page-extras.json';
-const PAGE_EXTRAS = existsSync(EXTRAS_PATH)
-  ? JSON.parse(readFileSync(EXTRAS_PATH, 'utf8')) : {};
-let extrasDirty = false;
-
-function extrasFor(path, o) {
-  if (!PAGE_EXTRAS[path]) {
-    PAGE_EXTRAS[path] = { url: canon(path), title: o.title, desc: o.desc, blocks: [] };
-    extrasDirty = true;
-  }
-  return PAGE_EXTRAS[path];
-}
-
 /* ── how a generated section is presented ─────────────────────────────────────
    A closed set. The design agent picks from these and nothing else, because
    each is built from classes the site already styles — a component it invented
@@ -736,7 +805,15 @@ const SECTION_RENDERERS = {
  * Renders a layout plan, falling back to prose for anything unrecognised —
  * showing a paragraph plainly beats dropping it without a trace.
  */
-function extraBlocks(plan, root = '') {
+/**
+ * Renders the sections of a plan that belong at one named position.
+ *
+ * A page is a sequence the reader moves through, and everything generated used
+ * to land at the end — after the closing call to action, where nobody reaches
+ * it. Sections now carry the slot they were placed in, and each slot in the
+ * template renders only its own.
+ */
+function extraBlocks(plan, root = '', slot = 'end') {
   /* A flat block array is the older shape; read it as one prose run. */
   const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
     ? [{ type: 'prose', blocks: plan }]
@@ -748,8 +825,13 @@ function extraBlocks(plan, root = '') {
      row put up to eight hundred pixels of emptiness between short paragraphs —
      the page read as fragments floating apart instead of as continuous text.
      A section break should mean a change of form, not a change of paragraph. */
+  /* Anything without a slot was placed before slots existed; it stays at the
+     end, which is where it has been rendering all along. */
+  const mine = raw.filter(sec => (sec?.slot || 'end') === slot);
+  if (!mine.length) return '';
+
   const sections = [];
-  for (const sec of raw) {
+  for (const sec of mine) {
     const isProse = !sec || !sec.type || sec.type === 'prose';
     const last = sections[sections.length - 1];
     /* Only an untitled run is a continuation. A section that announces itself
@@ -776,7 +858,7 @@ function leadPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path), ...(o.faq ? [faqLd(o.faq)] : [])],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks, root)}
+${o.sections(root)}
 ${clientsStrip(root)}
 ${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
@@ -1115,7 +1197,7 @@ ${pageHero(root, {
   </div>
 </section>
 
-${extraBlocks(digitalHubExtras.blocks, root)}${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמביא לקוחות?</span>' })}`,
+${ctaSection(root, { title: 'מוכנים לשיווק <span class="gw">שמביא לקוחות?</span>' })}`,
 });
 
 function digitalPage(path, o) {
@@ -1126,7 +1208,7 @@ function digitalPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path)],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks, root)}
+${o.sections(root)}
 ${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
