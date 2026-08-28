@@ -444,6 +444,14 @@ section{position:relative}
 
 /* Deep content + sidebar */
 .deep-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:clamp(28px,4vw,56px);align-items:start}
+/* Imagery inside generated content. Its own frame rather than the hero's
+   backdrop, which is absolutely positioned and would cover the section. */
+.gen-media{margin:0;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  background:var(--bg2)}
+.gen-media img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.gen-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(24px,3.5vw,48px);align-items:center}
+@media (max-width:860px){.gen-grid{grid-template-columns:1fr}}
 .side-menu{position:sticky;top:100px;display:flex;flex-direction:column;gap:16px;
   max-height:calc(100vh - 120px);overflow-y:auto;padding:2px 2px 8px;
   scrollbar-width:thin;scrollbar-color:rgba(217,164,91,.35) transparent}

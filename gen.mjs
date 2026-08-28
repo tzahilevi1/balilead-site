@@ -687,7 +687,7 @@ const SECTION_RENDERERS = {
 <section class="sec-tight">
   <div class="container">
     ${sec.heading ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
-    <div class="checks">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
+    <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
   </div>
 </section>`;
   },
@@ -711,12 +711,12 @@ const SECTION_RENDERERS = {
     return `
 <section class="sec-tight">
   <div class="container">
-    <div class="deep-grid">
+    <div class="gen-grid">
       <div class="prose">${html}</div>
-      <div class="p-hero-media reveal">
+      <figure class="gen-media reveal">
         <img src="${sec.root || ''}assets/${attr(sec.image)}" alt="${attr(sec.alt)}"
              loading="lazy" width="640" height="420">
-      </div>
+      </figure>
     </div>
   </div>
 </section>`;
