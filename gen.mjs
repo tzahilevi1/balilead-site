@@ -729,10 +729,26 @@ const SECTION_RENDERERS = {
  */
 function extraBlocks(plan, root = '') {
   /* A flat block array is the older shape; read it as one prose run. */
-  const sections = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
+  const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
     ? [{ type: 'prose', blocks: plan }]
     : (Array.isArray(plan) ? plan : []);
-  if (!sections.length) return '';
+  if (!raw.length) return '';
+
+  /* Consecutive prose becomes one section rather than several.
+     Each section carries its own vertical padding, so six prose sections in a
+     row put up to eight hundred pixels of emptiness between short paragraphs —
+     the page read as fragments floating apart instead of as continuous text.
+     A section break should mean a change of form, not a change of paragraph. */
+  const sections = [];
+  for (const sec of raw) {
+    const isProse = !sec || !sec.type || sec.type === 'prose';
+    const last = sections[sections.length - 1];
+    if (isProse && last && last.type === 'prose') {
+      last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
+      continue;
+    }
+    sections.push(isProse ? { type: 'prose', blocks: (sec && sec.blocks) || [] } : sec);
+  }
 
   return sections
     .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
