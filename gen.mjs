@@ -134,12 +134,105 @@ const BUILT = [];
    from BUILT minus this set. */
 const NOINDEX = new Set();
 
+/* =================================================================
+   אזור נתונים לעמודים המסחריים
+
+   העמודים האלה כתובים ביד: מבנה סקשנים, prose, הדגשות. חילוץ שלהם
+   לבלוקים היה הורס את העיצוב. במקום זה כל עמוד כזה מקבל אזור אחד
+   שמגיע מ-data/page-extras.json — הכותרת, התיאור, ופרקים שאפשר
+   להוסיף לסוף. החלק המעוצב נשאר בקוד ואיש אינו נוגע בו.
+
+   הקובץ נזרע מעצמו בבנייה הראשונה מהערכים שכבר קיימים כאן, כדי
+   שלא תהיה העתקה ידנית של עשרים כותרות ותיאורים.
+================================================================= */
+const EXTRAS_PATH = 'data/page-extras.json';
+const PAGE_EXTRAS = existsSync(EXTRAS_PATH)
+  ? JSON.parse(readFileSync(EXTRAS_PATH, 'utf8')) : {};
+let extrasDirty = false;
+
+function extrasFor(path, o) {
+  if (!PAGE_EXTRAS[path]) {
+    PAGE_EXTRAS[path] = { url: canon(path), title: o.title, desc: o.desc, blocks: [] };
+    extrasDirty = true;
+  }
+  return PAGE_EXTRAS[path];
+}
+
+/**
+ * Puts each planned section at the position it was planned for.
+ *
+ * Every page here is a string of `<section>` elements, whether it came from a
+ * template or was written by hand, so the positions are found by anchoring on
+ * the markup the page already contains: the hero, the questions, the closing
+ * form. That makes one mechanism cover all 140 pages — including the ones
+ * written before any of this existed, which is most of them.
+ *
+ * A slot with nothing planned inserts nothing at all, so a page with no extras
+ * is byte-for-byte what it was.
+ */
+function injectSlots(body, plan, root) {
+  if (!Array.isArray(plan) || !plan.length) return body;
+
+  /* Where each position lives in the markup, in the order the reader meets
+     them. Each anchor returns the index the HTML is spliced in at. */
+  const anchors = {
+    after_intro: html => {
+      const hero = html.indexOf('<section class="p-hero');
+      if (hero === -1) return -1;
+      const close = html.indexOf('</section>', hero);
+      return close === -1 ? -1 : close + '</section>'.length;
+    },
+    /* Halfway through, at a real section boundary rather than a character
+       count — landing inside a grid would break the page. */
+    mid: html => {
+      const bounds = [];
+      for (let i = html.indexOf('<section'); i !== -1; i = html.indexOf('<section', i + 1)) bounds.push(i);
+      const usable = bounds.filter(i => i > (anchors.after_intro(html) || 0));
+      return usable.length ? usable[Math.floor(usable.length / 2)] : -1;
+    },
+    before_faq: html => {
+      const faq = html.indexOf('class="faq reveal"');
+      if (faq === -1) return -1;
+      return html.lastIndexOf('<section', faq);
+    },
+    end: html => {
+      const cta = html.indexOf('<section class="sec contact"');
+      return cta === -1 ? html.length : cta;
+    },
+  };
+
+  /* Applied from the bottom up, so an earlier insertion cannot shift the index
+     a later one was measured against. */
+  const order = ['after_intro', 'mid', 'before_faq', 'end'];
+  const placed = order
+    .map(slot => ({ slot, html: extraBlocks(plan, root, slot) }))
+    .filter(x => x.html)
+    .map(x => ({ ...x, at: anchors[x.slot](body) }))
+    .filter(x => x.at >= 0)
+    .sort((a, b) => b.at - a.at);
+
+  let out = body;
+  for (const { html, at } of placed) out = out.slice(0, at) + html + out.slice(at);
+
+  /* A section whose position could not be found still belongs on the page;
+     dropping it silently would leave data that renders nowhere. */
+  const missing = order
+    .filter(slot => extraBlocks(plan, root, slot) && !placed.some(p => p.slot === slot))
+    .map(slot => extraBlocks(plan, root, slot));
+  if (missing.length) {
+    const cta = out.indexOf('<section class="sec contact"');
+    const at = cta === -1 ? out.length : cta;
+    out = out.slice(0, at) + missing.join('') + out.slice(at);
+  }
+  return out;
+}
+
 function page(path, opts) {
   const depth = path ? path.split('/').length : 0;
   const root = '../'.repeat(depth);
   BUILT.push(path);
   if (opts.robots && /noindex/i.test(opts.robots)) NOINDEX.add(path);
-  const body = opts.body(root);
+  const body = injectSlots(opts.body(root), extrasFor(path, opts).blocks, root);
   // auto og:image from the page's hero image (shared previews per page)
   let ogImage = opts.ogImage;
   if (!ogImage) {
@@ -246,6 +339,66 @@ const ART_META = {
   'insurance-leads-closing-rates': { cat: 'ביטוח', cover: 'cover-insurance.webp', teaser: 'הקפיצה הגדולה: מהליד הראשון ועד אחוזי סגירה גבוהים מאי פעם בענף הביטוח.', services: [['קניית-לידים/לידים-לביטוח/', 'לידים לביטוח']] },
 };
 
+/**
+ * Pulls a questions-and-answers run out of an article body.
+ *
+ * The site has an accordion for questions — rounded cards with a plus that
+ * opens — and articles were not using it. Their questions came through as bold
+ * text inside a paragraph, which reads as a wall and looks nothing like the
+ * same questions on a service page.
+ *
+ * Two shapes are recognised, because the articles came from two places: a
+ * WordPress import that used H3 per question, and generated drafts that put the
+ * question in bold at the head of a paragraph.
+ *
+ * @returns {{blocks: Array, faq: Array<[string,string]>}} the body without the
+ *   questions, and the questions themselves.
+ */
+function splitFaq(blocks) {
+  const heads = /^(שאלות|שאלות נפוצות|שאלות ותשובות|שו"ת)/;
+  const at = blocks.findIndex(([t, txt]) =>
+    (t === 'h2' || t === 'h3') && heads.test(String(txt).replace(/<[^>]+>/g, '').trim()));
+  if (at === -1) return { blocks, faq: [] };
+
+  const faq = [];
+  let i = at + 1;
+  let pending = null;
+
+  for (; i < blocks.length; i++) {
+    const [tag, raw] = blocks[i];
+    const txt = String(raw);
+
+    /* A new H2 ends the questions; anything else at this level belongs to it. */
+    if (tag === 'h2') break;
+
+    const bold = /^<strong>(.+?)<\/strong>\s*(.*)$/s.exec(txt.trim());
+    if (tag === 'p' && bold && /\?\s*$/.test(bold[1].trim())) {
+      if (pending && pending.a) faq.push([pending.q, pending.a]);
+      pending = { q: bold[1].trim(), a: bold[2].trim() };
+      continue;
+    }
+    if (tag === 'h3' && /\?\s*$/.test(txt.replace(/<[^>]+>/g, '').trim())) {
+      if (pending && pending.a) faq.push([pending.q, pending.a]);
+      pending = { q: txt.replace(/<[^>]+>/g, '').trim(), a: '' };
+      continue;
+    }
+    if (pending && tag === 'p') {
+      pending.a = pending.a ? `${pending.a} ${txt}` : txt;
+      continue;
+    }
+    /* Something that is not part of a question-and-answer run: the run is over,
+       and whatever follows stays in the body. */
+    break;
+  }
+  if (pending && pending.a) faq.push([pending.q, pending.a]);
+
+  /* Fewer than three is not a section; leaving them in the prose is better than
+     an accordion with two rows in it. */
+  if (faq.length < 3) return { blocks, faq: [] };
+
+  return { blocks: [...blocks.slice(0, at), ...blocks.slice(i)], faq };
+}
+
 function cleanArticleBlocks(blocks) {
   let start = blocks.findIndex(b => b[0] === 'h2' || (b[0] === 'p' && b[1].length > 90));
   if (start < 0) start = 0;
@@ -339,19 +492,12 @@ page('', {
       </div>
     </div>
     <div class="cascade reveal" style="--d:.35s" aria-label="דוגמאות לתחומי לידים ומחירים">
-      <a class="lead-card" href="${root}קניית-לידים/לידים-לביטוח/">
+      <a class="lead-card" href="${root}קניית-לידים/לידים-להלוואות/">
         <span class="lc-tag">הכי מבוקש</span>
         <div class="lead-card-in">
-          <div class="lc-ic">${IC.shield}</div>
-          <div class="lc-body"><div class="lc-title">לידים לביטוח</div><div class="lc-meta">ממוקדים לפי סוג פוליסה</div></div>
+          <div class="lc-ic">${IC.bank}</div>
+          <div class="lc-body"><div class="lc-title">לידים להלוואות</div><div class="lc-meta">מי שצריך מימון עכשיו</div></div>
           <div class="lc-price">₪10 עד ₪100</div>
-        </div>
-      </a>
-      <a class="lead-card" href="${root}קניית-לידים/לידים-למשכנתאות/">
-        <div class="lead-card-in">
-          <div class="lc-ic">${IC.house}</div>
-          <div class="lc-body"><div class="lc-title">לידים למשכנתאות</div><div class="lc-meta">לקוחות בתהליך החלטה</div></div>
-          <div class="lc-price">₪50 עד ₪150</div>
         </div>
       </a>
       <a class="lead-card" href="${root}קניית-לידים/לידים-להחזרי-מס/">
@@ -359,6 +505,13 @@ page('', {
           <div class="lc-ic">${IC.shekel}</div>
           <div class="lc-body"><div class="lc-title">לידים להחזרי מס</div><div class="lc-meta">שכירים עם זכאות</div></div>
           <div class="lc-price">₪15 עד ₪45</div>
+        </div>
+      </a>
+      <a class="lead-card" href="${root}קניית-לידים/לידים-לביטוח/">
+        <div class="lead-card-in">
+          <div class="lc-ic">${IC.shield}</div>
+          <div class="lc-body"><div class="lc-title">לידים לביטוח</div><div class="lc-meta">ממוקדים לפי סוג פוליסה</div></div>
+          <div class="lc-price">₪10 עד ₪100</div>
         </div>
       </a>
     </div>
@@ -451,7 +604,7 @@ ${clientsStrip(root)}
 <section class="sec" id="pricing" style="padding-top:0">
   <div class="container">
     <div class="contact-shell reveal" style="border-radius:var(--r-card)">
-      <div class="contact-in" style="grid-template-columns:1fr auto;align-items:center;padding:clamp(26px,4vw,44px)">
+      <div class="contact-in contact-in--split">
         <div>
           <h2 style="font-size:clamp(24px,2.8vw,36px);margin-bottom:10px">מחירון שקוף. <span class="gw" style="background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent">בלי הפתעות.</span></h2>
           <p style="color:var(--muted)">אנחנו מהיחידים בענף שמפרסמים מחירון מלא. כל 29 התחומים, מעודכן לשנת 2026.</p>
@@ -618,53 +771,317 @@ ${ctaSection(root)}`,
    Lead vertical pages
 ================================================================= */
 
-/* =================================================================
-   אזור נתונים לעמודים המסחריים
+/* ── how a generated section is presented ─────────────────────────────────────
+   A closed set. The design agent picks from these and nothing else, because
+   each is built from classes the site already styles — a component it invented
+   would land on the page unstyled. An empty plan renders nothing at all, so a
+   page without generated content builds byte for byte as it did before.
+   ------------------------------------------------------------------------- */
 
-   העמודים האלה כתובים ביד: מבנה סקשנים, prose, הדגשות. חילוץ שלהם
-   לבלוקים היה הורס את העיצוב. במקום זה כל עמוד כזה מקבל אזור אחד
-   שמגיע מ-data/page-extras.json — הכותרת, התיאור, ופרקים שאפשר
-   להוסיף לסוף. החלק המעוצב נשאר בקוד ואיש אינו נוגע בו.
+/* gen.mjs does not import the layout escapers, and alt text is the only
+   attribute built from generated content, so one local escape covers it. */
+const attr = t => String(t == null ? '' : t)
+  .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-   הקובץ נזרע מעצמו בבנייה הראשונה מהערכים שכבר קיימים כאן, כדי
-   שלא תהיה העתקה ידנית של עשרים כותרות ותיאורים.
-================================================================= */
-const EXTRAS_PATH = 'data/page-extras.json';
-const PAGE_EXTRAS = existsSync(EXTRAS_PATH)
-  ? JSON.parse(readFileSync(EXTRAS_PATH, 'utf8')) : {};
-let extrasDirty = false;
-
-function extrasFor(path, o) {
-  if (!PAGE_EXTRAS[path]) {
-    PAGE_EXTRAS[path] = { url: canon(path), title: o.title, desc: o.desc, blocks: [] };
-    extrasDirty = true;
-  }
-  return PAGE_EXTRAS[path];
-}
-
-/* Renders nothing at all when there is nothing to add, so a page with an empty
-   extras entry builds byte for byte as it did before. */
-function extraBlocks(blocks) {
-  if (!Array.isArray(blocks) || !blocks.length) return '';
-  const html = [];
+/** Paragraphs, headings and list items — the plain reading lane. */
+function proseHtml(blocks) {
+  const out = [];
   let list = [];
-  const flushList = () => {
-    if (list.length) { html.push('<ul>' + list.join('') + '</ul>'); list = []; }
-  };
-  for (const b of blocks) {
+  const flush = () => { if (list.length) { out.push('<ul>' + list.join('') + '</ul>'); list = []; } };
+  for (const b of blocks || []) {
     if (!Array.isArray(b) || typeof b[1] !== 'string') continue;
     if (b[0] === 'li') { list.push('<li>' + b[1] + '</li>'); continue; }
-    flushList();
-    if (['p', 'h2', 'h3'].includes(b[0])) html.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
+    flush();
+    if (['p', 'h2', 'h3'].includes(b[0])) out.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
   }
-  flushList();
-  if (!html.length) return '';
-  return `
+  flush();
+  return out.join('');
+}
+
+/**
+ * Gives a generated heading the site's own accent.
+ *
+ * Every hand-written heading here carries gold on part of itself. A generated
+ * heading rendered plain reads as a different page's typography sitting inside
+ * this one — the exact seam this whole layer exists to remove.
+ *
+ * The accent falls on the last two words, or the last one when the heading is
+ * short, which is where the site puts it. Nothing is rewritten: the same words
+ * come out, wrapped.
+ */
+function accentHeading(heading) {
+  const text = String(heading || '').trim();
+  if (!text || /<span/.test(text)) return text;
+  const words = text.split(/\s+/);
+  if (words.length < 3) return text;
+
+  /* A possessive or preposition on its own carries no meaning to accent —
+     "המעטפת <שלנו>" highlights the wrong half, so the word before it joins. */
+  const WEAK = /^(שלנו|שלכם|שלך|שלו|שלה|שלהם|לכם|לנו|בו|בה|בהם|זה|זאת|הזה|הזאת)[?!.,]?$/;
+  let take = words.length >= 5 ? 2 : 1;
+  if (WEAK.test(words.at(-1)) && words.length > take + 1) take += 1;
+
+  const head = words.slice(0, -take).join(' ');
+  const tail = words.slice(-take).join(' ');
+  return `${head} <span class="gw">${tail}</span>`;
+}
+
+/**
+ * The heading of a generated section, with the line under it.
+ *
+ * Every hand-written section on this site introduces itself twice: a title with
+ * gold on part of it, and one sentence saying what the reader is about to see.
+ * Generated sections had only the title, and the missing sentence is most of
+ * why they read as thinner than the rest of the page.
+ */
+const secHead = (heading, sub) => (heading
+  ? `<div class="sec-head reveal"><h2>${accentHeading(heading)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>`
+  : '');
+
+const SECTION_RENDERERS = {
+  /* A run of text: still the right choice for anything that is explanation. */
+  prose: sec => {
+    const html = proseHtml(sec.blocks);
+    if (!html) return '';
+    /* A heading is only added when the text does not already open with one —
+       otherwise the section would announce itself twice. */
+    const owns = /^<h[23]>/.test(html);
+    return `
 <section class="sec-tight">
   <div class="container">
-    <div class="prose">${html.join('')}</div>
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
+    <div class="prose">${html}</div>
   </div>
 </section>`;
+  },
+
+  /* Short points that are read by scanning rather than by reading. */
+  checks: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 2) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * The card grid the site uses for "what we offer": an icon per card, the
+   * first one given more room and a lit background, and an optional figure in
+   * its corner. This is the shape the owner points at when asked what a good
+   * section looks like, so generated content should be able to reach it.
+   */
+  bento: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
+    if (items.length < 3) return '';
+    /* Two wide, then thirds — the proportions the hand-written grids use. */
+    const span = i => (items.length <= 4 ? 6 : i < 2 ? 6 : 3);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="bento">
+      ${items.map((it, i) => `
+      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${i ? ` style="--d:.${i * 6}s"` : ''}><div class="v-in">
+        <div class="v-top"><div class="v-ic">${IC.check}</div>${it.note ? `<span class="v-range">${it.note}</span>` : ''}</div>
+        <div><h3>${it.title}</h3><p class="v-desc">${it.text || ''}</p></div>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A compact list of points, each opening with the phrase it is about. Lighter
+   * than the card grid, and the right shape when the points are sentences
+   * rather than headings.
+   */
+  checklist: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    <div class="prose">
+      ${sec.heading ? `<h2>${accentHeading(sec.heading)}</h2>` : ''}
+      ${sec.sub ? `<p>${sec.sub}</p>` : ''}
+      <ul>
+        ${items.map(i => `<li><b>${i.title}${/[.!?:]$/.test(i.title) ? '' : '.'}</b> ${i.text || ''}</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Numbered steps. The site draws them as a row divided by hairlines with an
+   * ordinal above each, which makes a sequence read as a sequence rather than
+   * as four cards that happen to be adjacent.
+   */
+  process: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 5);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="process-grid">
+      ${items.map((it, i) => `
+      <div class="step reveal"${i ? ` style="--d:.${i}s"` : ''}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Figures, large, with a line saying what each one counts. Only ever built
+   * from numbers already in the draft — a statistics band is the one component
+   * where an invented number would look most like a fact.
+   */
+  stats: sec => {
+    const items = (sec.items || [])
+      .filter(i => i && i.title && /\d/.test(String(i.title)))
+      .slice(0, 4);
+    if (items.length < 2) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="stats-grid">
+      ${items.map(it => `
+      <div class="stat reveal"><div class="stat-num">${it.title}</div><div class="stat-label">${it.text || ''}</div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Cards that open with a one-word label above the title — the shape the site
+   * uses for reasons to choose it. The label is what separates this from the
+   * plain card grid: it gives each card a category before it is read.
+   */
+  reasons: sec => {
+    const items = (sec.items || []).filter(i => i && i.title && i.note).slice(0, 4);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="why-grid">
+      ${items.map((it, i) => `
+      <div class="why-card reveal"${i ? ` style="--d:.${i}s"` : ''}><div class="why-in">
+        <span class="why-num">${it.note}</span><h3>${it.title}</h3>
+        <p>${it.text || ''}</p>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A row of pills. For a list of names with nothing to say about each — the
+   * channels a service covers, the sectors it serves — where a card grid would
+   * give five words the weight of a paragraph.
+   */
+  pills: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 8);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="dig-row reveal" style="--d:.1s">
+      ${items.map(i => (i.href
+    ? `<a class="dig-pill" href="${sec.root || ''}${i.href}">${IC.check}${i.title}</a>`
+    : `<span class="dig-pill">${IC.check}${i.title}</span>`)).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /* Questions people actually ask, in the accordion the site already uses. */
+  faq: sec => {
+    const items = (sec.items || []).filter(i => i && i.q && i.a).map(i => [i.q, i.a]);
+    return items.length ? faqBlock(items) : '';
+  },
+
+  /* One sentence that deserves to stop the eye. */
+  callout: sec => sec.text ? `
+<section class="sec-tight" style="padding-top:0">
+  <div class="container"><p class="price-note reveal">${IC.info} ${sec.text}</p></div>
+</section>` : '',
+
+  /* Text beside a picture, where the image carries part of the meaning. */
+  media: sec => {
+    const html = proseHtml(sec.blocks);
+    if (!html || !sec.image) return '';
+    const owns = /^<h[23]>/.test(html);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
+    <div class="gen-grid">
+      <div class="prose">${html}</div>
+      <figure class="gen-media reveal">
+        <img src="${sec.root || ''}assets/${attr(sec.image)}" alt="${attr(sec.alt)}"
+             loading="lazy" width="640" height="420">
+      </figure>
+    </div>
+  </div>
+</section>`;
+  },
+};
+
+/**
+ * Renders a layout plan, falling back to prose for anything unrecognised —
+ * showing a paragraph plainly beats dropping it without a trace.
+ */
+/**
+ * Renders the sections of a plan that belong at one named position.
+ *
+ * A page is a sequence the reader moves through, and everything generated used
+ * to land at the end — after the closing call to action, where nobody reaches
+ * it. Sections now carry the slot they were placed in, and each slot in the
+ * template renders only its own.
+ */
+function extraBlocks(plan, root = '', slot = 'end') {
+  /* A flat block array is the older shape; read it as one prose run. */
+  const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
+    ? [{ type: 'prose', blocks: plan }]
+    : (Array.isArray(plan) ? plan : []);
+  if (!raw.length) return '';
+
+  /* Consecutive prose becomes one section rather than several.
+     Each section carries its own vertical padding, so six prose sections in a
+     row put up to eight hundred pixels of emptiness between short paragraphs —
+     the page read as fragments floating apart instead of as continuous text.
+     A section break should mean a change of form, not a change of paragraph. */
+  /* Anything without a slot was placed before slots existed; it stays at the
+     end, which is where it has been rendering all along. */
+  const mine = raw.filter(sec => (sec?.slot || 'end') === slot);
+  if (!mine.length) return '';
+
+  const sections = [];
+  for (const sec of mine) {
+    const isProse = !sec || !sec.type || sec.type === 'prose';
+    const last = sections[sections.length - 1];
+    /* Only an untitled run is a continuation. A section that announces itself
+       is a section, and merging it would silently drop its heading. */
+    if (isProse && !sec?.heading && last && last.type === 'prose') {
+      last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
+      continue;
+    }
+    sections.push(isProse
+      ? { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] }
+      : sec);
+  }
+
+  return sections
+    .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
+    .filter(Boolean).join('');
 }
 
 function leadPage(path, o) {
@@ -675,7 +1092,7 @@ function leadPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path), ...(o.faq ? [faqLd(o.faq)] : [])],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, price: o.price, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks)}
+${o.sections(root)}
 ${clientsStrip(root)}
 ${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
@@ -949,9 +1366,14 @@ leadPage('מכירת-תיק-לרואי-חשבון', {
 /* =================================================================
    Digital hub + service pages
 ================================================================= */
-page('שיווק-דיגיטלי', {
+const digitalHubExtras = extrasFor('שיווק-דיגיטלי', {
   title: 'שיווק דיגיטלי - פתרונות מתקדמים להגדלת מכירות | BaliLead',
   desc: 'שירותי שיווק דיגיטלי מקצועיים לעסקים: קידום ממומן, SEO, רשתות חברתיות וכתבות ממירות. אסטרטגיה מותאמת ותוצאות מדידות.',
+});
+
+page('שיווק-דיגיטלי', {
+  title: digitalHubExtras.title,
+  desc: digitalHubExtras.desc,
   active: 'digital',
   extraLd: [crumbsLd([{ href: '', t: 'ראשי' }, { t: 'שיווק דיגיטלי' }])],
   body: root => `
@@ -1020,7 +1442,7 @@ function digitalPage(path, o) {
     extraLd: [crumbsLd(crumbs), serviceLd(o.crumb, o.desc, path)],
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, img: o.img, alt: o.alt })}
-${o.sections(root)}${extraBlocks(x.blocks)}
+${o.sections(root)}
 ${deepSection(root, path)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
@@ -1394,6 +1816,7 @@ ${ctaSection(root, { title: 'מעדיפים שנעשה את זה <span class="gw
 const HOME_TITLE = 'לידים רותחים שיעזרו לעסק שלך לצמוח - BaliLeads';
 for (const art of RAW_ARTICLES) {
   const m = getMeta(art.slug);
+  const artBody = splitFaq(art.blocks);
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'עדכונים-חמים/', t: 'המגזין' }, { t: m.cat }];
   const mins = readMinutes(art.blocks);
   const artDate = LASTMOD[art.slug] || '2025-04-27';
@@ -1405,6 +1828,7 @@ for (const art of RAW_ARTICLES) {
     ogImage: GH + 'assets/' + m.cover,
     extraLd: [
       crumbsLd(crumbs),
+      ...(artBody.faq.length ? [faqLd(artBody.faq)] : []),
       {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: artTitle(art), description: (art.desc && art.desc.length > 20) ? art.desc : m.teaser,
@@ -1426,12 +1850,14 @@ ${pageHero(root, {
     })}
 
 <section class="sec-tight">
-  <div class="container">
+  <div class="container deep-grid">
     <div class="prose art-body reveal" style="--d:.08s">
-      ${autolink(cleanArticleBlocks(art.blocks), root, art.slug)}
+      ${autolink(cleanArticleBlocks(artBody.blocks), root, art.slug)}
     </div>
+    ${sideMenu(root, art.slug)}
   </div>
 </section>
+${artBody.faq.length ? faqBlock(artBody.faq) : ''}
 
 ${articlesStrip(root, LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat === m.cat).slice(0, 3).concat(LISTED_ARTICLES.map(a => a.slug).filter(s => s !== art.slug && getMeta(s).cat !== m.cat)).slice(0, 3), 'עוד מהמגזין')}
 ${relatedBlock(root, m.services.concat([['מחירון-לידים/', 'מחירון 2026']]))}

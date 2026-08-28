@@ -173,16 +173,55 @@ section{position:relative}
 .burger span:nth-child(2){top:25px}
 .burger.open span:nth-child(1){transform:translateY(4px) rotate(45deg)}
 .burger.open span:nth-child(2){transform:translateY(-4px) rotate(-45deg)}
-.mnav{position:fixed;inset:0;z-index:55;background:rgba(8,6,4,.9);
-  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
-  display:flex;flex-direction:column;padding:110px clamp(28px,8vw,60px) 40px;overflow-y:auto;
-  opacity:0;visibility:hidden;transition:opacity .6s var(--ease),visibility .6s}
+/* The drawer. Sized so the whole menu is reachable: at 28 links the old
+   display type — 34px headings with wide padding — pushed half of them below
+   the fold on a phone, and the last items were simply unreachable. */
+.mnav{position:fixed;inset:0;z-index:55;
+  background:linear-gradient(180deg,rgba(16,11,6,.97),rgba(8,6,4,.99));
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  display:flex;flex-direction:column;
+  padding:96px clamp(22px,6vw,44px) max(28px,env(safe-area-inset-bottom));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility .45s}
 .mnav.open{opacity:1;visibility:visible}
-.mnav .m-main{font-family:'Secular One';font-size:clamp(24px,6vw,34px);color:var(--ink);padding:10px 0;display:block}
-.mnav .m-main:hover{color:var(--gold2)}
-.mnav .m-group{font-size:12.5px;font-weight:800;letter-spacing:.16em;color:var(--gold);margin:18px 0 4px}
-.mnav .m-sub{display:block;font-size:17px;font-weight:600;color:var(--muted);padding:7px 0}
-.mnav .m-sub:hover{color:var(--ink)}
+
+.mnav .m-main{font-family:'Secular One';font-size:20px;line-height:1.25;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 2px;border-bottom:1px solid rgba(244,238,227,.07)}
+/* Physical borders on purpose: with logical ones the mark came out pointing
+   downwards, which reads as "this expands" on links that simply navigate. */
+.mnav .m-main::after{content:"";width:7px;height:7px;border-left:1.5px solid var(--gold);
+  border-top:1.5px solid var(--gold);transform:rotate(-45deg);opacity:.5;flex:0 0 auto}
+.mnav .m-main:hover,.mnav .m-main:active{color:var(--gold2)}
+
+/* Section label: a gold rule rather than a wide gap, so the grouping reads
+   without spending a fifth of the screen on emptiness. */
+.mnav .m-group{display:flex;align-items:center;gap:10px;
+  font-size:11.5px;font-weight:800;letter-spacing:.18em;color:var(--gold);
+  margin:22px 0 8px;text-transform:uppercase}
+.mnav .m-group::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,rgba(217,164,91,.4),transparent)}
+
+.mnav .m-sub{display:block;font-size:15.5px;font-weight:600;color:var(--muted);
+  padding:9px 12px;border-radius:10px;transition:background .2s var(--ease),color .2s var(--ease)}
+.mnav .m-sub:hover,.mnav .m-sub:active{color:var(--ink);background:rgba(217,164,91,.08)}
+
+/* Sub-links sit two to a row: the labels are short, and a single column of
+   fourteen of them is a scroll nobody finishes. */
+.mnav > div:not(.m-group):not(.mnav-contact){display:grid;grid-template-columns:1fr 1fr;gap:2px 10px}
+@media (max-width:360px){.mnav > div:not(.m-group):not(.mnav-contact){grid-template-columns:1fr}}
+
+/* The reason the menu is open at all, kept where a thumb rests. */
+.mnav-contact{margin-top:auto;padding-top:22px;display:grid;gap:10px}
+.mnav-contact .mn-cta{display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:15px;border-radius:14px;font-weight:800;font-size:15.5px;
+  background:var(--grad-gold);color:#1c1206;
+  box-shadow:0 14px 30px -14px rgba(217,164,91,.55)}
+.mnav-contact .mn-alt{display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:14px;border-radius:14px;font-weight:700;font-size:15px;
+  border:1px solid var(--line-strong);color:var(--ink)}
+.mnav-contact .mn-mail{text-align:center;font-size:12.5px;color:var(--dim);padding-top:2px}
+.mnav-contact svg{width:18px;height:18px;flex:0 0 auto}
 .mnav > *{opacity:0;transform:translateY(22px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
 .mnav.open > *{opacity:1;transform:translateY(0)}
 .mnav.open > *:nth-child(1){transition-delay:.06s}.mnav.open > *:nth-child(2){transition-delay:.1s}
@@ -190,7 +229,6 @@ section{position:relative}
 .mnav.open > *:nth-child(5){transition-delay:.22s}.mnav.open > *:nth-child(6){transition-delay:.26s}
 .mnav.open > *:nth-child(7){transition-delay:.3s}.mnav.open > *:nth-child(8){transition-delay:.34s}
 .mnav.open > *:nth-child(n+9){transition-delay:.38s}
-.mnav .mnav-contact{margin-top:26px;font-size:16px;color:var(--muted)}
 
 /* ===== Home hero + video ===== */
 .hero{min-height:100dvh;display:flex;align-items:center;padding:clamp(120px,15vh,170px) 0 70px;overflow:hidden}
@@ -260,7 +298,8 @@ section{position:relative}
 .p-hero.has-media .crumbs a,.p-hero.has-media .crumbs span{text-shadow:0 1px 10px rgba(0,0,0,.7)}
 @media (prefers-reduced-motion:reduce){.p-hero-media img{animation:none}}
 .crumbs{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--dim);margin-bottom:18px;flex-wrap:wrap}
-.crumbs a{color:var(--muted);transition:color .4s var(--ease)}
+.crumbs a{color:var(--muted);transition:color .4s var(--ease);
+  display:inline-block;padding-block:11px;margin-block:-11px}
 .crumbs a:hover{color:var(--gold2)}
 .crumbs svg{width:12px;height:12px;transform:scaleX(-1)}
 .p-hero h1{font-size:clamp(34px,4.4vw,56px);margin-bottom:16px;max-width:20ch}
@@ -444,6 +483,14 @@ section{position:relative}
 
 /* Deep content + sidebar */
 .deep-grid{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:clamp(28px,4vw,56px);align-items:start}
+/* Imagery inside generated content. Its own frame rather than the hero's
+   backdrop, which is absolutely positioned and would cover the section. */
+.gen-media{margin:0;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  background:var(--bg2)}
+.gen-media img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.gen-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(24px,3.5vw,48px);align-items:center}
+@media (max-width:860px){.gen-grid{grid-template-columns:1fr}}
 .side-menu{position:sticky;top:100px;display:flex;flex-direction:column;gap:16px;
   max-height:calc(100vh - 120px);overflow-y:auto;padding:2px 2px 8px;
   scrollbar-width:thin;scrollbar-color:rgba(217,164,91,.35) transparent}
@@ -456,7 +503,7 @@ section{position:relative}
 .sm-stat .st-sub{font-size:13px;font-weight:700;color:#4a3210}
 .sm-actions{display:flex;gap:8px;margin-top:12px}
 .sm-actions button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:999px;
-  padding:9px 8px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;
+  min-height:44px;padding:9px 8px;font-family:'Assistant';font-size:13.5px;font-weight:800;cursor:pointer;
   background:rgba(20,12,4,.18);border:1px solid rgba(20,12,4,.25);color:#1c1206;
   transition:background .35s var(--ease),transform .35s var(--ease)}
 .sm-actions button:hover{background:rgba(20,12,4,.28)}
@@ -481,7 +528,7 @@ section{position:relative}
   box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
 .sm-in h4{font-family:'Secular One';font-size:15.5px;color:var(--gold2);margin-bottom:10px;padding-bottom:9px;
   border-bottom:1px solid rgba(217,164,91,.22)}
-.sm-in a{display:block;padding:7px 10px;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--muted);
+.sm-in a{display:flex;align-items:center;min-height:44px;padding:7px 10px;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--muted);
   transition:color .35s var(--ease),background .35s var(--ease)}
 .sm-in a:hover{color:var(--gold2);background:rgba(217,164,91,.07)}
 .sm-in a.on{color:var(--gold2);background:rgba(217,164,91,.13)}
@@ -492,12 +539,20 @@ section{position:relative}
 .sm-cta .btn{width:100%;justify-content:center;padding:11px 18px;font-size:15px;margin-bottom:8px}
 @media (max-width:1024px){
   .deep-grid{grid-template-columns:1fr}
-  .side-menu{position:static}
+  .side-menu{position:static;max-height:none;overflow:visible}
+}
+
+/* On a phone the side menu stops being a sidebar and becomes more page to
+   scroll. Its two navigation cards list exactly what the footer lists a moment
+   later, so they go — the parts that are not repeated anywhere stay. */
+@media (max-width:760px){
+  .side-menu .sm-nav-dup{display:none}
 }
 
 /* Related */
 .related{display:flex;flex-wrap:wrap;gap:12px}
-.related a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:10px 20px;font-size:15px;font-weight:600;
+.related a{display:inline-flex;align-items:center;gap:9px;border-radius:999px;
+  min-height:44px;padding:10px 20px;font-size:15px;font-weight:600;
   border:1px solid var(--line-strong);color:var(--muted);transition:color .4s var(--ease),border-color .4s var(--ease)}
 .related a:hover{color:var(--gold2);border-color:rgba(217,164,91,.4)}
 
@@ -524,11 +579,23 @@ section{position:relative}
   background:linear-gradient(160deg,rgba(24,16,8,.96) 0%,rgba(10,8,5,.98) 100%);
   box-shadow:inset 0 1px 1px rgba(255,255,255,.1);
   display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,5vw,70px);align-items:center}
+/* This variant used to be an inline style, which no media query can reach —
+   the band stayed two columns on a phone and squeezed its text into 87px. */
+.contact-in--split{grid-template-columns:1fr auto;align-items:center;
+  padding:clamp(26px,4vw,44px)}
+@media (max-width:860px){
+  .contact-in--split{grid-template-columns:1fr;text-align:center;justify-items:center}
+}
+
 .contact-copy h2{font-size:clamp(28px,3.4vw,42px);margin-bottom:14px}
 .contact-copy h2 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
 .contact-copy p{color:var(--muted);margin-bottom:22px}
 .contact-lines{display:flex;flex-direction:column;gap:12px;font-weight:600}
-.contact-lines a,.contact-lines span{display:inline-flex;align-items:center;gap:12px;color:var(--muted);transition:color .4s var(--ease)}
+/* The phone number and the email address are the two most important things a
+   visitor can tap on the whole page. At 27px they were under the size a thumb
+   reliably hits, which is a lead lost to a mis-tap. */
+.contact-lines a,.contact-lines span{display:inline-flex;align-items:center;gap:12px;
+  min-height:44px;color:var(--muted);transition:color .4s var(--ease)}
 .contact-lines a:hover{color:var(--gold2)}
 .contact-lines svg{width:18px;height:18px;color:var(--gold);flex:0 0 auto}
 .form{display:flex;flex-direction:column;gap:16px}
@@ -566,7 +633,40 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 .f-social a:hover{color:var(--gold2);border-color:rgba(217,164,91,.45);transform:translateY(-2px)}
 .f-social svg{width:17px;height:17px}
 
+/* ── the footer on a phone ────────────────────────────────────────────────────
+   Four stacked lists at desktop spacing turned the footer into a screen and a
+   half of scrolling. Two columns, a tighter rhythm, and the contact details
+   given the weight they deserve — they are the reason anyone reads this far. */
+@media (max-width:860px){
+  footer{padding:44px 0 calc(96px + env(safe-area-inset-bottom))}
+
+  .f-brand{grid-column:1/-1;padding-bottom:22px;margin-bottom:6px;
+    border-bottom:1px solid rgba(244,238,227,.08)}
+  .f-brand img{width:118px;height:auto}
+  .f-brand p{font-size:14px;line-height:1.75;max-width:44ch;margin-top:12px;color:var(--dim)}
+
+  .f-grid{gap:26px 18px;margin-bottom:26px}
+  .f-col h4{font-size:13px;margin-bottom:9px;letter-spacing:.1em;text-transform:uppercase}
+  .f-col a{font-size:14px;padding:6px 0;line-height:1.35}
+
+  /* The contact column reads as a card, not as one more list of links. */
+  .f-col:last-child{grid-column:1/-1;padding:16px 16px 14px;border-radius:16px;
+    background:linear-gradient(160deg,rgba(217,164,91,.09),rgba(244,238,227,.02));
+    border:1px solid rgba(217,164,91,.18)}
+  .f-col:last-child a{font-size:15px;font-weight:600;color:var(--ink);padding:7px 0}
+
+  .f-bottom{flex-direction:column-reverse;align-items:center;gap:16px;text-align:center;
+    padding-top:20px}
+  .f-social a{width:42px;height:42px}
+}
+
 /* WhatsApp float */
+/* Hidden until scrolled to, and never in the way of a tap while hidden. */
+.float-cta{opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(16px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease),visibility .35s}
+.float-cta.is-visible{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+
 .wa-float{position:fixed;bottom:24px;inset-inline-start:24px;z-index:50;width:56px;height:56px;border-radius:999px;
   background:#1ebe5d;display:flex;align-items:center;justify-content:center;color:#fff;
   box-shadow:0 16px 40px -12px rgba(30,190,93,.6);transition:transform .5s var(--ease)}
@@ -608,7 +708,9 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
   .step{border-inline-start:none}
   .price-groups,.art-grid,.contact-cards{grid-template-columns:1fr}
   .why-grid{grid-template-columns:1fr}
-  .f-grid{grid-template-columns:1fr}
+  /* Two columns of short service names still read comfortably at 360px and
+     halve the scrolling; the brand block and the contact card span both. */
+  .f-grid{grid-template-columns:1fr 1fr}
   .hero-ctas .btn{width:100%;justify-content:center}
 }
 /* About (home) */
@@ -766,7 +868,11 @@ export function header(root, active = '') {
   <div>${NAV_LEADS.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
   <div class="m-group">שיווק דיגיטלי</div>
   <div>${NAV_DIGITAL.map(([h, t]) => `<a class="m-sub" href="${root}${h}">${t}</a>`).join('')}</div>
-  <div class="mnav-contact">${SITE.phone} · ${SITE.email}</div>
+  <div class="mnav-contact">
+    <a class="mn-cta" href="${SITE.phoneHref}">${IC.phone}${SITE.phone}</a>
+    <a class="mn-alt" href="${SITE.waText}" target="_blank" rel="noopener">${IC.wa}דברו איתנו בוואטסאפ</a>
+    <div class="mn-mail">${SITE.email}</div>
+  </div>
 </nav>`;
 }
 
@@ -849,11 +955,11 @@ export function sideMenu(root, activePath) {
           </button>
         </div>
       </div></div>
-      <div class="sm-card"><div class="sm-in">
+      <div class="sm-card sm-nav-dup"><div class="sm-in">
         <h4>לידים חמים</h4>
         ${NAV_LEADS.map(link).join('')}
       </div></div>
-      <div class="sm-card"><div class="sm-in">
+      <div class="sm-card sm-nav-dup"><div class="sm-in">
         <h4>שיווק דיגיטלי</h4>
         ${NAV_DIGITAL.map(link).join('')}
       </div></div>
@@ -991,6 +1097,30 @@ export const js = `
       fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
     } catch(e){}
   };
+
+  /* The floating call-to-actions stay out of the way until someone has read
+     a little. Arriving to two buttons covering the hero reads as a pop-up;
+     offering them once the page has been engaged with reads as help. */
+  (function(){
+    var floats = document.querySelectorAll('.mcta, .wa-float, .chat-btn');
+    if(!floats.length) return;
+    var shown = false;
+    function check(){
+      var doc = document.documentElement;
+      var max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      /* A quarter of the page, but never more than one screen of scrolling —
+         on a very long article a quarter would hide them far too long. */
+      var trigger = Math.min(max * 0.25, window.innerHeight);
+      var past = window.scrollY > trigger;
+      if(past === shown) return;
+      shown = past;
+      for(var i=0;i<floats.length;i++) floats[i].classList.toggle('is-visible', past);
+    }
+    for(var i=0;i<floats.length;i++) floats[i].classList.add('float-cta');
+    window.addEventListener('scroll', check, { passive: true });
+    window.addEventListener('resize', check, { passive: true });
+    check();
+  })();
 
   var header = document.getElementById('header');
   var sentinel = document.querySelector('.hero-eyebrow') || document.querySelector('.crumbs') || document.body;
@@ -1132,7 +1262,26 @@ function analyticsHtml() {
   return out;
 }
 
-export const siteCss = () => css + widgetsCss;
+/**
+ * The stylesheet, with every responsive block moved to the end.
+ *
+ * Media queries carry no extra specificity, so a base rule written after one
+ * simply wins. `.about-grid` was declared single-column under 860px and
+ * two-column afterwards, and on a phone the two-column rule took it — the copy
+ * was squeezed into 180 pixels of a 390 pixel screen. Ordering the file so the
+ * responsive rules come last removes that whole class of silent failure
+ * instead of patching each rule as it is noticed.
+ */
+export const siteCss = () => {
+  const all = css + widgetsCss;
+  const blocks = [];
+  /* Matches a top-level @media block and its closing brace at column zero. */
+  const base = all.replace(/@media[^{]*\{[\s\S]*?\n\}/g, m => {
+    blocks.push(m);
+    return '';
+  });
+  return base.replace(/\n{3,}/g, '\n\n') + '\n\n' + blocks.join('\n');
+};
 export const siteJs = () => js + '\n' + widgetsJs;
 
 export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage, robots }) {

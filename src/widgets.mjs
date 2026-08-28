@@ -12,7 +12,7 @@ export const widgetsCss = `
 .skip-link:focus{top:14px}
 
 /* ===== Accessibility widget ===== */
-.acc-btn{position:fixed;top:44%;inset-inline-end:0;z-index:90;width:46px;height:46px;
+.acc-btn{position:fixed;top:44%;inset-inline-end:0;z-index:50;width:46px;height:46px;
   border-radius:12px 0 0 12px;border:none;cursor:pointer;background:#1a56db;color:#fff;
   display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
 .acc-btn svg{width:26px;height:26px}
@@ -85,8 +85,12 @@ html.acc-noanim .hero-media video{display:none}
 .ctyping span:nth-child(2){animation-delay:.18s}.ctyping span:nth-child(3){animation-delay:.36s}
 @keyframes cty{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
 @media (max-width:860px){
-  .chat-btn{bottom:150px}
-  .chat-box{bottom:150px;inset-inline-start:16px}
+  /* Above the fixed call/WhatsApp bar and nothing more. At 150px it floated in
+     the middle of the screen and covered what the reader was reading. */
+  .chat-btn{bottom:calc(84px + env(safe-area-inset-bottom));inset-inline-start:16px;
+    width:50px;height:50px}
+  .chat-btn svg{width:22px;height:22px}
+  .chat-box{bottom:calc(144px + env(safe-area-inset-bottom));inset-inline-start:16px}
 }
 
 /* ===== Popups ===== */
