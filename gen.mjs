@@ -232,7 +232,19 @@ function page(path, opts) {
   const root = '../'.repeat(depth);
   BUILT.push(path);
   if (opts.robots && /noindex/i.test(opts.robots)) NOINDEX.add(path);
-  const body = injectSlots(opts.body(root), extrasFor(path, opts).blocks, root);
+
+  const extras = extrasFor(path, opts);
+  const body = injectSlots(opts.body(root), extras.blocks, root);
+
+  /* The title and description come from the data file when it holds them.
+     
+     Service pages already worked this way; article pages did not, and their
+     entry in page-extras.json was a field nothing read. Two dozen rewritten
+     titles were written there and changed nothing on the site — caught only
+     because the publisher refuses an edit the build ignores. One rule for every
+     page is the fix: whatever is in the data file is what the page shows. */
+  if (extras.title) opts = { ...opts, title: extras.title };
+  if (extras.desc) opts = { ...opts, desc: extras.desc };
   // auto og:image from the page's hero image (shared previews per page)
   let ogImage = opts.ogImage;
   if (!ogImage) {
