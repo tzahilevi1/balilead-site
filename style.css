@@ -377,6 +377,11 @@ section{position:relative}
 .clients{padding:34px 0 30px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
   background:rgba(244,238,227,.015)}
 .clients-label{text-align:center;font-size:13px;font-weight:700;letter-spacing:.18em;color:var(--dim);margin-bottom:22px}
+/* The section that follows the logo strip zeroes its own top padding, so the
+   content lands directly on the strip's bottom border. The gap is added here,
+   on the adjacent sibling, so only this pairing gets it — the strip elsewhere
+   on the site keeps the rhythm it already has. */
+.clients + .sec, .clients + .sec-tight{margin-top:clamp(30px,4.5vw,58px)}
 .marquee{direction:ltr;overflow:hidden;position:relative;
   mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
