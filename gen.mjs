@@ -55,15 +55,52 @@ const LINK_MAP = [
   ['סוכני AI', 'סוכני-ai/'],
   ['סוכן AI', 'סוכני-ai/'],
   ['בינה מלאכותית', 'סוכני-ai/'],
+  /* Four paid-media services and two others were reachable only from the menu,
+     which search engines weight far below a link inside a sentence. Every
+     phrase here was counted first in body paragraphs that carry no link yet —
+     an entry for wording nobody writes adds nothing and hides the ones that
+     would have worked. */
+  ['טאבולה', 'פרסום-בטאבולה-ואאוטבריין/'],
+  ['אאוטבריין', 'פרסום-בטאבולה-ואאוטבריין/'],
+  ['פתיחת עוסק מורשה', 'פתיחת-עוסק-מורשה/'],
+  ['משרד פרסום דיגיטלי', 'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/'],
+  ['פרסום בפייסבוק', 'קידום-בפייסבוק/'],
+  ['פרסום באינסטגרם', 'פרסום-באינסטגרם/'],
+  ['המרת לידים', 'מדריך-המרת-לידים-ללקוחות/'],
+  ['איכות לידים', 'בדיקת-איכות-לידים/'],
+  ['בדיקת איכות', 'בדיקת-איכות-לידים/'],
+  ['לינקדאין', 'קידום-בלינקדאין/'],
+  ['העברת תיקים', 'מכירת-תיק-לרואי-חשבון/'],
+  ['עוסק מורשה', 'פתיחת-עוסק-מורשה/'],
+  ['סוכנות פרסום', 'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/'],
+  ['מעטפת שיווק', 'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/'],
 ];
 /* Destinations that the crawl found starved of editorial links. They are tried
    before the rest, because the six-link budget on a page was always being spent
    on the lead pages — which already have more inbound links than they need —
    before these were ever reached. */
+/**
+ * Destinations that get first pick of a page's six auto-links.
+ *
+ * The linker stops after six per page, so ordering decides who is reached and
+ * who is not. Set from a count of links that actually appear inside paragraphs
+ * — menu links do not count, because search engines discount them and they are
+ * identical on all 148 pages.
+ *
+ * The list is the pages measured at zero, plus the two commercial pages sitting
+ * at one or two. Everything else earns links already; adding it here would only
+ * take the budget from a page that has none.
+ */
 const LINK_PRIORITY = new Set([
-  'שיווק-דיגיטלי/',
+  'פתיחת-עוסק-מורשה/',
+  'מכירת-תיק-לרואי-חשבון/',
+  'קידום-בלינקדאין/',
   'פיתוח-אפליקציות/',
-  'סוכני-ai/',
+  'בדיקת-איכות-לידים/',
+  'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/',
+  'קידום-אתרים-seo/',
+  'קידום-בפייסבוק/',
+  'בניית-אתרים/',
 ]);
 
 function autolink(html, root, selfPath) {
