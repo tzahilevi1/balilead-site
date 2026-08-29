@@ -158,6 +158,311 @@ function extrasFor(path, o) {
   return PAGE_EXTRAS[path];
 }
 
+const attr = t => String(t == null ? '' : t)
+  .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+/** Paragraphs, headings and list items — the plain reading lane. */
+function proseHtml(blocks) {
+  const out = [];
+  let list = [];
+  const flush = () => { if (list.length) { out.push('<ul>' + list.join('') + '</ul>'); list = []; } };
+  for (const b of blocks || []) {
+    if (!Array.isArray(b) || typeof b[1] !== 'string') continue;
+    if (b[0] === 'li') { list.push('<li>' + b[1] + '</li>'); continue; }
+    flush();
+    if (['p', 'h2', 'h3'].includes(b[0])) out.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
+  }
+  flush();
+  return out.join('');
+}
+
+/**
+ * Gives a generated heading the site's own accent.
+ *
+ * Every hand-written heading here carries gold on part of itself. A generated
+ * heading rendered plain reads as a different page's typography sitting inside
+ * this one — the exact seam this whole layer exists to remove.
+ *
+ * The accent falls on the last two words, or the last one when the heading is
+ * short, which is where the site puts it. Nothing is rewritten: the same words
+ * come out, wrapped.
+ */
+function accentHeading(heading) {
+  const text = String(heading || '').trim();
+  if (!text || /<span/.test(text)) return text;
+  const words = text.split(/\s+/);
+  if (words.length < 3) return text;
+
+  /* A possessive or preposition on its own carries no meaning to accent —
+     "המעטפת <שלנו>" highlights the wrong half, so the word before it joins. */
+  const WEAK = /^(שלנו|שלכם|שלך|שלו|שלה|שלהם|לכם|לנו|בו|בה|בהם|זה|זאת|הזה|הזאת)[?!.,]?$/;
+  let take = words.length >= 5 ? 2 : 1;
+  if (WEAK.test(words.at(-1)) && words.length > take + 1) take += 1;
+
+  const head = words.slice(0, -take).join(' ');
+  const tail = words.slice(-take).join(' ');
+  return `${head} <span class="gw">${tail}</span>`;
+}
+
+/**
+ * The heading of a generated section, with the line under it.
+ *
+ * Every hand-written section on this site introduces itself twice: a title with
+ * gold on part of it, and one sentence saying what the reader is about to see.
+ * Generated sections had only the title, and the missing sentence is most of
+ * why they read as thinner than the rest of the page.
+ */
+const secHead = (heading, sub) => (heading
+  ? `<div class="sec-head reveal"><h2>${accentHeading(heading)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>`
+  : '');
+
+const SECTION_RENDERERS = {
+  /* A run of text: still the right choice for anything that is explanation. */
+  prose: sec => {
+    const html = proseHtml(sec.blocks);
+    if (!html) return '';
+    /* A heading is only added when the text does not already open with one —
+       otherwise the section would announce itself twice. */
+    const owns = /^<h[23]>/.test(html);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
+    <div class="prose">${html}</div>
+  </div>
+</section>`;
+  },
+
+  /* Short points that are read by scanning rather than by reading. */
+  checks: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 2) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * The card grid the site uses for "what we offer": an icon per card, the
+   * first one given more room and a lit background, and an optional figure in
+   * its corner. This is the shape the owner points at when asked what a good
+   * section looks like, so generated content should be able to reach it.
+   */
+  bento: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
+    if (items.length < 3) return '';
+    /* Two wide, then thirds — the proportions the hand-written grids use. */
+    const span = i => (items.length <= 4 ? 6 : i < 2 ? 6 : 3);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="bento">
+      ${items.map((it, i) => `
+      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${i ? ` style="--d:.${i * 6}s"` : ''}><div class="v-in">
+        <div class="v-top"><div class="v-ic">${IC.check}</div>${it.note ? `<span class="v-range">${it.note}</span>` : ''}</div>
+        <div><h3>${it.title}</h3><p class="v-desc">${it.text || ''}</p></div>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A compact list of points, each opening with the phrase it is about. Lighter
+   * than the card grid, and the right shape when the points are sentences
+   * rather than headings.
+   */
+  checklist: sec => {
+    const items = (sec.items || []).filter(i => i && i.title);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    <div class="prose">
+      ${sec.heading ? `<h2>${accentHeading(sec.heading)}</h2>` : ''}
+      ${sec.sub ? `<p>${sec.sub}</p>` : ''}
+      <ul>
+        ${items.map(i => `<li><b>${i.title}${/[.!?:]$/.test(i.title) ? '' : '.'}</b> ${i.text || ''}</li>`).join('')}
+      </ul>
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Numbered steps. The site draws them as a row divided by hairlines with an
+   * ordinal above each, which makes a sequence read as a sequence rather than
+   * as four cards that happen to be adjacent.
+   */
+  process: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 5);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="process-grid">
+      ${items.map((it, i) => `
+      <div class="step reveal"${i ? ` style="--d:.${i}s"` : ''}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Figures, large, with a line saying what each one counts. Only ever built
+   * from numbers already in the draft — a statistics band is the one component
+   * where an invented number would look most like a fact.
+   */
+  stats: sec => {
+    const items = (sec.items || [])
+      .filter(i => i && i.title && /\d/.test(String(i.title)))
+      .slice(0, 4);
+    if (items.length < 2) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="stats-grid">
+      ${items.map(it => `
+      <div class="stat reveal"><div class="stat-num">${it.title}</div><div class="stat-label">${it.text || ''}</div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * Cards that open with a one-word label above the title — the shape the site
+   * uses for reasons to choose it. The label is what separates this from the
+   * plain card grid: it gives each card a category before it is read.
+   */
+  reasons: sec => {
+    const items = (sec.items || []).filter(i => i && i.title && i.note).slice(0, 4);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="why-grid">
+      ${items.map((it, i) => `
+      <div class="why-card reveal"${i ? ` style="--d:.${i}s"` : ''}><div class="why-in">
+        <span class="why-num">${it.note}</span><h3>${it.title}</h3>
+        <p>${it.text || ''}</p>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /**
+   * A row of pills. For a list of names with nothing to say about each — the
+   * channels a service covers, the sectors it serves — where a card grid would
+   * give five words the weight of a paragraph.
+   */
+  pills: sec => {
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 8);
+    if (items.length < 3) return '';
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="dig-row reveal" style="--d:.1s">
+      ${items.map(i => (i.href
+    ? `<a class="dig-pill" href="${sec.root || ''}${i.href}">${IC.check}${i.title}</a>`
+    : `<span class="dig-pill">${IC.check}${i.title}</span>`)).join('')}
+    </div>
+  </div>
+</section>`;
+  },
+
+  /* Questions people actually ask, in the accordion the site already uses. */
+  faq: sec => {
+    const items = (sec.items || []).filter(i => i && i.q && i.a).map(i => [i.q, i.a]);
+    return items.length ? faqBlock(items) : '';
+  },
+
+  /* One sentence that deserves to stop the eye. */
+  callout: sec => sec.text ? `
+<section class="sec-tight" style="padding-top:0">
+  <div class="container"><p class="price-note reveal">${IC.info} ${sec.text}</p></div>
+</section>` : '',
+
+  /* Text beside a picture, where the image carries part of the meaning. */
+  media: sec => {
+    const html = proseHtml(sec.blocks);
+    if (!html || !sec.image) return '';
+    const owns = /^<h[23]>/.test(html);
+    return `
+<section class="sec-tight">
+  <div class="container">
+    ${owns ? '' : secHead(sec.heading, sec.sub)}
+    <div class="gen-grid">
+      <div class="prose">${html}</div>
+      <figure class="gen-media reveal">
+        <img src="${sec.root || ''}assets/${attr(sec.image)}" alt="${attr(sec.alt)}"
+             loading="lazy" width="640" height="420">
+      </figure>
+    </div>
+  </div>
+</section>`;
+  },
+};
+
+/**
+ * Renders a layout plan, falling back to prose for anything unrecognised —
+ * showing a paragraph plainly beats dropping it without a trace.
+ */
+/**
+ * Renders the sections of a plan that belong at one named position.
+ *
+ * A page is a sequence the reader moves through, and everything generated used
+ * to land at the end — after the closing call to action, where nobody reaches
+ * it. Sections now carry the slot they were placed in, and each slot in the
+ * template renders only its own.
+ */
+function extraBlocks(plan, root = '', slot = 'end') {
+  /* A flat block array is the older shape; read it as one prose run. */
+  const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
+    ? [{ type: 'prose', blocks: plan }]
+    : (Array.isArray(plan) ? plan : []);
+  if (!raw.length) return '';
+
+  /* Consecutive prose becomes one section rather than several.
+     Each section carries its own vertical padding, so six prose sections in a
+     row put up to eight hundred pixels of emptiness between short paragraphs —
+     the page read as fragments floating apart instead of as continuous text.
+     A section break should mean a change of form, not a change of paragraph. */
+  /* Anything without a slot was placed before slots existed; it stays at the
+     end, which is where it has been rendering all along. */
+  const mine = raw.filter(sec => (sec?.slot || 'end') === slot);
+  if (!mine.length) return '';
+
+  const sections = [];
+  for (const sec of mine) {
+    const isProse = !sec || !sec.type || sec.type === 'prose';
+    const last = sections[sections.length - 1];
+    /* Only an untitled run is a continuation. A section that announces itself
+       is a section, and merging it would silently drop its heading. */
+    if (isProse && !sec?.heading && last && last.type === 'prose') {
+      last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
+      continue;
+    }
+    sections.push(isProse
+      ? { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] }
+      : sec);
+  }
+
+  return sections
+    .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
+    .filter(Boolean).join('');
+}
+
+
 /**
  * Puts each planned section at the position it was planned for.
  *
@@ -792,310 +1097,6 @@ ${ctaSection(root)}`,
 
 /* gen.mjs does not import the layout escapers, and alt text is the only
    attribute built from generated content, so one local escape covers it. */
-const attr = t => String(t == null ? '' : t)
-  .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-
-/** Paragraphs, headings and list items — the plain reading lane. */
-function proseHtml(blocks) {
-  const out = [];
-  let list = [];
-  const flush = () => { if (list.length) { out.push('<ul>' + list.join('') + '</ul>'); list = []; } };
-  for (const b of blocks || []) {
-    if (!Array.isArray(b) || typeof b[1] !== 'string') continue;
-    if (b[0] === 'li') { list.push('<li>' + b[1] + '</li>'); continue; }
-    flush();
-    if (['p', 'h2', 'h3'].includes(b[0])) out.push('<' + b[0] + '>' + b[1] + '</' + b[0] + '>');
-  }
-  flush();
-  return out.join('');
-}
-
-/**
- * Gives a generated heading the site's own accent.
- *
- * Every hand-written heading here carries gold on part of itself. A generated
- * heading rendered plain reads as a different page's typography sitting inside
- * this one — the exact seam this whole layer exists to remove.
- *
- * The accent falls on the last two words, or the last one when the heading is
- * short, which is where the site puts it. Nothing is rewritten: the same words
- * come out, wrapped.
- */
-function accentHeading(heading) {
-  const text = String(heading || '').trim();
-  if (!text || /<span/.test(text)) return text;
-  const words = text.split(/\s+/);
-  if (words.length < 3) return text;
-
-  /* A possessive or preposition on its own carries no meaning to accent —
-     "המעטפת <שלנו>" highlights the wrong half, so the word before it joins. */
-  const WEAK = /^(שלנו|שלכם|שלך|שלו|שלה|שלהם|לכם|לנו|בו|בה|בהם|זה|זאת|הזה|הזאת)[?!.,]?$/;
-  let take = words.length >= 5 ? 2 : 1;
-  if (WEAK.test(words.at(-1)) && words.length > take + 1) take += 1;
-
-  const head = words.slice(0, -take).join(' ');
-  const tail = words.slice(-take).join(' ');
-  return `${head} <span class="gw">${tail}</span>`;
-}
-
-/**
- * The heading of a generated section, with the line under it.
- *
- * Every hand-written section on this site introduces itself twice: a title with
- * gold on part of it, and one sentence saying what the reader is about to see.
- * Generated sections had only the title, and the missing sentence is most of
- * why they read as thinner than the rest of the page.
- */
-const secHead = (heading, sub) => (heading
-  ? `<div class="sec-head reveal"><h2>${accentHeading(heading)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>`
-  : '');
-
-const SECTION_RENDERERS = {
-  /* A run of text: still the right choice for anything that is explanation. */
-  prose: sec => {
-    const html = proseHtml(sec.blocks);
-    if (!html) return '';
-    /* A heading is only added when the text does not already open with one —
-       otherwise the section would announce itself twice. */
-    const owns = /^<h[23]>/.test(html);
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${owns ? '' : secHead(sec.heading, sec.sub)}
-    <div class="prose">${html}</div>
-  </div>
-</section>`;
-  },
-
-  /* Short points that are read by scanning rather than by reading. */
-  checks: sec => {
-    const items = (sec.items || []).filter(i => i && i.title);
-    if (items.length < 2) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="check-grid">${items.map(i => checkCard(IC.check, i.title, i.text || '')).join('')}</div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * The card grid the site uses for "what we offer": an icon per card, the
-   * first one given more room and a lit background, and an optional figure in
-   * its corner. This is the shape the owner points at when asked what a good
-   * section looks like, so generated content should be able to reach it.
-   */
-  bento: sec => {
-    const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
-    if (items.length < 3) return '';
-    /* Two wide, then thirds — the proportions the hand-written grids use. */
-    const span = i => (items.length <= 4 ? 6 : i < 2 ? 6 : 3);
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="bento">
-      ${items.map((it, i) => `
-      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${i ? ` style="--d:.${i * 6}s"` : ''}><div class="v-in">
-        <div class="v-top"><div class="v-ic">${IC.check}</div>${it.note ? `<span class="v-range">${it.note}</span>` : ''}</div>
-        <div><h3>${it.title}</h3><p class="v-desc">${it.text || ''}</p></div>
-      </div></div>`).join('')}
-    </div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * A compact list of points, each opening with the phrase it is about. Lighter
-   * than the card grid, and the right shape when the points are sentences
-   * rather than headings.
-   */
-  checklist: sec => {
-    const items = (sec.items || []).filter(i => i && i.title);
-    if (items.length < 3) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    <div class="prose">
-      ${sec.heading ? `<h2>${accentHeading(sec.heading)}</h2>` : ''}
-      ${sec.sub ? `<p>${sec.sub}</p>` : ''}
-      <ul>
-        ${items.map(i => `<li><b>${i.title}${/[.!?:]$/.test(i.title) ? '' : '.'}</b> ${i.text || ''}</li>`).join('')}
-      </ul>
-    </div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * Numbered steps. The site draws them as a row divided by hairlines with an
-   * ordinal above each, which makes a sequence read as a sequence rather than
-   * as four cards that happen to be adjacent.
-   */
-  process: sec => {
-    const items = (sec.items || []).filter(i => i && i.title).slice(0, 5);
-    if (items.length < 3) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="process-grid">
-      ${items.map((it, i) => `
-      <div class="step reveal"${i ? ` style="--d:.${i}s"` : ''}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
-    </div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * Figures, large, with a line saying what each one counts. Only ever built
-   * from numbers already in the draft — a statistics band is the one component
-   * where an invented number would look most like a fact.
-   */
-  stats: sec => {
-    const items = (sec.items || [])
-      .filter(i => i && i.title && /\d/.test(String(i.title)))
-      .slice(0, 4);
-    if (items.length < 2) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="stats-grid">
-      ${items.map(it => `
-      <div class="stat reveal"><div class="stat-num">${it.title}</div><div class="stat-label">${it.text || ''}</div></div>`).join('')}
-    </div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * Cards that open with a one-word label above the title — the shape the site
-   * uses for reasons to choose it. The label is what separates this from the
-   * plain card grid: it gives each card a category before it is read.
-   */
-  reasons: sec => {
-    const items = (sec.items || []).filter(i => i && i.title && i.note).slice(0, 4);
-    if (items.length < 3) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="why-grid">
-      ${items.map((it, i) => `
-      <div class="why-card reveal"${i ? ` style="--d:.${i}s"` : ''}><div class="why-in">
-        <span class="why-num">${it.note}</span><h3>${it.title}</h3>
-        <p>${it.text || ''}</p>
-      </div></div>`).join('')}
-    </div>
-  </div>
-</section>`;
-  },
-
-  /**
-   * A row of pills. For a list of names with nothing to say about each — the
-   * channels a service covers, the sectors it serves — where a card grid would
-   * give five words the weight of a paragraph.
-   */
-  pills: sec => {
-    const items = (sec.items || []).filter(i => i && i.title).slice(0, 8);
-    if (items.length < 3) return '';
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${secHead(sec.heading, sec.sub)}
-    <div class="dig-row reveal" style="--d:.1s">
-      ${items.map(i => (i.href
-    ? `<a class="dig-pill" href="${sec.root || ''}${i.href}">${IC.check}${i.title}</a>`
-    : `<span class="dig-pill">${IC.check}${i.title}</span>`)).join('')}
-    </div>
-  </div>
-</section>`;
-  },
-
-  /* Questions people actually ask, in the accordion the site already uses. */
-  faq: sec => {
-    const items = (sec.items || []).filter(i => i && i.q && i.a).map(i => [i.q, i.a]);
-    return items.length ? faqBlock(items) : '';
-  },
-
-  /* One sentence that deserves to stop the eye. */
-  callout: sec => sec.text ? `
-<section class="sec-tight" style="padding-top:0">
-  <div class="container"><p class="price-note reveal">${IC.info} ${sec.text}</p></div>
-</section>` : '',
-
-  /* Text beside a picture, where the image carries part of the meaning. */
-  media: sec => {
-    const html = proseHtml(sec.blocks);
-    if (!html || !sec.image) return '';
-    const owns = /^<h[23]>/.test(html);
-    return `
-<section class="sec-tight">
-  <div class="container">
-    ${owns ? '' : secHead(sec.heading, sec.sub)}
-    <div class="gen-grid">
-      <div class="prose">${html}</div>
-      <figure class="gen-media reveal">
-        <img src="${sec.root || ''}assets/${attr(sec.image)}" alt="${attr(sec.alt)}"
-             loading="lazy" width="640" height="420">
-      </figure>
-    </div>
-  </div>
-</section>`;
-  },
-};
-
-/**
- * Renders a layout plan, falling back to prose for anything unrecognised —
- * showing a paragraph plainly beats dropping it without a trace.
- */
-/**
- * Renders the sections of a plan that belong at one named position.
- *
- * A page is a sequence the reader moves through, and everything generated used
- * to land at the end — after the closing call to action, where nobody reaches
- * it. Sections now carry the slot they were placed in, and each slot in the
- * template renders only its own.
- */
-function extraBlocks(plan, root = '', slot = 'end') {
-  /* A flat block array is the older shape; read it as one prose run. */
-  const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
-    ? [{ type: 'prose', blocks: plan }]
-    : (Array.isArray(plan) ? plan : []);
-  if (!raw.length) return '';
-
-  /* Consecutive prose becomes one section rather than several.
-     Each section carries its own vertical padding, so six prose sections in a
-     row put up to eight hundred pixels of emptiness between short paragraphs —
-     the page read as fragments floating apart instead of as continuous text.
-     A section break should mean a change of form, not a change of paragraph. */
-  /* Anything without a slot was placed before slots existed; it stays at the
-     end, which is where it has been rendering all along. */
-  const mine = raw.filter(sec => (sec?.slot || 'end') === slot);
-  if (!mine.length) return '';
-
-  const sections = [];
-  for (const sec of mine) {
-    const isProse = !sec || !sec.type || sec.type === 'prose';
-    const last = sections[sections.length - 1];
-    /* Only an untitled run is a continuation. A section that announces itself
-       is a section, and merging it would silently drop its heading. */
-    if (isProse && !sec?.heading && last && last.type === 'prose') {
-      last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
-      continue;
-    }
-    sections.push(isProse
-      ? { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] }
-      : sec);
-  }
-
-  return sections
-    .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
-    .filter(Boolean).join('');
-}
-
 function leadPage(path, o) {
   const crumbs = [{ href: '', t: 'ראשי' }, { href: 'קניית-לידים/', t: 'קניית לידים' }, { t: o.crumb }];
   const x = extrasFor(path, o);
