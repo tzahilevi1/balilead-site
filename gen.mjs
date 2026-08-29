@@ -1,10 +1,27 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { shell, pageHero, ctaSection, clientsStrip, sideMenu, siteCss, siteJs, SITE, IC } from './src/layout.mjs';
+import { shell, pageHero, ctaSection, clientsStrip, sideMenu, siteCss, siteJs, SITE, IC, NAV_DIGITAL } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
 
 const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
 const LASTMOD = JSON.parse(readFileSync('data/lastmod.json', 'utf8'));
+
+/* Service pages defined as data rather than as code. Loaded here, before the
+   first page is rendered, because a new service has to appear in the
+   navigation that every other page prints — registering it later would build a
+   page nothing links to, which is the orphan the linker spends its time
+   hunting. */
+const SERVICE_PAGES_PATH = 'data/service-pages.json';
+const SERVICE_PAGES = existsSync(SERVICE_PAGES_PATH)
+  ? JSON.parse(readFileSync(SERVICE_PAGES_PATH, 'utf8')) : {};
+
+for (const [slug, s] of Object.entries(SERVICE_PAGES)) {
+  if (!s?.h1 || !Array.isArray(s.sections) || !s.sections.length) continue;
+  const href = `${slug}/`;
+  if (!NAV_DIGITAL.some(([h]) => h === href)) {
+    NAV_DIGITAL.push([href, s.navLabel || s.crumb || s.h1.replace(/<[^>]+>/g, '')]);
+  }
+}
 
 /* ---------- internal auto-linker (on-page SEO) ---------- */
 const LINK_MAP = [
@@ -2205,6 +2222,45 @@ digitalPage('מערכת-ניהול-לידים', {
   ],
   related: [['סוכני-ai/', 'סוכני AI חכמים'], ['אוטומציות-שיווק/', 'אוטומציות שיווק'], ['קניית-לידים/', 'קניית לידים']],
 });
+
+/* =================================================================
+   עמודי שירות מנתונים
+   -----------------------------------------------------------------
+   Every service page above is a function: its sections are hand-written
+   HTML, which is why the engine could not create one and said so rather
+   than producing something broken. The sections are the only part that
+   was ever really code, and the vocabulary they use — prose, checks,
+   bento, process, stats, reasons, pills, callout — already exists as
+   data renderers for the extras system.
+
+   So a service page becomes a JSON file that names its hero, its
+   sections in that vocabulary, its questions and its neighbours, and
+   goes through the same digitalPage builder as the hand-written ones.
+   Identical output, identical styling, identical schema — the only
+   difference is where the description came from.
+================================================================= */
+for (const [slug, s] of Object.entries(SERVICE_PAGES)) {
+  /* A half-described page is worse than none: it would publish a hero with
+     nothing under it. Skipped loudly rather than rendered thin. */
+  if (!s || !s.h1 || !Array.isArray(s.sections) || !s.sections.length) {
+    console.log(`  דילוג על ${slug} — חסר h1 או סקשנים`);
+    continue;
+  }
+  digitalPage(slug, {
+    title: s.title, desc: s.desc,
+    crumb: s.crumb || s.h1.replace(/<[^>]+>/g, ''),
+    img: s.img || 'hero-auto.webp',
+    alt: s.alt || s.crumb || 'שירות שיווק דיגיטלי',
+    h1: s.h1, sub: s.sub || '',
+    ctaTitle: s.ctaTitle || 'רוצים לשמוע <span class="gw">איך זה עובד אצלכם?</span>',
+    topic: s.topic,
+    /* Rendered through the same path as every other data-driven section, so
+       a fix to the renderers reaches these pages too. */
+    sections: root => extraBlocks(s.sections, root, 'end'),
+    faq: s.faq,
+    related: s.related || [],
+  });
+}
 
 /* =================================================================
    מחשבון ROI ללידים
