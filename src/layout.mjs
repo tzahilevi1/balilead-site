@@ -1095,6 +1095,15 @@ export const js = `
       data.ip = sessionStorage.getItem('bl_ip') || '';
       /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */
       fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
+      /* אותו ליד גם ל-GA4. בלי האירוע הזה אנליטיקס סופר ביקורים בלבד,
+         ואי אפשר לדעת איזה עמוד או איזה מקור באמת הביא פנייה. */
+      if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', {
+          lead_source: data.type || 'לא ידוע',
+          lead_topic: data.topic || '',
+          page_title: data.pageTitle || ''
+        });
+      }
     } catch(e){}
   };
 
@@ -1247,7 +1256,7 @@ export const js = `
 })();`;
 
 /* מזהי מדידה: מלאו כאן GA4 (G-XXXXXXX) ו/או פיקסל מטא (מספר), הריצו node gen.mjs, וזה יוזרק לכל העמודים */
-export const ANALYTICS = { ga4: '', metaPixel: '' };
+export const ANALYTICS = { ga4: 'G-978SYH30DL', metaPixel: '' };
 
 const escAttr = s => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const escText = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');

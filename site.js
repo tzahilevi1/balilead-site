@@ -35,6 +35,15 @@
       data.ip = sessionStorage.getItem('bl_ip') || '';
       /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */
       fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
+      /* אותו ליד גם ל-GA4. בלי האירוע הזה אנליטיקס סופר ביקורים בלבד,
+         ואי אפשר לדעת איזה עמוד או איזה מקור באמת הביא פנייה. */
+      if (typeof gtag === 'function') {
+        gtag('event', 'generate_lead', {
+          lead_source: data.type || 'לא ידוע',
+          lead_topic: data.topic || '',
+          page_title: data.pageTitle || ''
+        });
+      }
     } catch(e){}
   };
 
