@@ -945,6 +945,12 @@ ${clientsStrip(root)}
       <a class="dig-pill" href="${root}פרסום-באינסטגרם/">${IC.ig}פרסום באינסטגרם</a>
       <a class="dig-pill" href="${root}קידום-בלינקדאין/">${IC.li}קידום בלינקדאין</a>
       <a class="dig-pill" href="${root}פרסום-בטאבולה-ואאוטבריין/">${IC.rss}טאבולה ואאוטבריין</a>
+      <a class="dig-pill" href="${root}בניית-אתרים/">${IC.doc}בניית אתרים</a>
+      <a class="dig-pill" href="${root}דפי-נחיתה/">${IC.target}דפי נחיתה</a>
+      <a class="dig-pill" href="${root}פיתוח-אפליקציות/">${IC.bolt}פיתוח אפליקציות</a>
+      <a class="dig-pill" href="${root}מערכת-ניהול-לידים/">${IC.users}מערכת ניהול לידים</a>
+      <a class="dig-pill" href="${root}אוטומציות-שיווק/">${IC.filter}אוטומציות שיווק</a>
+      <a class="dig-pill" href="${root}סוכני-ai/">${IC.shield}סוכני AI</a>
     </div>
   </div>
 </section>
