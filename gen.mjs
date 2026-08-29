@@ -1456,7 +1456,7 @@ function digitalPage(path, o) {
     body: root => `
 ${pageHero(root, { crumbs, h1: o.h1, sub: o.sub, img: o.img, alt: o.alt })}
 ${o.sections(root)}
-${deepSection(root, path)}
+${deepSection(root, path, null, true)}
 ${o.faq ? faqBlock(o.faq) : ''}
 ${relatedBlock(root, o.related)}
 ${ctaSection(root, { title: o.ctaTitle, sub: 'השאירו פרטים ונחזור אליכם עם תוכנית פעולה מותאמת לעסק שלכם.', topic: o.topic || 'שיווק דיגיטלי לעסק שלי' })}`,
