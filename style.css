@@ -292,9 +292,14 @@ html.acc-noanim .hero-media video{display:none}
 .pop h3{font-family:'Secular One';font-size:clamp(22px,3vw,30px);margin-bottom:10px}
 .pop h3 .gw{background:var(--grad-gold);-webkit-background-clip:text;background-clip:text;color:transparent}
 .pop p{color:var(--muted);font-size:15.5px;margin-bottom:18px}
-.pop .pop-form{display:flex;gap:10px}
-.pop .pop-form input{flex:1;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
+.pop .pop-form{display:flex;gap:10px;flex-wrap:wrap}
+.pop .pop-form input{flex:1 1 150px;border-radius:999px;border:1px solid var(--line-strong);background:rgba(244,238,227,.05);
   color:var(--ink);font-family:'Assistant';font-size:15px;padding:12px 18px;outline:none;direction:ltr;text-align:right}
+/* A flex item whose overflow is not visible gets an automatic minimum size of
+   zero, so the button shrank under its own label and clipped it: "שלחו לי
+   פרטים" needed 135px and was given 93px on every phone. The primary action of
+   the conversion popup was unreadable, and nothing in the markup showed it. */
+.pop .pop-form .btn{flex:0 0 auto}
 .pop .pop-form input:focus{border-color:var(--gold)}
 .pop .consent{margin-top:12px}
 /* toast */
@@ -317,6 +322,9 @@ html.acc-noanim .hero-media video{display:none}
 .consent{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.4;cursor:pointer}
 .consent > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:640px){.consent > span{white-space:normal}}
+/* Below this the phone and the button no longer share a line comfortably, so
+   the button takes its own and reads as a deliberate full-width action. */
+@media (max-width:430px){.pop .pop-form .btn{flex:1 0 100%;justify-content:center}}
 .consent input{appearance:none;width:17px;height:17px;flex:0 0 auto;border-radius:5px;cursor:pointer;
   border:1.5px solid rgba(217,164,91,.5);background:rgba(217,164,91,.08);position:relative}
 .consent input:checked{background:var(--grad-gold);border-color:var(--gold)}
