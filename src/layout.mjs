@@ -1256,7 +1256,7 @@ export const js = `
 })();`;
 
 /* מזהי מדידה: מלאו כאן GA4 (G-XXXXXXX) ו/או פיקסל מטא (מספר), הריצו node gen.mjs, וזה יוזרק לכל העמודים */
-export const ANALYTICS = { ga4: 'G-978SYH30DL', metaPixel: '' };
+export const ANALYTICS = { ga4: 'G-978SYH30DL', metaPixel: '301427234917164' };
 
 const escAttr = s => String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const escText = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -1267,7 +1267,9 @@ function analyticsHtml() {
 <script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS.ga4}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ANALYTICS.ga4}');</script>`;
   if (ANALYTICS.metaPixel) out += `
-<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${ANALYTICS.metaPixel}');fbq('track','PageView');</script>`;
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${ANALYTICS.metaPixel}');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=${ANALYTICS.metaPixel}&ev=PageView&noscript=1"></noscript>`;
   return out;
 }
 
