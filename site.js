@@ -44,8 +44,44 @@
           page_title: data.pageTitle || ''
         });
       }
+      /* ואותו ליד למטא. ההמרה "Lead - Web BaliLeaD" הוגדרה שם להמתין
+         ל-PageView בכתובת balilead.co.il/thank-you — עמוד שאינו קיים ושהטופס
+         מעולם לא עבר אליו, כי הוא שולח ברקע ופותח וואטסאפ. כלומר ההמרה לא
+         יכלה להירשם אף פעם, גם אחרי שהפיקסל הותקן.
+         Lead הוא אירוע תקני של מטא: אפשר לבחור אותו ישירות כיעד קמפיין,
+         בלי להיתלות בכתובת שצריכה להתקיים. */
+      if (typeof fbq === 'function') {
+        fbq('track', 'Lead', {
+          content_name: data.topic || '',
+          content_category: data.type || ''
+        });
+      }
     } catch(e){}
   };
+
+  /* וואטסאפ וטלפון הם פנייה לכל דבר, ועד היום הם לא נמדדו כלל: הליד שנשלח
+     בטופס נספר, ומי שלחץ ישירות על הכפתור הצף פשוט נעלם מהנתונים. מטא לא
+     יכולה לייעל קמפיין לעבר פעולה שהיא לא רואה.
+     נתפס ב-capture על המסמך כדי שגם כפתורים שנוספו אחרי הטעינה ייספרו. */
+  document.addEventListener('click', function(ev){
+    var a = ev.target && ev.target.closest && ev.target.closest('a[href]');
+    if(!a) return;
+    var href = a.getAttribute('href') || '';
+    var kind = /wa.me|whatsapp/i.test(href) ? 'whatsapp'
+      : /^tel:/i.test(href) ? 'phone'
+      : null;
+    if(!kind) return;
+    /* שיתוף עמוד בוואטסאפ אינו פנייה אלינו. */
+    if(kind === 'whatsapp' && !/972584700706/.test(href)) return;
+    try {
+      if (typeof gtag === 'function') {
+        gtag('event', 'contact', { method: kind, page_title: document.title || '' });
+      }
+      if (typeof fbq === 'function') {
+        fbq('track', 'Contact', { content_category: kind });
+      }
+    } catch(e){}
+  }, true);
 
   /* The floating call-to-actions stay out of the way until someone has read
      a little. Arriving to two buttons covering the hero reads as a pop-up;
