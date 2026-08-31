@@ -658,8 +658,28 @@ const CUSTOM_PAGES = new Set([
   'יצירת-קשר', 'הצהרת-נגישות', 'מערכת-ניהול-לידים', 'מחשבון-roi-ללידים',
 ]);
 const HIDDEN_POSTS = new Set(['לא-לחזור-על-נושאים-שכבר-כתבת-עליהם-בעב-2']);
+
+/* Articles folded into another article.
+ *
+ * The site carried several pairs writing about one subject twice — two pieces
+ * on choosing an insurance-lead supplier, two on cutting lead costs — each a
+ * few hundred words and none of them ranking. Two thin answers to one question
+ * split whatever authority the subject earns; one full answer keeps it.
+ *
+ * Hiding a slug from the magazine index is not enough, because the page still
+ * exists and still competes. These stop being built as articles and become
+ * redirects instead, so the address keeps working for anyone who saved it and
+ * Google is told plainly where the subject now lives.
+ *
+ * data rather than code: the next merge is an edit to a JSON file.
+ */
+const REDIRECTS_PATH = 'data/redirects.json';
+const REDIRECTS = existsSync(REDIRECTS_PATH)
+  ? JSON.parse(readFileSync(REDIRECTS_PATH, 'utf8')) : {};
+
 const RAW_ARTICLES = Object.keys(SITE_CONTENT)
   .filter(k => !CUSTOM_PAGES.has(k))
+  .filter(k => !REDIRECTS[k])
   .map(slug => ({ slug, ...SITE_CONTENT[slug] }))
   .filter(a => (a.blocks || []).length > 5);
 const LISTED_ARTICLES = RAW_ARTICLES.filter(a => !HIDDEN_POSTS.has(a.slug));
@@ -2502,6 +2522,39 @@ ${pageHero(root, {
 ${ctaSection(root)}`,
   });
 }
+
+/* =================================================================
+   Redirect stubs for merged articles
+
+   GitHub Pages serves files, not status codes, so a 301 is not available.
+   What is available is the pair Google documents as its equivalent: a
+   canonical pointing at the survivor, and a zero-second meta refresh.
+
+   Deliberately not noindex — noindex tells Google to drop the page, and the
+   point of a merge is the opposite, to pass what the page earned to the one
+   that replaced it. The two directives together are contradictory anyway.
+
+   These are not added to BUILT, so they stay out of the sitemap: a sitemap
+   exists to list destinations, and a redirect is not one.
+================================================================= */
+for (const [from, to] of Object.entries(REDIRECTS)) {
+  const target = canon(to);
+  write(from, `<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>הועבר — BaliLead</title>
+<link rel="canonical" href="${target}">
+<meta http-equiv="refresh" content="0;url=${target}">
+</head>
+<body style="font-family:system-ui,sans-serif;padding:3rem;text-align:center">
+<p>העמוד הזה אוחד לתוך מדריך מלא יותר.</p>
+<p><a href="${target}">המשך לעמוד המעודכן</a></p>
+</body>
+</html>`);
+}
+console.log(Object.keys(REDIRECTS).length, 'redirect stubs written');
 
 /* =================================================================
    sitemap.xml + robots.txt (canonical domain, ready for the move)
