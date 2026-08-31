@@ -74,6 +74,14 @@ const LINK_MAP = [
   ['עוסק מורשה', 'פתיחת-עוסק-מורשה/'],
   ['סוכנות פרסום', 'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/'],
   ['מעטפת שיווק', 'משרד-פרסום-דיגיטלי-שמנהל-עבורך-את-כל-השיווק/'],
+  /* Published without a single editorial link to it, which is how a page ends
+     up crawled but never ranked. The wording is already all over the site —
+     twenty-eight uses of the first phrase and sixteen of the second — so these
+     entries have something to attach to rather than describing wording nobody
+     writes. */
+  ['חנות וירטואלית', 'מחיר-בניית-חנות-וירטואלית-ואתר-מכירות-לעסק/'],
+  ['חנויות וירטואליות', 'מחיר-בניית-חנות-וירטואלית-ואתר-מכירות-לעסק/'],
+  ['אתר מכירות', 'מחיר-בניית-חנות-וירטואלית-ואתר-מכירות-לעסק/'],
 ];
 /* Destinations that the crawl found starved of editorial links. They are tried
    before the rest, because the six-link budget on a page was always being spent
@@ -92,6 +100,8 @@ const LINK_MAP = [
  * take the budget from a page that has none.
  */
 const LINK_PRIORITY = new Set([
+  /* Measured at zero inbound editorial links the day after it was published. */
+  'מחיר-בניית-חנות-וירטואלית-ואתר-מכירות-לעסק/',
   'פתיחת-עוסק-מורשה/',
   'מכירת-תיק-לרואי-חשבון/',
   'קידום-בלינקדאין/',
