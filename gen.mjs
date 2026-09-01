@@ -542,6 +542,32 @@ function extraBlocks(plan, root = '', slot = 'end') {
 function injectSlots(body, plan, root) {
   if (!Array.isArray(plan) || !plan.length) return body;
 
+  /**
+   * Where the article ends and the page's closing furniture begins.
+   *
+   * A page finishes with blocks that are not part of what it says: the magazine
+   * strip, "אולי יעניין אתכם גם", the questions, the contact form. They belong
+   * last, always. The anchors below used to measure against every <section> on
+   * the page, so "halfway down" landed past the magazine strip — and a reader
+   * met eight paragraphs of the article *after* being offered other articles to
+   * go read. On /hot-cold-leads-guide/ the strip sat second out of thirteen.
+   *
+   * Everything inserted now lands before this line.
+   */
+  const furnitureStart = html => {
+    const marks = [
+      html.indexOf('class="art-grid"'),
+      html.indexOf('class="faq reveal"'),
+      html.indexOf('<section class="sec contact"'),
+    ].filter(i => i !== -1);
+    if (!marks.length) return html.length;
+    /* Back up to the section that opens the furniture, so nothing is spliced
+       into the middle of a grid. */
+    const first = Math.min(...marks);
+    const open = html.lastIndexOf('<section', first);
+    return open === -1 ? first : open;
+  };
+
   /* Where each position lives in the markup, in the order the reader meets
      them. Each anchor returns the index the HTML is spliced in at. */
   const anchors = {
@@ -556,7 +582,8 @@ function injectSlots(body, plan, root) {
     mid: html => {
       const bounds = [];
       for (let i = html.indexOf('<section'); i !== -1; i = html.indexOf('<section', i + 1)) bounds.push(i);
-      const usable = bounds.filter(i => i > (anchors.after_intro(html) || 0));
+      const stop = furnitureStart(html);
+      const usable = bounds.filter(i => i > (anchors.after_intro(html) || 0) && i < stop);
       return usable.length ? usable[Math.floor(usable.length / 2)] : -1;
     },
     before_faq: html => {
@@ -564,15 +591,70 @@ function injectSlots(body, plan, root) {
       if (faq === -1) return -1;
       return html.lastIndexOf('<section', faq);
     },
-    end: html => {
-      const cta = html.indexOf('<section class="sec contact"');
-      return cta === -1 ? html.length : cta;
-    },
+    /* The end of the article, not the end of the document: after the last
+       thing the page says and before the first thing it offers. */
+    end: html => furnitureStart(html),
+  };
+
+  /* Applied from the bottom up, so an earlier insertion cannot shift the index
+     a later one was measured against. */
+  /**
+   * The article's own column, when the page has one.
+   *
+   * An article page is a two-column grid: the prose on the left, the sticky
+   * menu on the right. Generated sections were spliced in as siblings of that
+   * grid, which put them outside the column the menu is anchored to — so on
+   * /hot-cold-leads-guide/ the reader passed eight generated sections with no
+   * menu beside them and only met it six thousand pixels down, at the original
+   * article. The menu was never broken; the content had been placed where it
+   * could not reach.
+   *
+   * Returns the span inside .art-body, or null on a page built differently —
+   * commercial pages have no such column and keep the section-level anchors.
+   */
+  const articleColumn = html => {
+    const openTag = /<div class="prose art-body[^"]*"[^>]*>/.exec(html);
+    if (!openTag) return null;
+    const from = openTag.index + openTag[0].length;
+    /* Matching close, by depth: .art-body holds nested divs, so the first
+       </div> after it is almost never the right one. */
+    let depth = 1;
+    const tag = /<\/?div\b[^>]*>/g;
+    tag.lastIndex = from;
+    for (let m = tag.exec(html); m; m = tag.exec(html)) {
+      depth += m[0][1] === '/' ? -1 : 1;
+      if (depth === 0) return { from, to: m.index };
+    }
+    return null;
   };
 
   /* Applied from the bottom up, so an earlier insertion cannot shift the index
      a later one was measured against. */
   const order = ['after_intro', 'mid', 'before_faq', 'end'];
+
+  /* On an article page every slot resolves inside the column, in the same
+     reading order, so the menu spans all of it. */
+  const column = articleColumn(body);
+  if (column) {
+    const inner = body.slice(column.from, column.to);
+    const heads = [...inner.matchAll(/<h2\b/g)].map(m => m.index);
+    const at = {
+      after_intro: heads.length ? heads[0] : 0,
+      mid: heads.length ? heads[Math.floor(heads.length / 2)] : inner.length,
+      before_faq: inner.length,
+      end: inner.length,
+    };
+    const placed = order
+      .map(slot => ({ slot, html: extraBlocks(plan, root, slot), at: at[slot] }))
+      .filter(x => x.html)
+      .sort((a, b) => b.at - a.at);
+
+    let col = inner;
+    for (const { html, at: index } of placed) {
+      col = col.slice(0, index) + html + col.slice(index);
+    }
+    return body.slice(0, column.from) + col + body.slice(column.to);
+  }
   const placed = order
     .map(slot => ({ slot, html: extraBlocks(plan, root, slot) }))
     .filter(x => x.html)
@@ -589,8 +671,7 @@ function injectSlots(body, plan, root) {
     .filter(slot => extraBlocks(plan, root, slot) && !placed.some(p => p.slot === slot))
     .map(slot => extraBlocks(plan, root, slot));
   if (missing.length) {
-    const cta = out.indexOf('<section class="sec contact"');
-    const at = cta === -1 ? out.length : cta;
+    const at = furnitureStart(out);
     out = out.slice(0, at) + missing.join('') + out.slice(at);
   }
   return out;
