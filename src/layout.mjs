@@ -15,6 +15,29 @@ export const SITE = {
   fb: 'https://www.facebook.com/BaliLead',
 };
 
+/**
+ * Who stands behind the writing.
+ *
+ * Seventy-seven articles over six hundred words carried no author at all, which
+ * is the visible difference between a publication and a content farm — and one
+ * of the few E-E-A-T signals a small site can actually earn rather than claim.
+ *
+ * One real name with a real role. The title says what he does and nothing more:
+ * an invented credential is worse than none, because it is the first thing a
+ * reader can check and the first thing that costs trust when it does not hold.
+ */
+export const AUTHOR = {
+  name: 'צחי לוי',
+  role: 'מייסד באלי ליד',
+  /* Read by a person deciding whether to trust the page, so it says what the
+     experience is rather than how impressive it sounds. */
+  bio: 'מנהל מערך לידים ושיווק דיגיטלי לסקטור הפיננסי — ביטוח, משכנתאות, '
+    + 'הלוואות והחזרי מס. עוסק בייצור לידים, בניית אתרים וקמפיינים ממומנים מאז 2020.',
+  short: 'מייסד באלי ליד · לידים ושיווק דיגיטלי לסקטור הפיננסי',
+  url: 'https://balilead.co.il/',
+  sameAs: ['https://www.facebook.com/BaliLead'],
+};
+
 export const NAV_LEADS = [
   ['קניית-לידים/', 'קניית לידים, כל התחומים'],
   ['חברת-לידים/', 'חברת לידים, מודל CPL'],
@@ -734,6 +757,58 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 
 /* ===== Article pages ===== */
 .art-meta{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--dim);font-weight:600;margin-bottom:14px}
+.art-meta .am-by{color:var(--muted);font-size:12.5px}
+.art-meta .am-by b{color:var(--ink)}
+/* The author box closes the article: a reader who got this far is deciding
+   whether to believe it, and a name with a role is what that decision needs. */
+/* The about page: prose on one side, the vertical video on the other. It
+   collapses before the two columns get narrow enough to make a 9:16 player
+   taller than the text beside it. */
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(28px,5vw,64px);align-items:start}
+.about-grid h2{margin:0 0 14px}
+.about-grid p{color:var(--muted);line-height:1.85;margin:0 0 14px}
+.about-grid p b{color:var(--ink)}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+
+.two-tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media(max-width:820px){.two-tracks{grid-template-columns:1fr}}
+.track{padding:1.5px;border-radius:calc(var(--r-card) + 2px);
+  background:linear-gradient(150deg,rgba(217,164,91,.34),transparent 55%)}
+.track-in{background:var(--bg2);border-radius:var(--r-card);padding:26px 24px;height:100%}
+.track .t-tag{display:inline-block;font-size:11.5px;letter-spacing:.1em;color:var(--gold2);
+  border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;margin-bottom:12px}
+.track h3{margin:0 0 10px;font-size:clamp(20px,2.2vw,25px)}
+.track p{color:var(--muted);line-height:1.8;margin:0 0 18px}
+
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.why-in{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:22px 20px;height:100%;transition:border-color .5s cubic-bezier(.32,.72,0,1),transform .5s cubic-bezier(.32,.72,0,1)}
+.why:hover .why-in{border-color:rgba(217,164,91,.34);transform:translateY(-3px)}
+.why-in h3{margin:0 0 8px;font-size:16.5px;color:var(--gold2)}
+.why-in p{color:var(--muted);font-size:14px;line-height:1.75;margin:0}
+
+.yt-short{max-width:340px;margin:0 auto}
+.yt-fac{display:block;width:100%;aspect-ratio:9/16;position:relative;padding:0;cursor:pointer;
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;
+  transition:transform .5s cubic-bezier(.32,.72,0,1),box-shadow .5s cubic-bezier(.32,.72,0,1)}
+.yt-fac img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92;transition:opacity .5s}
+.yt-fac:hover{transform:translateY(-3px);box-shadow:0 18px 46px rgba(0,0,0,.5)}
+.yt-fac:hover img{opacity:1}
+.yt-play{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;
+  display:grid;place-items:center;color:#1a1206;
+  background:linear-gradient(140deg,var(--gold2),var(--gold));
+  box-shadow:0 10px 30px rgba(0,0,0,.45);transition:transform .4s cubic-bezier(.32,.72,0,1)}
+.yt-fac:hover .yt-play{transform:scale(1.07)}
+.yt-short iframe{width:100%;aspect-ratio:9/16;border:0;border-radius:20px;display:block}
+.author-card{display:flex;gap:16px;align-items:flex-start;margin:34px 0 0;padding:20px 22px;
+  border:1px solid var(--line);border-radius:var(--r-card);background:var(--bg2)}
+.author-card .ac-av{flex:0 0 54px;width:54px;height:54px;border-radius:50%;display:grid;
+  place-items:center;background:linear-gradient(140deg,var(--gold2),var(--gold));
+  color:#1a1206;font-weight:800;font-size:19px;letter-spacing:.02em}
+.author-card .ac-name{font-weight:700;font-size:16px;margin:0 0 2px}
+.author-card .ac-role{color:var(--gold2);font-size:13px;margin:0 0 8px}
+.author-card .ac-bio{color:var(--muted);font-size:13.5px;line-height:1.7;margin:0}
+@media(max-width:520px){.author-card{flex-direction:column;gap:12px}}
 .art-meta .am-cat{color:var(--gold2);border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;font-size:12.5px;letter-spacing:.06em}
 .art-cover{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
   box-shadow:0 40px 100px -40px rgba(0,0,0,.9);margin-bottom:clamp(32px,5vw,54px)}
@@ -845,6 +920,7 @@ export function header(root, active = '') {
       </div>
       <div class="nav-item"><a href="${root}מחירון-לידים/"${mark('pricing')}>מחירון 2026</a></div>
       <div class="nav-item"><a href="${root}עדכונים-חמים/"${mark('magazine')}>מגזין</a></div>
+      <div class="nav-item"><a href="${root}מי-אנחנו/"${mark('about')}>מי אנחנו</a></div>
       <div class="nav-item"><a href="${root}יצירת-קשר/"${mark('contact')}>צור קשר</a></div>
     </nav>
     <div class="header-cta">
@@ -1329,7 +1405,23 @@ export const siteCss = () => {
   });
   return base.replace(/\n{3,}/g, '\n\n') + '\n\n' + blocks.join('\n');
 };
-export const siteJs = () => js + '\n' + widgetsJs;
+/* Swaps the thumbnail for the real player on click. Delegated from the
+   document so it costs nothing on the pages that have no video, and autoplay
+   belongs here because the click *was* the request to play. */
+const shortsJs = `
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('.yt-fac');
+  if (!b) return;
+  var id = b.getAttribute('data-yt');
+  var f = document.createElement('iframe');
+  f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+  f.title = b.getAttribute('aria-label') || 'סרטון';
+  f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  f.setAttribute('allowfullscreen','');
+  b.replaceWith(f);
+});`;
+
+export const siteJs = () => js + '\n' + widgetsJs + '\n' + shortsJs;
 
 export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage, robots }) {
   return `<!DOCTYPE html>
@@ -1371,6 +1463,46 @@ ${widgetsHtml(root)}
 </body>
 </html>`;
 }
+
+/* ── the vertical player on the about page ────────────────────────────── */
+
+/**
+ * A YouTube Short, loaded only when someone asks for it.
+ *
+ * The embed pulls roughly half a megabyte of player before anyone presses
+ * play, and sets cookies for a video most visitors will never watch. This
+ * shows the thumbnail and swaps in the iframe on click — the pattern costs one
+ * line of script and removes the whole weight from first paint.
+ *
+ * Portrait on purpose: a Short is 9:16, and forcing it into a widescreen frame
+ * pillarboxes it into a strip of black with a stamp of video in the middle.
+ */
+export const shortsPlayer = (id, label) => `
+<div class="yt-short reveal">
+  <button class="yt-fac" data-yt="${id}" aria-label="${label}">
+    <img src="https://i.ytimg.com/vi/${id}/hq720.jpg" alt="${label}" loading="lazy" width="405" height="720">
+    <span class="yt-play" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </span>
+  </button>
+</div>`;
+
+/**
+ * The byline block that closes an article.
+ *
+ * Initials rather than a photograph: a stock portrait beside a real name is the
+ * exact opposite of what this is for, and a missing image file is worse than
+ * none. Swap in a real photograph when there is one.
+ */
+export const authorCard = () => `
+<div class="author-card reveal">
+  <div class="ac-av" aria-hidden="true">${AUTHOR.name.split(' ').map(w => w[0]).join('')}</div>
+  <div>
+    <p class="ac-name">${AUTHOR.name}</p>
+    <p class="ac-role">${AUTHOR.role}</p>
+    <p class="ac-bio">${AUTHOR.bio}</p>
+  </div>
+</div>`;
 
 export function pageHero(root, { crumbs, h1, sub, price, ctas = true, metaLine, img, alt }) {
   const crumbHtml = crumbs

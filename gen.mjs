@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
-import { shell, pageHero, ctaSection, clientsStrip, sideMenu, siteCss, siteJs, SITE, IC, NAV_DIGITAL } from './src/layout.mjs';
+import { shell, pageHero, ctaSection, clientsStrip, sideMenu, authorCard, shortsPlayer, siteCss, siteJs, SITE, AUTHOR, IC, NAV_DIGITAL } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
 
 const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
@@ -746,7 +746,7 @@ const CUSTOM_PAGES = new Set([
   'קניית-לידים/לידים-למשכנתאות', 'קניית-לידים/לידים-לבניית-אתרים', 'לידים-לרואי-חשבון', 'פתיחת-עוסק-מורשה',
   'מכירת-תיק-לרואי-חשבון', 'שיווק-דיגיטלי', 'קידום-אתרים-seo', 'קידום-בגוגל', 'קידום-בפייסבוק',
   'פרסום-באינסטגרם', 'קידום-בלינקדאין', 'פרסום-בטאבולה-ואאוטבריין', 'מחירון-לידים', 'עדכונים-חמים',
-  'יצירת-קשר', 'הצהרת-נגישות', 'מערכת-ניהול-לידים', 'מחשבון-roi-ללידים',
+  'יצירת-קשר', 'הצהרת-נגישות', 'מערכת-ניהול-לידים', 'מחשבון-roi-ללידים', 'מי-אנחנו',
 ]);
 const HIDDEN_POSTS = new Set(['לא-לחזור-על-נושאים-שכבר-כתבת-עליהם-בעב-2']);
 
@@ -2018,7 +2018,13 @@ for (const art of RAW_ARTICLES) {
         headline: artTitle(art), description: (art.desc && art.desc.length > 20) ? art.desc : m.teaser,
         datePublished: artDate, dateModified: artDate,
         image: GH + 'assets/' + m.cover,
-        author: { '@type': 'Organization', name: 'BaliLeads' },
+        /* A named person rather than the company. Google's guidance on
+           helpful content asks who wrote this and why they can be trusted;
+           "BaliLeads" answers neither. */
+        author: {
+          '@type': 'Person', name: AUTHOR.name, jobTitle: AUTHOR.role,
+          description: AUTHOR.bio, url: AUTHOR.url, sameAs: AUTHOR.sameAs,
+        },
         publisher: { '@type': 'Organization', name: 'BaliLeads', logo: { '@type': 'ImageObject', url: 'https://balilead.co.il/wp-content/uploads/2021/10/cropped-לוגו-שקוף.png' } },
         mainEntityOfPage: canon(art.slug),
       },
@@ -2026,7 +2032,8 @@ for (const art of RAW_ARTICLES) {
     body: root => `
 ${pageHero(root, {
       crumbs,
-      metaLine: `<span class="am-cat">${m.cat}</span><span>${mins} דקות קריאה</span>`,
+      metaLine: `<span class="am-cat">${m.cat}</span><span>${mins} דקות קריאה</span>`
+        + `<span class="am-by">מאת <b>${AUTHOR.name}</b>, ${AUTHOR.role}</span>`,
       h1: artTitle(art),
       sub: m.teaser,
       ctas: false,
@@ -2040,6 +2047,7 @@ ${pageHero(root, {
     </div>
     ${sideMenu(root, art.slug)}
   </div>
+  <div class="container">${authorCard()}</div>
 </section>
 ${artBody.faq.length ? faqBlock(artBody.faq) : ''}
 
@@ -2090,6 +2098,102 @@ ${pageHero(root, {
 </section>
 
 ${ctaSection(root, { title: 'השאירו פרטים וקבלו <span class="gw">הצעת מחיר מותאמת</span>', sub: 'מענה מובטח תוך 24 שעות. הפרטים שלכם נשארים אצלנו בלבד.' })}`,
+});
+
+/* =================================================================
+   מי אנחנו
+================================================================= */
+page('מי-אנחנו', {
+  title: 'מי אנחנו - באלי ליד | לידים ושיווק דיגיטלי לסקטור הפיננסי',
+  desc: 'באלי ליד פועלת מאז 2020 ומספקת לידים בלעדיים ושיווק דיגיטלי לעסקים '
+    + 'בתחומי ביטוח, משכנתאות, הלוואות והחזרי מס. מחירון מלא ופומבי ל-29 תחומים.',
+  active: 'about',
+  extraLd: [
+    crumbsLd([{ href: '', t: 'ראשי' }, { t: 'מי אנחנו' }]),
+    {
+      '@context': 'https://schema.org', '@type': 'AboutPage',
+      name: 'מי אנחנו — באלי ליד', url: canon('מי-אנחנו'),
+      mainEntity: {
+        '@type': 'Organization', name: 'BaliLead', alternateName: 'באלי ליד',
+        url: 'https://balilead.co.il/', foundingDate: '2020',
+        telephone: '+972-58-470-0706', email: SITE.email,
+        address: { '@type': 'PostalAddress', streetAddress: 'אצ״ל 34', addressLocality: 'רמת גן', addressCountry: 'IL' },
+        founder: { '@type': 'Person', name: AUTHOR.name, jobTitle: AUTHOR.role },
+        sameAs: [SITE.fb],
+      },
+    },
+  ],
+  body: root => `
+${pageHero(root, {
+    crumbs: [{ href: '', t: 'ראשי' }, { t: 'מי אנחנו' }],
+    h1: 'בעל עסק מדבר <span class="gw">עם בעל עסק</span>',
+    sub: 'באלי ליד פועלת מאז <b>2020</b> ועוסקת בדבר אחד: להביא לעסק פניות שמסתיימות בעסקה. '
+      + 'לא חשיפות, לא לייקים — <b>אנשים שהשאירו פרטים כי הם רוצים את השירות שלכם</b>.',
+    ctas: false,
+  })}
+
+<section class="sec-tight">
+  <div class="container about-grid">
+    <div class="reveal">
+      <h2>הכירו אותנו</h2>
+      <p>אנחנו לא סוכנות שמוכרת "נוכחות דיגיטלית". אנחנו מודדים את עצמנו במספר אחד:
+      כמה פניות איכותיות הגיעו לעסק שלכם החודש, ובכמה זה עלה.</p>
+      <p>העבודה שלנו מתמקדת ב<b>סקטור הפיננסי</b> — ביטוח, משכנתאות, הלוואות והחזרי מס —
+      שם הידע הצטבר, ושם אנחנו יודעים בדיוק מה מבדיל פנייה ששווה זמן מפנייה שמבזבזת אותו.</p>
+      <p>לצד זה אנחנו מנהלים מערכי שיווק דיגיטלי מלאים לעסקים מכל ענף:
+      אתר, קמפיינים, קידום אורגני, אפליקציות ואוטומציות.</p>
+      ${authorCard()}
+    </div>
+    ${shortsPlayer('fW3EDbyXOfI', 'סרטון היכרות עם באלי ליד')}
+  </div>
+</section>
+
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>שני מסלולים, שני מודלים</h2>
+      <p class="sub">שני קווי עסקים נפרדים לגמרי. בוחרים אחד — או את שניהם.</p></div>
+    <div class="two-tracks">
+      <div class="track reveal"><div class="track-in">
+        <span class="t-tag">מודל CPL</span>
+        <h3>קניית לידים</h3>
+        <p>אתם קונים חבילת פניות ומשלמים <b>מחיר לליד</b>. כל ליד נמכר לעסק אחד בלבד,
+        מסונן מול תנאי הסף שהגדרתם, ומועבר אליכם מיד.</p>
+        <a class="btn btn-ghost" href="${root}מחירון-לידים/">למחירון המלא</a>
+      </div></div>
+      <div class="track reveal" style="--d:.1s"><div class="track-in">
+        <span class="t-tag">ריטיינר חודשי</span>
+        <h3>שיווק דיגיטלי</h3>
+        <p>אנחנו מנהלים עבורכם את <b>כל מערך השיווק</b> — אתר, דפי נחיתה, קמפיינים
+        ממומנים, קידום אורגני, אפליקציות ואוטומציות. תשלום חודשי ואחוז מתקציב המדיה.</p>
+        <a class="btn btn-ghost" href="${root}שיווק-דיגיטלי/">מה כולל הליווי</a>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-tight">
+  <div class="container">
+    <div class="sec-head reveal"><h2>ארבעה דברים שאנחנו עושים אחרת</h2></div>
+    <div class="why-grid">
+      ${[
+    ['מחירון פומבי ל-29 תחומים', 'מהיחידים בענף שמפרסמים מחירים באתר. לא צריך לשלוח פנייה כדי לדעת כמה זה עולה.'],
+    ['ליד בלעדי ב-100%', 'כל פנייה נמכרת לעסק אחד בלבד. בלי רשימות ממוחזרות ובלי להתחרות בעוד חמישה שקיבלו את אותו מספר.'],
+    ['סינון לפני העברה', 'כל פנייה נבדקת מול תנאי הסף שהגדרתם — סכום, מצב תעסוקתי, אזור — לפני שהיא מגיעה אליכם.'],
+    ['תוך 24 שעות', 'מרגע החתימה, הלידים מתחילים לזרום. בלי חודש הקמה ובלי המתנה.'],
+  ].map(([t, d], i) => `
+      <div class="why reveal" style="--d:.${i}s"><div class="why-in">
+        <h3>${t}</h3><p>${d}</p>
+      </div></div>`).join('')}
+    </div>
+  </div>
+</section>
+
+${clientsStrip(root)}
+
+${ctaSection(root, {
+    title: 'רוצים לדעת אם זה מתאים <span class="gw">לעסק שלכם?</span>',
+    sub: 'שיחה קצרה, בלי התחייבות. נגיד לכם בכנות אם יש לנו מה להציע.',
+  })}`,
 });
 
 /* =================================================================

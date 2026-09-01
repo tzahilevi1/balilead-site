@@ -496,3 +496,15 @@
     resetIdle();
   }
 })();
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest && e.target.closest('.yt-fac');
+  if (!b) return;
+  var id = b.getAttribute('data-yt');
+  var f = document.createElement('iframe');
+  f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0&playsinline=1';
+  f.title = b.getAttribute('aria-label') || 'סרטון';
+  f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+  f.setAttribute('allowfullscreen','');
+  b.replaceWith(f);
+});

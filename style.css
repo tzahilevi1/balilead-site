@@ -163,37 +163,17 @@ footer{border-top:1px solid var(--line);background:#060504;padding:clamp(50px,7v
 
 /* ===== Article pages ===== */
 .art-meta{display:flex;align-items:center;gap:14px;font-size:14px;color:var(--dim);font-weight:600;margin-bottom:14px}
-.art-meta .am-cat{color:var(--gold2);border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;font-size:12.5px;letter-spacing:.06em}
-.art-cover{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
-  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);margin-bottom:clamp(32px,5vw,54px)}
-.art-cover img{width:100%;height:auto;aspect-ratio:21/9;object-fit:cover}
-.art-body{max-width:780px}
-.art-body h2{scroll-margin-top:120px}
-
-/* Magazine cards with covers */
-.art-in{padding:0;overflow:hidden}
-.art-in .a-img{aspect-ratio:16/9;overflow:hidden;background:#0b0906}
-.art-in .a-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease);opacity:.9}
-.art-card:hover .a-img img{transform:scale(1.06);opacity:1}
-.art-in .a-txt{display:flex;flex-direction:column;gap:12px;padding:20px 22px 22px;flex:1}
-.art-featured{border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.05);border:1px solid var(--line-strong);
-  margin-bottom:26px;transition:transform .6s var(--ease),border-color .5s var(--ease);display:block}
-.art-featured:hover{transform:translateY(-4px);border-color:rgba(217,164,91,.4)}
-.art-featured .af-in{border-radius:var(--r-inner);overflow:hidden;display:grid;grid-template-columns:1.2fr 1fr;
-  background:linear-gradient(160deg,#150f08 0%,#0b0906 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
-.art-featured .af-img{min-height:280px}
-.art-featured .af-img img{width:100%;height:100%;object-fit:cover}
-.art-featured .af-txt{padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:14px;justify-content:center}
-.art-featured h3{font-size:clamp(21px,2.2vw,28px);line-height:1.35}
-.art-featured p{color:var(--muted);font-size:15.5px}
-
-/* Side image */
-.side-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
-  box-shadow:0 40px 90px -40px rgba(0,0,0,.85);margin-bottom:18px}
-.side-img img{width:100%;display:block}
-
-/* Sticky mobile CTA bar */
-.mcta{display:none}
+.art-meta .am-by{color:var(--muted);font-size:12.5px}
+.art-meta .am-by b{color:var(--ink)}
+/* The author box closes the article: a reader who got this far is deciding
+   whether to believe it, and a name with a role is what that decision needs. */
+/* The about page: prose on one side, the vertical video on the other. It
+   collapses before the two columns get narrow enough to make a 9:16 player
+   taller than the text beside it. */
+.about-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(28px,5vw,64px);align-items:start}
+.about-grid h2{margin:0 0 14px}
+.about-grid p{color:var(--muted);line-height:1.85;margin:0 0 14px}
+.about-grid p b{color:var(--ink)}
 
 /* ===== Skip link ===== */
 .skip-link{position:fixed;top:-60px;inset-inline-start:16px;z-index:200;background:var(--grad-gold);color:#1c1206;
@@ -858,6 +838,78 @@ html.acc-noanim .hero-media video{display:none}
   .f-grid{grid-template-columns:1fr 1fr}
   .hero-ctas .btn{width:100%;justify-content:center}
 }
+@media(max-width:900px){.about-grid{grid-template-columns:1fr}}
+
+.two-tracks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media(max-width:820px){.two-tracks{grid-template-columns:1fr}}
+.track{padding:1.5px;border-radius:calc(var(--r-card) + 2px);
+  background:linear-gradient(150deg,rgba(217,164,91,.34),transparent 55%)}
+.track-in{background:var(--bg2);border-radius:var(--r-card);padding:26px 24px;height:100%}
+.track .t-tag{display:inline-block;font-size:11.5px;letter-spacing:.1em;color:var(--gold2);
+  border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;margin-bottom:12px}
+.track h3{margin:0 0 10px;font-size:clamp(20px,2.2vw,25px)}
+.track p{color:var(--muted);line-height:1.8;margin:0 0 18px}
+
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.why-in{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:22px 20px;height:100%;transition:border-color .5s cubic-bezier(.32,.72,0,1),transform .5s cubic-bezier(.32,.72,0,1)}
+.why:hover .why-in{border-color:rgba(217,164,91,.34);transform:translateY(-3px)}
+.why-in h3{margin:0 0 8px;font-size:16.5px;color:var(--gold2)}
+.why-in p{color:var(--muted);font-size:14px;line-height:1.75;margin:0}
+
+.yt-short{max-width:340px;margin:0 auto}
+.yt-fac{display:block;width:100%;aspect-ratio:9/16;position:relative;padding:0;cursor:pointer;
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#000;
+  transition:transform .5s cubic-bezier(.32,.72,0,1),box-shadow .5s cubic-bezier(.32,.72,0,1)}
+.yt-fac img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92;transition:opacity .5s}
+.yt-fac:hover{transform:translateY(-3px);box-shadow:0 18px 46px rgba(0,0,0,.5)}
+.yt-fac:hover img{opacity:1}
+.yt-play{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;
+  display:grid;place-items:center;color:#1a1206;
+  background:linear-gradient(140deg,var(--gold2),var(--gold));
+  box-shadow:0 10px 30px rgba(0,0,0,.45);transition:transform .4s cubic-bezier(.32,.72,0,1)}
+.yt-fac:hover .yt-play{transform:scale(1.07)}
+.yt-short iframe{width:100%;aspect-ratio:9/16;border:0;border-radius:20px;display:block}
+.author-card{display:flex;gap:16px;align-items:flex-start;margin:34px 0 0;padding:20px 22px;
+  border:1px solid var(--line);border-radius:var(--r-card);background:var(--bg2)}
+.author-card .ac-av{flex:0 0 54px;width:54px;height:54px;border-radius:50%;display:grid;
+  place-items:center;background:linear-gradient(140deg,var(--gold2),var(--gold));
+  color:#1a1206;font-weight:800;font-size:19px;letter-spacing:.02em}
+.author-card .ac-name{font-weight:700;font-size:16px;margin:0 0 2px}
+.author-card .ac-role{color:var(--gold2);font-size:13px;margin:0 0 8px}
+.author-card .ac-bio{color:var(--muted);font-size:13.5px;line-height:1.7;margin:0}
+@media(max-width:520px){.author-card{flex-direction:column;gap:12px}}
+.art-meta .am-cat{color:var(--gold2);border:1px solid rgba(217,164,91,.3);border-radius:999px;padding:3px 12px;font-size:12.5px;letter-spacing:.06em}
+.art-cover{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 100px -40px rgba(0,0,0,.9);margin-bottom:clamp(32px,5vw,54px)}
+.art-cover img{width:100%;height:auto;aspect-ratio:21/9;object-fit:cover}
+.art-body{max-width:780px}
+.art-body h2{scroll-margin-top:120px}
+
+/* Magazine cards with covers */
+.art-in{padding:0;overflow:hidden}
+.art-in .a-img{aspect-ratio:16/9;overflow:hidden;background:#0b0906}
+.art-in .a-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease);opacity:.9}
+.art-card:hover .a-img img{transform:scale(1.06);opacity:1}
+.art-in .a-txt{display:flex;flex-direction:column;gap:12px;padding:20px 22px 22px;flex:1}
+.art-featured{border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.05);border:1px solid var(--line-strong);
+  margin-bottom:26px;transition:transform .6s var(--ease),border-color .5s var(--ease);display:block}
+.art-featured:hover{transform:translateY(-4px);border-color:rgba(217,164,91,.4)}
+.art-featured .af-in{border-radius:var(--r-inner);overflow:hidden;display:grid;grid-template-columns:1.2fr 1fr;
+  background:linear-gradient(160deg,#150f08 0%,#0b0906 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.07)}
+.art-featured .af-img{min-height:280px}
+.art-featured .af-img img{width:100%;height:100%;object-fit:cover}
+.art-featured .af-txt{padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:14px;justify-content:center}
+.art-featured h3{font-size:clamp(21px,2.2vw,28px);line-height:1.35}
+.art-featured p{color:var(--muted);font-size:15.5px}
+
+/* Side image */
+.side-img{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.85);margin-bottom:18px}
+.side-img img{width:100%;display:block}
+
+/* Sticky mobile CTA bar */
+.mcta{display:none}
 @media (max-width:860px){
   .mcta{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:fixed;bottom:0;inset-inline:0;z-index:52;
     padding:10px 14px calc(10px + env(safe-area-inset-bottom));
