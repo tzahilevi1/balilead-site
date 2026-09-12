@@ -599,7 +599,10 @@ function injectSlots(body, plan, root) {
 
   /* Applied from the bottom up, so an earlier insertion cannot shift the index
      a later one was measured against. */
-  const order = ['lead', 'after_intro', 'mid', 'before_faq', 'end'];
+  /* `lead_in` has no anchor of its own on purpose: it exists only where a
+     template asks for it by name, for the one or two sections a page wants
+     read before anything else it generated. */
+  const order = ['lead', 'lead_in', 'after_intro', 'mid', 'before_faq', 'end'];
 
   /* A template may say where a slot goes, and when it does it wins.
    *
@@ -1843,6 +1846,7 @@ ${pageHero(root, {
     <p class="price-note reveal" style="--d:.1s">${IC.info} המחיר הסופי תלוי בפילוח, באזור ובכמות. מתלבטים? מתחילים בפיילוט ניסיון ורואים תוצאות לפני שמתחייבים.</p>
   </div>
 </section>
+<!--slot:lead_in-->
 
 <section class="sec" style="padding-top:clamp(40px,5vw,60px)">
   <div class="container">
@@ -1857,6 +1861,8 @@ ${pageHero(root, {
     </div>
   </div>
 </section>
+<!--slot:after_intro-->
+<!--slot:mid-->
 
 ${ctaSection(root, { title: 'רוצים הצעת מחיר <span class="gw">מדויקת לתחום שלכם?</span>' })}`,
 });
