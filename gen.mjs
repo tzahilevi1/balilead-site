@@ -1139,6 +1139,7 @@ ${clientsStrip(root)}
     </div>
   </div>
 </section>
+<!--slot:mid-->
 
 <section class="sec" style="padding-top:0">
   <div class="container">
