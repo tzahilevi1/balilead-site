@@ -386,17 +386,37 @@ function anchorHeadings(html, from, to) {
   return { html: out, entries };
 }
 
+/* How many chapters are shown before the rest are folded away.
+ *
+ * A scrolling panel was the first attempt and it was the wrong one: a
+ * scrollbar inside a card looks like a form control, the rows at its edges are
+ * sliced in half, and a reader who lands on it sees the list already scrolled
+ * past its own beginning. Nothing scrolls now. A page with more chapters than
+ * this folds the remainder behind one line the reader can open. */
+const TOC_VISIBLE = 18;
+
+const tocRows = (entries, offset) => entries
+  .map((e, i) => `<li><a href="#${e.id}"><span class="toc-n">${String(offset + i + 1).padStart(2, '0')}</span><span class="toc-t">${e.text}</span></a></li>`)
+  .join('\n      ');
+
 function tocHtml(entries, wrap) {
-  const many = entries.length > 14;
+  const head = entries.slice(0, TOC_VISIBLE);
+  const rest = entries.slice(TOC_VISIBLE);
   const inner = `<nav class="toc reveal" aria-label="תוכן העמוד">
   <div class="toc-in">
     <div class="toc-head">
       <span class="toc-eyebrow">בעמוד הזה</span>
       <span class="toc-count">${entries.length} פרקים</span>
     </div>
-    <ol class="toc-list${many ? ' toc-scroll' : ''}">
-      ${entries.map((e, i) => `<li><a href="#${e.id}"><span class="toc-n">${String(i + 1).padStart(2, '0')}</span><span class="toc-t">${e.text}</span></a></li>`).join('\n      ')}
-    </ol>
+    <ol class="toc-list">
+      ${tocRows(head, 0)}
+    </ol>${rest.length ? `
+    <details class="toc-more">
+      <summary>ועוד ${rest.length} פרקים</summary>
+      <ol class="toc-list">
+        ${tocRows(rest, TOC_VISIBLE)}
+      </ol>
+    </details>` : ''}
   </div>
 </nav>`;
   return wrapped(inner, wrap);
@@ -621,35 +641,43 @@ export function enrichCss() {
 .toc{display:block;margin:34px 0 42px;padding:.4rem;border-radius:1.7rem;
   background:linear-gradient(150deg,rgba(217,164,91,.12),rgba(20,15,9,.5) 58%);
   border:1px solid rgba(217,164,91,.18)}
-.toc-in{border-radius:calc(1.7rem - .4rem);padding:20px 22px 14px;
+.toc-in{border-radius:calc(1.7rem - .4rem);padding:24px 22px 18px;
   background:linear-gradient(160deg,rgba(24,17,10,.96),rgba(11,9,6,.97));
   box-shadow:inset 0 1px 1px rgba(255,255,255,.08)}
 .toc .toc-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  padding:0 10px 14px;margin-bottom:8px;border-bottom:1px solid var(--line)}
 .toc .toc-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
   letter-spacing:.16em;color:var(--gold2)}
 .toc .toc-eyebrow::before{content:"";width:16px;height:2px;border-radius:999px;background:var(--grad-gold)}
 .toc .toc-count{font-size:12.5px;color:var(--dim);white-space:nowrap}
-.toc .toc-list{list-style:none;margin:0;padding:0;display:grid;gap:1px 26px}
+.toc .toc-list{list-style:none;margin:0;padding:0;display:grid;gap:2px 30px}
 @media (min-width:700px){.toc .toc-list{grid-template-columns:1fr 1fr}}
 @media (min-width:1180px){.enrich-wrap .toc .toc-list{grid-template-columns:1fr 1fr 1fr}}
-/* Every chapter stays listed on a page with forty of them; the panel scrolls
-   rather than the list being cut, because a list of contents that hides half
-   the contents is worse than none. */
-/* Padding on both sides, not only the far one: a scrolling box clips on its
-   inline-start edge too, and the ordinal sat exactly on it. */
-.toc .toc-scroll{max-height:min(46vh,360px);overflow-y:auto;padding-inline:5px 8px;
-  mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent);
-  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent)}
+
+/* The chapters past the fold, behind one line. No script: a details element
+   opens by itself, and a reader who never opens it still saw the first
+   eighteen. */
+.toc .toc-more{margin-top:4px}
+.toc .toc-more>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:9px;
+  padding:10px 0 2px;font-size:13.5px;font-weight:700;color:var(--gold2);
+  border-top:1px solid var(--line);width:100%;
+  transition:color .35s var(--ease)}
+.toc .toc-more>summary::-webkit-details-marker{display:none}
+.toc .toc-more>summary::after{content:"";width:7px;height:7px;border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin-top:-4px;
+  transition:transform .45s var(--ease)}
+.toc .toc-more[open]>summary::after{transform:rotate(-135deg);margin-top:2px}
+.toc .toc-more>summary:hover{color:#f6d9a0}
+.toc .toc-more .toc-list{padding-top:2px}
 /* A grid item's min-width is auto, so without this the row refuses to shrink
    below its longest title, the columns overflow the panel, and the ordinal at
    the far edge is sliced in half by the border. */
 .toc .toc-list li{margin:0;padding:0;min-width:0}
 .toc .toc-list li::before{display:none}
-.toc .toc-list a{display:flex;align-items:baseline;gap:10px;padding:8px 0;min-width:0;
+.toc .toc-list a{display:flex;align-items:baseline;gap:11px;padding:9px 10px;min-width:0;border-radius:11px;
   color:var(--muted);font-size:15px;font-weight:600;text-decoration:none;line-height:1.45;
-  border-bottom:1px solid transparent;transition:color .35s var(--ease)}
-.toc .toc-list a:hover{color:var(--gold2);background:none}
+  transition:color .35s var(--ease),background-color .35s var(--ease)}
+.toc .toc-list a:hover{color:var(--gold2);background:rgba(217,164,91,.07)}
 .toc .toc-n{flex:0 0 auto;font-family:'Secular One';font-size:11.5px;color:var(--gold);opacity:.75;
   letter-spacing:.06em;transition:opacity .35s var(--ease)}
 .toc .toc-list a:hover .toc-n{opacity:1}
