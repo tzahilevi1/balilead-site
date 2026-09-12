@@ -317,9 +317,85 @@ const secHead = (heading, sub) => (heading
 const LONG_ITEM = 180;
 const hasLongItems = items => items.some(i => String((i && i.text) || '').length > LONG_ITEM);
 
+/**
+ * A run of prose that is really a list of questions and answers.
+ *
+ * The engine writes these as a bold paragraph asking something and a plain
+ * paragraph answering it, one after another. Rendered as prose they are a wall
+ * of alternating bold and grey — which is what the site showed — while the
+ * accordion the site already uses for exactly this shape sat unused a few
+ * sections below.
+ *
+ * Returns the intro blocks and the pairs, or null when the run is not that.
+ */
+function faqFromBlocks(blocks, heading = '') {
+  if (!Array.isArray(blocks) || blocks.length < 6) return null;
+  /* Inside a section that announces itself as questions, a short bold line is
+     a question whether or not it carries a question mark. Outside one, the
+     mark is the only honest signal. */
+  const announced = /שאל/.test(String(heading));
+  const asks = b => {
+    if (!Array.isArray(b) || typeof b[1] !== 'string') return false;
+    const raw = b[1].trim();
+    const text = raw.replace(/<[^>]+>/g, '').trim();
+    if (!text) return false;
+    if (!/[?？]$/.test(text) && !(announced && text.length <= 90)) return false;
+    if (b[0] === 'h3') return true;
+    return b[0] === 'p' && /^<(strong|b)>[\s\S]*<\/(strong|b)>$/.test(raw);
+  };
+
+  const intro = [];
+  const items = [];
+  let start = -1;
+  blocks.forEach((b, i) => {
+    if (!Array.isArray(b) || typeof b[1] !== 'string') return;
+    if (b[0] === 'h2') return;
+    if (asks(b)) {
+      if (start < 0) start = i;
+      items.push({ q: b[1].replace(/<\/?(strong|b)>/g, '').trim(), a: [] });
+      return;
+    }
+    if (items.length) items[items.length - 1].a.push(b);
+    else intro.push(b);
+  });
+
+  /* Three is where a pair stops being an aside and starts being a list. A
+     question left without an answer means the run was something else. */
+  if (items.length < 3 || items.some(i => !i.a.length)) return null;
+  /* An answer of five paragraphs is not an answer, it is a chapter that opens
+     with a rhetorical question — and folding a chapter into an accordion hides
+     content a reader came for. */
+  if (items.some(i => i.a.length > 4)) return null;
+  /* Outside a section that announces itself as questions, the run has to carry
+     the text to its end. A question in the middle of an article is a sentence,
+     not an entry in a list. */
+  if (!announced && start >= 0) {
+    const last = blocks.length - 1;
+    const tail = blocks[last];
+    if (!Array.isArray(tail) || tail[0] === 'h2') return null;
+    if (items[items.length - 1].a[items[items.length - 1].a.length - 1] !== tail) return null;
+  }
+  return { start, intro, items: items.map(i => [i.q, proseHtml(i.a)]) };
+}
+
 const SECTION_RENDERERS = {
   /* A run of text: still the right choice for anything that is explanation. */
   prose: sec => {
+    const own = (sec.blocks || []).find(b => Array.isArray(b) && b[0] === 'h2');
+    const title = sec.heading || (own && own[1]) || '';
+    const faq = faqFromBlocks(sec.blocks, title);
+    if (faq) {
+      const intro = proseHtml(faq.intro);
+      return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(title || 'שאלות ותשובות', sec.sub)}
+    ${intro ? `<div class="prose" style="margin-bottom:24px">${intro}</div>` : ''}
+${faqAccordion(faq.items)}
+  </div>
+</section>`;
+    }
+
     const html = proseHtml(sec.blocks);
     if (!html) return '';
     /* A heading is only added when the text does not already open with one —
@@ -615,14 +691,29 @@ function extraBlocks(plan, root = '', slot = 'end', useLead = false) {
     const isProse = !sec || !sec.type || sec.type === 'prose';
     const last = sections[sections.length - 1];
     /* Only an untitled run is a continuation. A section that announces itself
-       is a section, and merging it would silently drop its heading. */
-    if (isProse && !sec?.heading && last && last.type === 'prose') {
+       is a section, and merging it would silently drop its heading.
+
+       A heading can also live inside the blocks rather than in the `heading`
+       field, and that counts: the FAQ on /קידום-אתרים-seo/ opened with an h2
+       block, was merged into the chapter above it, and then read as a wall of
+       bold questions because the run it belonged to no longer announced what
+       it was. */
+    const titledInside = Array.isArray(sec?.blocks) && Array.isArray(sec.blocks[0])
+      && /^h[23]$/.test(sec.blocks[0][0]);
+    /* A list of questions is closed: appending the next chapter to it puts
+       that chapter's paragraphs inside the last answer, and the run stops
+       looking like a list of questions at all. That is exactly what happened
+       on /קידום-בפייסבוק/ — four questions and answers, followed by a chapter
+       about pricing, and the whole thing rendered as flat bold-and-grey text. */
+    if (isProse && !sec?.heading && !titledInside && last && last.type === 'prose' && !last.isFaq) {
       last.blocks = [...(last.blocks || []), ...((sec && sec.blocks) || [])];
       continue;
     }
-    sections.push(isProse
-      ? { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] }
-      : sec);
+    if (!isProse) { sections.push(sec); continue; }
+    const entry = { type: 'prose', heading: sec?.heading, blocks: (sec && sec.blocks) || [] };
+    const own = entry.blocks.find(b => Array.isArray(b) && b[0] === 'h2');
+    entry.isFaq = !!faqFromBlocks(entry.blocks, entry.heading || (own && own[1]) || '');
+    sections.push(entry);
   }
 
   return rich(sections
@@ -793,13 +884,21 @@ const checkCard = (ic, h, p) => `
     <div class="c-ic">${ic}</div><h3>${h}</h3><p>${p}</p>
   </div></div>`;
 
+/* The accordion itself, without a section around it — so a generated section
+   that turns out to be questions and answers can use the same component the
+   hand-written ones use, under its own heading. A div rather than a paragraph
+   for the answer: an answer can run to several paragraphs or a list, and a
+   paragraph cannot contain either. */
+const faqAccordion = items => `
+    <div class="faq reveal" style="--d:.1s">
+      ${items.map(([q, a]) => `<details><summary>${q}<span class="pl">${IC.plus}</span></summary><div class="fa">${a}</div></details>`).join('')}
+    </div>`;
+
 const faqBlock = items => `
 <section class="sec" style="padding-top:0">
   <div class="container">
     <div class="sec-head reveal"><h2>שאלות <span class="gw">ותשובות</span></h2></div>
-    <div class="faq reveal" style="--d:.1s">
-      ${items.map(([q, a]) => `<details><summary>${q}<span class="pl">${IC.plus}</span></summary><p class="fa">${a}</p></details>`).join('')}
-    </div>
+${faqAccordion(items)}
   </div>
 </section>`;
 
@@ -990,8 +1089,16 @@ function cleanArticleBlocks(blocks) {
   ];
   for (const b of out) for (const [f, t] of TYPOS) b[1] = b[1].split(f).join(t);
   while (out.length && out[out.length - 1][0] !== 'p' && out[out.length - 1][1].length < 60) out.pop();
+
+  /* An article that closes with a run of questions and answers gets the site's
+     accordion for that run, and keeps its ordinary prose for everything above
+     it. The questions arrive from WordPress as a bold paragraph followed by a
+     plain one, which rendered as alternating bold and grey text. */
+  const faq = faqFromBlocks(out, '');
+  const body = faq ? out.slice(0, faq.start) : out;
+
   let html = '', inList = false;
-  for (const [t, txt] of out) {
+  for (const [t, txt] of body) {
     if (t === 'li') { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${txt}</li>`; continue; }
     if (inList) { html += '</ul>'; inList = false; }
     if (t === 'h2') html += `<h2>${txt}</h2>`;
@@ -999,6 +1106,7 @@ function cleanArticleBlocks(blocks) {
     else html += `<p>${txt}</p>`;
   }
   if (inList) html += '</ul>';
+  if (faq) html += faqAccordion(faq.items);
   return html;
 }
 
