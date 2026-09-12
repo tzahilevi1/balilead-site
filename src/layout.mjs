@@ -387,6 +387,32 @@ section{position:relative}
 .step h3{font-size:21px;margin:12px 0 10px}
 .step p{color:var(--muted);font-size:15.5px}
 
+/* Steps that are paragraphs: down the page, on a rail */
+.steps{list-style:none;counter-reset:vstep;margin:0;padding:0;position:relative;max-width:940px}
+.steps::before{content:"";position:absolute;inset-block:14px 26px;inset-inline-start:21px;width:1px;
+  background:linear-gradient(to bottom,rgba(217,164,91,.5),rgba(217,164,91,.16) 55%,transparent)}
+.step-row{counter-increment:vstep;position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);
+  gap:clamp(16px,2vw,26px);padding-bottom:clamp(26px,3vw,38px)}
+.step-row:last-child{padding-bottom:0}
+.step-n{grid-column:1;width:44px;height:44px;border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-family:'Secular One';font-size:14px;letter-spacing:.06em;color:var(--gold2);
+  background:linear-gradient(160deg,#1a1207 0%,#0c0906 100%);
+  border:1px solid rgba(217,164,91,.32);box-shadow:0 0 0 5px var(--bg),inset 0 1px 1px rgba(255,255,255,.08)}
+.step-body{grid-column:2;padding-top:6px}
+.step-body h3{font-size:clamp(18px,1.9vw,22px);margin-bottom:9px}
+.step-body p{color:var(--muted);font-size:16px;line-height:1.68;max-width:70ch;margin:0}
+
+/* Term and explanation, one row each */
+.spec{border-top:1px solid var(--line);max-width:1000px}
+.spec-row{display:grid;gap:6px clamp(20px,3vw,44px);padding:clamp(20px,2.4vw,28px) 0;
+  border-bottom:1px solid var(--line)}
+.spec-row:last-child{border-bottom:0}
+@media (min-width:820px){.spec-row{grid-template-columns:minmax(0,5fr) minmax(0,9fr);align-items:baseline}}
+.spec-k{font-size:clamp(17px,1.8vw,20px);color:var(--ink);position:relative;padding-inline-start:15px}
+.spec-k::before{content:"";position:absolute;inset-inline-start:0;top:.42em;width:6px;height:6px;border-radius:999px;
+  background:var(--gold2);box-shadow:0 0 10px rgba(240,194,122,.7)}
+.spec-v{color:var(--muted);font-size:16px;line-height:1.68;margin:0}
+
 /* Bento verticals */
 .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
 .v-card{position:relative;border-radius:var(--r-card);padding:.45rem;background:rgba(244,238,227,.04);

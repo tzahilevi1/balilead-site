@@ -228,6 +228,26 @@ const attr = t => String(t == null ? '' : t)
   .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 /** Paragraphs, headings and list items — the plain reading lane. */
+/**
+ * Internal links the engine wrote in markdown, turned into links.
+ *
+ * Anything that rendered the text as-is showed the reader literal brackets —
+ * 58 of them across 21 pages, the home page included — and the link they were
+ * meant to be was never created, so the internal linking they were written for
+ * never happened either.
+ *
+ * Only site-relative targets are converted. A bracket followed by anything
+ * else is prose, and prose is left alone.
+ */
+const MD_LINK = /\[([^\]\n<>]{1,120})\]\((\/[^)\s"'<>]*)\)/g;
+const rich = html => String(html == null ? '' : html).replace(MD_LINK, '<a href="$2">$1</a>');
+
+/** Stagger for a reveal, in seconds. Written out rather than interpolated into
+ *  `.${i * 8}s`, which produced ".8s" for the second item and ".16s" for the
+ *  third — eight hundred milliseconds against a hundred and sixty, so the
+ *  second row of every list arrived last. */
+const dly = (i, step = 0.08) => (i ? ` style="--d:${(i * step).toFixed(2)}s"` : '');
+
 function proseHtml(blocks) {
   const out = [];
   let list = [];
@@ -282,6 +302,21 @@ const secHead = (heading, sub) => (heading
   ? `<div class="sec-head reveal"><h2>${accentHeading(heading)}</h2>${sub ? `<p>${sub}</p>` : ''}</div>`
   : '');
 
+/**
+ * Whether a set of items carries paragraphs rather than lines.
+ *
+ * The site's own strips — the four-step process row, the bullet list — were
+ * written by hand for a line or two per item. The engine writes paragraphs: of
+ * the 22 generated process sections, 13 hold an item over 220 characters, and
+ * one holds 877. A paragraph inside a quarter-width column is a ribbon of text
+ * one word wide, which is exactly what it looked like on the site.
+ *
+ * So each of those layouts has two shapes, and the content picks. Nothing is
+ * shortened — the text is the text; only the frame around it changes.
+ */
+const LONG_ITEM = 180;
+const hasLongItems = items => items.some(i => String((i && i.text) || '').length > LONG_ITEM);
+
 const SECTION_RENDERERS = {
   /* A run of text: still the right choice for anything that is explanation. */
   prose: sec => {
@@ -321,15 +356,18 @@ const SECTION_RENDERERS = {
   bento: sec => {
     const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
     if (items.length < 3) return '';
-    /* Two wide, then thirds — the proportions the hand-written grids use. */
-    const span = i => (items.length <= 4 ? 6 : i < 2 ? 6 : 3);
+    /* Two wide, then thirds — the proportions the hand-written grids use.
+       Unless the cards hold paragraphs, in which case a quarter-width card is
+       a column of single words and every card gets half the row. */
+    const wide = hasLongItems(items) || items.length <= 4;
+    const span = i => (wide ? 6 : i < 2 ? 6 : 3);
     return `
 <section class="sec-tight">
   <div class="container">
     ${secHead(sec.heading, sec.sub)}
     <div class="bento">
       ${items.map((it, i) => `
-      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${i ? ` style="--d:.${i * 6}s"` : ''}><div class="v-in">
+      <div class="v-card${i === 0 ? ' feature' : ''} col-${span(i)} reveal"${dly(i, 0.06)}><div class="v-in">
         <div class="v-top"><div class="v-ic">${IC.check}</div>${it.note ? `<span class="v-range">${it.note}</span>` : ''}</div>
         <div><h3>${it.title}</h3><p class="v-desc">${it.text || ''}</p></div>
       </div></div>`).join('')}
@@ -346,6 +384,27 @@ const SECTION_RENDERERS = {
   checklist: sec => {
     const items = (sec.items || []).filter(i => i && i.title);
     if (items.length < 3) return '';
+
+    /* A bullet whose text runs four hundred characters is not a bullet. Rows
+       instead: the term on one side, the explanation on the other, a hairline
+       between them — the shape a specification sheet uses, and the reason it
+       survives long text. */
+    if (hasLongItems(items)) {
+      return `
+<section class="sec-tight">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="spec">
+      ${items.map((i, n) => `
+      <div class="spec-row reveal"${dly(n, 0.06)}>
+        <h3 class="spec-k">${String(i.title).replace(/[.:]\s*$/, '')}</h3>
+        <p class="spec-v">${i.text || ''}</p>
+      </div>`).join('')}
+    </div>
+  </div>
+</section>`;
+    }
+
     return `
 <section class="sec-tight">
   <div class="container">
@@ -366,15 +425,37 @@ const SECTION_RENDERERS = {
    * as four cards that happen to be adjacent.
    */
   process: sec => {
-    const items = (sec.items || []).filter(i => i && i.title).slice(0, 5);
+    const items = (sec.items || []).filter(i => i && i.title).slice(0, 6);
     if (items.length < 3) return '';
-    return `
+
+    /* Steps that are paragraphs read down the page, not across it: the ordinal
+       on a rail at the side, the text at a width a person can read. */
+    if (hasLongItems(items) || items.length > 4) {
+      return `
 <section class="sec-tight">
   <div class="container">
     ${secHead(sec.heading, sec.sub)}
-    <div class="process-grid">
+    <ol class="steps">
       ${items.map((it, i) => `
-      <div class="step reveal"${i ? ` style="--d:.${i}s"` : ''}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
+      <li class="step-row reveal"${dly(i)}>
+        <span class="step-n">${String(i + 1).padStart(2, '0')}</span>
+        <div class="step-body"><h3>${it.title}</h3><p>${it.text || ''}</p></div>
+      </li>`).join('')}
+    </ol>
+  </div>
+</section>`;
+    }
+
+    /* Short steps keep the horizontal strip. `process` resets the counter —
+       without it the ordinals continue from the previous strip on the page,
+       and the second sequence on a page opened at 04. */
+    return `
+<section class="sec-tight process">
+  <div class="container">
+    ${secHead(sec.heading, sec.sub)}
+    <div class="process-grid${items.length === 3 ? ' p3' : ''}">
+      ${items.map((it, i) => `
+      <div class="step reveal"${dly(i, 0.1)}><h3>${it.title}</h3><p>${it.text || ''}</p></div>`).join('')}
     </div>
   </div>
 </section>`;
@@ -416,7 +497,7 @@ const SECTION_RENDERERS = {
     ${secHead(sec.heading, sec.sub)}
     <div class="why-grid">
       ${items.map((it, i) => `
-      <div class="why-card reveal"${i ? ` style="--d:.${i}s"` : ''}><div class="why-in">
+      <div class="why-card reveal"${dly(i, 0.1)}><div class="why-in">
         <span class="why-num">${it.note}</span><h3>${it.title}</h3>
         <p>${it.text || ''}</p>
       </div></div>`).join('')}
@@ -515,7 +596,7 @@ function extraBlocks(plan, root = '', slot = 'end', useLead = false) {
     /* Paragraphs only — no section wrapper. This renders inside a column that
        already has its own spacing, and a section's vertical padding here would
        reintroduce the gap it was moved to close. */
-    return proseHtml(raw[0].blocks || []);
+    return rich(proseHtml(raw[0].blocks || []));
   }
   if (leadIndex === 0) raw.shift();
 
@@ -544,9 +625,9 @@ function extraBlocks(plan, root = '', slot = 'end', useLead = false) {
       : sec);
   }
 
-  return sections
+  return rich(sections
     .map(sec => (SECTION_RENDERERS[sec && sec.type] || SECTION_RENDERERS.prose)({ ...sec, root }))
-    .filter(Boolean).join('');
+    .filter(Boolean).join(''));
 }
 
 

@@ -335,6 +335,73 @@ function figureHtml({ pic, root, wrap }) {
   return wrapped(inner, wrap);
 }
 
+/* ---------------- table of contents ---------------- */
+
+/**
+ * An id for a heading, made from the heading.
+ *
+ * Hebrew is kept: a fragment of Hebrew text is valid in HTML5 and in a URL,
+ * and "#איך-מתבצע-הסינון" tells a person who copies the link what it points
+ * at, which "#s7" does not. Only the characters that would break a fragment
+ * or an attribute are removed.
+ */
+function slugify(text, taken) {
+  const base = String(text)
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;|&#\d+;/gi, ' ')
+    .replace(/["'<>#?%&/\\|{}[\]()]/g, '')
+    .replace(/[.,:;!]+/g, '')
+    .trim().replace(/\s+/g, '-')
+    .slice(0, 60) || 'פרק';
+  let slug = base;
+  for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`;
+  taken.add(slug);
+  return slug;
+}
+
+const headingText = tag => tag.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+/**
+ * Gives every heading in the region an id, and reports what they are.
+ *
+ * Ids are written from the last heading backwards so that an insertion cannot
+ * move the position of one not yet reached.
+ */
+function anchorHeadings(html, from, to) {
+  const found = [...html.slice(from, to).matchAll(/<h2\b([^>]*)>([\s\S]*?)<\/h2>/g)]
+    .map(m => ({ at: m.index + from, attrs: m[1], inner: m[2], whole: m[0] }));
+  const taken = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map(m => m[1]));
+  const entries = [];
+  let out = html;
+  for (let i = found.length - 1; i >= 0; i--) {
+    const h = found[i];
+    const text = headingText(h.inner);
+    if (!text) continue;
+    const existing = /\sid="([^"]+)"/.exec(h.attrs);
+    const id = existing ? existing[1] : slugify(text, taken);
+    entries.unshift({ id, text });
+    if (existing) continue;
+    out = out.slice(0, h.at) + `<h2 id="${id}"${h.attrs}>` + out.slice(h.at + `<h2${h.attrs}>`.length);
+  }
+  return { html: out, entries };
+}
+
+function tocHtml(entries, wrap) {
+  const many = entries.length > 14;
+  const inner = `<nav class="toc reveal" aria-label="תוכן העמוד">
+  <div class="toc-in">
+    <div class="toc-head">
+      <span class="toc-eyebrow">בעמוד הזה</span>
+      <span class="toc-count">${entries.length} פרקים</span>
+    </div>
+    <ol class="toc-list${many ? ' toc-scroll' : ''}">
+      ${entries.map((e, i) => `<li><a href="#${e.id}"><span class="toc-n">${String(i + 1).padStart(2, '0')}</span><span class="toc-t">${e.text}</span></a></li>`).join('\n      ')}
+    </ol>
+  </div>
+</nav>`;
+  return wrapped(inner, wrap);
+}
+
 /* ---------------- placement ---------------- */
 
 /**
@@ -387,6 +454,16 @@ export function enrich(html, { path = '', title = '', root = '' } = {}) {
      action, and the accessibility statement is a legal text. */
   if (/^(יצירת-קשר|הצהרת-נגישות|מדיניות-פרטיות|תקנון|תנאי-שימוש|404)/.test(path)) return html;
 
+  /* Headings are given their ids first, because writing them moves every
+     position after them — so the region is measured again afterwards, not
+     patched up. */
+  {
+    const col = articleColumn(html);
+    const f = col ? col.from : heroEnd(html);
+    const t = col ? col.to : furnitureStart(html);
+    if (t > f) html = anchorHeadings(html, f, t).html;
+  }
+
   const column = articleColumn(html);
   const from = column ? column.from : heroEnd(html);
   const to = column ? column.to : furnitureStart(html);
@@ -395,7 +472,13 @@ export function enrich(html, { path = '', title = '', root = '' } = {}) {
   const region = html.slice(from, to);
   const words = hebrewWords(region);
   const plan = planFor(words);
-  if (!plan.length) return html;
+  const entries = [...region.matchAll(/<h2\b[^>]*\sid="([^"]+)"[^>]*>([\s\S]*?)<\/h2>/g)]
+    .map(m => ({ id: m[1], text: headingText(m[2]) }))
+    .filter(e => e.text);
+  /* Six is where a page stops being read straight through and starts being
+     searched. Below that a list of contents is furniture. */
+  const wantsToc = entries.length >= 6;
+  if (!plan.length && !wantsToc) return html;
 
   /* Every <h2> in the region, in reading order. They are the only places a
      block may land: between two headings is between two thoughts. */
@@ -426,18 +509,30 @@ export function enrich(html, { path = '', title = '', root = '' } = {}) {
     taken.add(i);
     picks.push({ ...step, index: heads[i] });
   }
+
+  /* The list of contents goes above everything, which is also why it is added
+     last: the loop below works from the bottom up, and this is the bottom of
+     that order. In a column it sits at the top of the column; on a page built
+     from sections it goes before the section the first heading is in. */
+  if (wantsToc) picks.push({ kind: 'toc', index: column ? from : heads[0], top: !column });
   if (!picks.length) return html;
 
   /* Bottom up, so an earlier insertion cannot shift the index a later one was
      measured against. */
   let out = html;
   for (const pick of picks.sort((a, b) => b.index - a.index)) {
-    const { at, wrap } = anchorAt(out, pick.index, from);
+    /* A list of contents at the top of a column needs no anchoring — it is
+       already at the start of the text it lists. */
+    const { at, wrap } = pick.kind === 'toc' && !pick.top
+      ? { at: pick.index, wrap: false }
+      : anchorAt(out, pick.index, from);
     const block = pick.kind === 'figure'
       ? figureHtml({ pic: pics[pick.n], root, wrap })
       : pick.kind === 'pitch'
         ? pitchHtml({ topic, href, wrap, delay: '.06s' })
-        : nudgeHtml({ topic, href, wrap });
+        : pick.kind === 'toc'
+          ? tocHtml(entries, wrap)
+          : nudgeHtml({ topic, href, wrap });
     out = out.slice(0, at) + block + out.slice(at);
   }
   return out;
@@ -519,6 +614,47 @@ export function enrichCss() {
 .nudge .nudge-ic{display:flex;transition:transform .5s var(--ease)}
 .nudge .nudge-ic svg{width:15px;height:15px}
 .nudge .nudge-go:hover .nudge-ic{transform:translateX(-3px)}
+
+/* Table of contents. The sticky header is a floating pill about ninety pixels
+   tall, so a heading jumped to lands under it without this. */
+[id]:target,h2[id]{scroll-margin-top:118px}
+.toc{display:block;margin:34px 0 42px;padding:.4rem;border-radius:1.7rem;
+  background:linear-gradient(150deg,rgba(217,164,91,.12),rgba(20,15,9,.5) 58%);
+  border:1px solid rgba(217,164,91,.18)}
+.toc-in{border-radius:calc(1.7rem - .4rem);padding:20px 22px 14px;
+  background:linear-gradient(160deg,rgba(24,17,10,.96),rgba(11,9,6,.97));
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.08)}
+.toc .toc-head{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding-bottom:12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.toc .toc-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.16em;color:var(--gold2)}
+.toc .toc-eyebrow::before{content:"";width:16px;height:2px;border-radius:999px;background:var(--grad-gold)}
+.toc .toc-count{font-size:12.5px;color:var(--dim);white-space:nowrap}
+.toc .toc-list{list-style:none;margin:0;padding:0;display:grid;gap:1px 26px}
+@media (min-width:700px){.toc .toc-list{grid-template-columns:1fr 1fr}}
+@media (min-width:1180px){.enrich-wrap .toc .toc-list{grid-template-columns:1fr 1fr 1fr}}
+/* Every chapter stays listed on a page with forty of them; the panel scrolls
+   rather than the list being cut, because a list of contents that hides half
+   the contents is worse than none. */
+/* Padding on both sides, not only the far one: a scrolling box clips on its
+   inline-start edge too, and the ordinal sat exactly on it. */
+.toc .toc-scroll{max-height:min(46vh,360px);overflow-y:auto;padding-inline:5px 8px;
+  mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent);
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 34px),transparent)}
+/* A grid item's min-width is auto, so without this the row refuses to shrink
+   below its longest title, the columns overflow the panel, and the ordinal at
+   the far edge is sliced in half by the border. */
+.toc .toc-list li{margin:0;padding:0;min-width:0}
+.toc .toc-list li::before{display:none}
+.toc .toc-list a{display:flex;align-items:baseline;gap:10px;padding:8px 0;min-width:0;
+  color:var(--muted);font-size:15px;font-weight:600;text-decoration:none;line-height:1.45;
+  border-bottom:1px solid transparent;transition:color .35s var(--ease)}
+.toc .toc-list a:hover{color:var(--gold2);background:none}
+.toc .toc-n{flex:0 0 auto;font-family:'Secular One';font-size:11.5px;color:var(--gold);opacity:.75;
+  letter-spacing:.06em;transition:opacity .35s var(--ease)}
+.toc .toc-list a:hover .toc-n{opacity:1}
+.toc .toc-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:600px){.toc .toc-t{white-space:normal}}
 
 .cfig{margin:40px 0;padding:0}
 .cfig-in{padding:.34rem;border-radius:1.7rem;background:rgba(244,238,227,.045);
