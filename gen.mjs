@@ -2,6 +2,8 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { shell, pageHero, ctaSection, clientsStrip, sideMenu, authorCard, shortsPlayer, siteCss, siteJs, SITE, AUTHOR, IC, NAV_DIGITAL } from './src/layout.mjs';
 import { PRICES as PRICE_GROUPS } from './src/prices.mjs';
+import { enrich, enrichCss } from './src/enrich.mjs';
+import { furnitureStart, articleColumn } from './src/regions.mjs';
 
 const SITE_CONTENT = JSON.parse(readFileSync('data/site-content.json', 'utf8'));
 const LASTMOD = JSON.parse(readFileSync('data/lastmod.json', 'utf8'));
@@ -489,12 +491,33 @@ const SECTION_RENDERERS = {
  * it. Sections now carry the slot they were placed in, and each slot in the
  * template renders only its own.
  */
-function extraBlocks(plan, root = '', slot = 'end') {
+function extraBlocks(plan, root = '', slot = 'end', useLead = false) {
   /* A flat block array is the older shape; read it as one prose run. */
   const raw = Array.isArray(plan) && plan.length && Array.isArray(plan[0])
     ? [{ type: 'prose', blocks: plan }]
     : (Array.isArray(plan) ? plan : []);
   if (!raw.length) return '';
+
+  /* `lead` is the opening run of prose that carries no heading of its own.
+   *
+   * It reads as a continuation of the introduction rather than as a section,
+   * and on a page whose intro is a two-column grid it belongs inside that
+   * column — beside the copy it continues, filling the space a tall pull quote
+   * leaves under short prose. Everything after it keeps its own slot, because a
+   * section that announces itself is a section. */
+  const leadIndex = useLead
+    ? raw.findIndex(s =>
+      s && (!s.type || s.type === 'prose') && !s.heading && (s.blocks || []).length)
+    : -1;
+
+  if (slot === 'lead') {
+    if (!useLead || leadIndex !== 0) return '';
+    /* Paragraphs only — no section wrapper. This renders inside a column that
+       already has its own spacing, and a section's vertical padding here would
+       reintroduce the gap it was moved to close. */
+    return proseHtml(raw[0].blocks || []);
+  }
+  if (leadIndex === 0) raw.shift();
 
   /* Consecutive prose becomes one section rather than several.
      Each section carries its own vertical padding, so six prose sections in a
@@ -542,31 +565,6 @@ function extraBlocks(plan, root = '', slot = 'end') {
 function injectSlots(body, plan, root) {
   if (!Array.isArray(plan) || !plan.length) return body;
 
-  /**
-   * Where the article ends and the page's closing furniture begins.
-   *
-   * A page finishes with blocks that are not part of what it says: the magazine
-   * strip, "אולי יעניין אתכם גם", the questions, the contact form. They belong
-   * last, always. The anchors below used to measure against every <section> on
-   * the page, so "halfway down" landed past the magazine strip — and a reader
-   * met eight paragraphs of the article *after* being offered other articles to
-   * go read. On /hot-cold-leads-guide/ the strip sat second out of thirteen.
-   *
-   * Everything inserted now lands before this line.
-   */
-  const furnitureStart = html => {
-    const marks = [
-      html.indexOf('class="art-grid"'),
-      html.indexOf('class="faq reveal"'),
-      html.indexOf('<section class="sec contact"'),
-    ].filter(i => i !== -1);
-    if (!marks.length) return html.length;
-    /* Back up to the section that opens the furniture, so nothing is spliced
-       into the middle of a grid. */
-    const first = Math.min(...marks);
-    const open = html.lastIndexOf('<section', first);
-    return open === -1 ? first : open;
-  };
 
   /* Where each position lives in the markup, in the order the reader meets
      them. Each anchor returns the index the HTML is spliced in at. */
@@ -598,39 +596,32 @@ function injectSlots(body, plan, root) {
 
   /* Applied from the bottom up, so an earlier insertion cannot shift the index
      a later one was measured against. */
-  /**
-   * The article's own column, when the page has one.
-   *
-   * An article page is a two-column grid: the prose on the left, the sticky
-   * menu on the right. Generated sections were spliced in as siblings of that
-   * grid, which put them outside the column the menu is anchored to — so on
-   * /hot-cold-leads-guide/ the reader passed eight generated sections with no
-   * menu beside them and only met it six thousand pixels down, at the original
-   * article. The menu was never broken; the content had been placed where it
-   * could not reach.
-   *
-   * Returns the span inside .art-body, or null on a page built differently —
-   * commercial pages have no such column and keep the section-level anchors.
-   */
-  const articleColumn = html => {
-    const openTag = /<div class="prose art-body[^"]*"[^>]*>/.exec(html);
-    if (!openTag) return null;
-    const from = openTag.index + openTag[0].length;
-    /* Matching close, by depth: .art-body holds nested divs, so the first
-       </div> after it is almost never the right one. */
-    let depth = 1;
-    const tag = /<\/?div\b[^>]*>/g;
-    tag.lastIndex = from;
-    for (let m = tag.exec(html); m; m = tag.exec(html)) {
-      depth += m[0][1] === '/' ? -1 : 1;
-      if (depth === 0) return { from, to: m.index };
-    }
-    return null;
-  };
 
   /* Applied from the bottom up, so an earlier insertion cannot shift the index
      a later one was measured against. */
-  const order = ['after_intro', 'mid', 'before_faq', 'end'];
+  const order = ['lead', 'after_intro', 'mid', 'before_faq', 'end'];
+
+  /* A template may say where a slot goes, and when it does it wins.
+   *
+   * The anchors above infer a position from heading offsets, which is right for
+   * a page this file has never seen. It is wrong for a page built by hand: the
+   * home page's opening section is a two-column grid whose right column — an
+   * image above a pull quote — runs far taller than the prose beside it, so
+   * inferring "after the first heading" dropped the generated text below the
+   * whole grid and left a screen of empty space under the copy. Marking the end
+   * of that column puts the text where a reader is already reading.
+   *
+   * `lead` is read only where a template asks for it by name. It lifts the
+   * opening untitled prose out of the flow, and doing that on a page that never
+   * asked would move text nobody placed there. */
+  const useLead = body.includes('<!--slot:lead-->');
+  const explicit = new Set();
+  for (const slot of order) {
+    const marker = `<!--slot:${slot}-->`;
+    if (!body.includes(marker)) continue;
+    explicit.add(slot);
+    body = body.replaceAll(marker, extraBlocks(plan, root, slot, useLead));
+  }
 
   /* On an article page every slot resolves inside the column, in the same
      reading order, so the menu spans all of it. */
@@ -645,8 +636,9 @@ function injectSlots(body, plan, root) {
       end: inner.length,
     };
     const placed = order
-      .map(slot => ({ slot, html: extraBlocks(plan, root, slot), at: at[slot] }))
-      .filter(x => x.html)
+      .filter(slot => !explicit.has(slot))
+      .map(slot => ({ slot, html: extraBlocks(plan, root, slot, useLead), at: at[slot] }))
+      .filter(x => x.html && typeof x.at === 'number')
       .sort((a, b) => b.at - a.at);
 
     let col = inner;
@@ -655,21 +647,23 @@ function injectSlots(body, plan, root) {
     }
     return body.slice(0, column.from) + col + body.slice(column.to);
   }
+  let out = body;
   const placed = order
-    .map(slot => ({ slot, html: extraBlocks(plan, root, slot) }))
+    .filter(slot => !explicit.has(slot) && anchors[slot])
+    .map(slot => ({ slot, html: extraBlocks(plan, root, slot, useLead) }))
     .filter(x => x.html)
-    .map(x => ({ ...x, at: anchors[x.slot](body) }))
+    .map(x => ({ ...x, at: anchors[x.slot](out) }))
     .filter(x => x.at >= 0)
     .sort((a, b) => b.at - a.at);
 
-  let out = body;
   for (const { html, at } of placed) out = out.slice(0, at) + html + out.slice(at);
 
   /* A section whose position could not be found still belongs on the page;
      dropping it silently would leave data that renders nowhere. */
   const missing = order
-    .filter(slot => extraBlocks(plan, root, slot) && !placed.some(p => p.slot === slot))
-    .map(slot => extraBlocks(plan, root, slot));
+    .filter(slot => !explicit.has(slot))
+    .filter(slot => extraBlocks(plan, root, slot, useLead) && !placed.some(p => p.slot === slot))
+    .map(slot => extraBlocks(plan, root, slot, useLead));
   if (missing.length) {
     const at = furnitureStart(out);
     out = out.slice(0, at) + missing.join('') + out.slice(at);
@@ -684,7 +678,7 @@ function page(path, opts) {
   if (opts.robots && /noindex/i.test(opts.robots)) NOINDEX.add(path);
 
   const extras = extrasFor(path, opts);
-  const body = injectSlots(opts.body(root), extras.blocks, root);
+  let body = injectSlots(opts.body(root), extras.blocks, root);
 
   /* The title and description come from the data file when it holds them.
      
@@ -695,6 +689,11 @@ function page(path, opts) {
      page is the fix: whatever is in the data file is what the page shows. */
   if (extras.title) opts = { ...opts, title: extras.title };
   if (extras.desc) opts = { ...opts, desc: extras.desc };
+
+  /* Calls to action and images, placed into the finished page rather than into
+     the content files — so nothing the engine writes has to know about them,
+     and no data file changes when the design does. */
+  body = enrich(body, { path, title: opts.title, root });
   // auto og:image from the page's hero image (shared previews per page)
   let ogImage = opts.ogImage;
   if (!ogImage) {
@@ -1017,6 +1016,7 @@ ${clientsStrip(root)}
       <p class="reveal" style="--d:.1s">באלי ליד היא חברת לידים ותיקה הפועלת מאז 2020 בזירה הכי תחרותית שיש, הסקטור הפיננסי: <b>ביטוח, הלוואות, משכנתאות, החזרי מס והטבות מס</b>.</p>
       <p class="reveal" style="--d:.18s">ליד אצלנו הוא לא מספר טלפון אקראי. זה לקוח שהתעניין בשירות שלכם, עבר סינון לפי דרישות התחום, ומגיע לאנשי המכירות שלכם <b>כשהוא עדיין חם</b>.</p>
       <p class="reveal" style="--d:.26s">הצוות שלנו מורכב מאנשי שיווק, כותבי תוכן ומומחי פרסום שחיים את עולם ההמרות. שיחת המכירה עליכם, האיכות עלינו.</p>
+      <!--slot:lead-->
     </div>
     <div>
       <div class="side-img reveal" style="--d:.14s"><img src="${root}assets/img-office.webp" alt="המשרד של באלי ליד, חברת לידים לסקטור הפיננסי" loading="lazy"></div>
@@ -2755,7 +2755,7 @@ console.log(Object.keys(REDIRECTS).length, 'redirect stubs written');
    sitemap.xml + robots.txt (canonical domain, ready for the move)
 ================================================================= */
 const today = '2026-08-25';
-writeFileSync(join(OUT, 'style.css'), siteCss());
+writeFileSync(join(OUT, 'style.css'), siteCss() + enrichCss());
 writeFileSync(join(OUT, 'site.js'), siteJs());
 console.log('style.css + site.js written');
 writeFileSync(join(OUT, 'sitemap.xml'),
