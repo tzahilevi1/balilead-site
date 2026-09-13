@@ -395,6 +395,16 @@ function anchorHeadings(html, from, to) {
  * this folds the remainder behind one line the reader can open. */
 const TOC_VISIBLE = 18;
 
+/**
+ * Pages that get no list of contents, whatever their length.
+ *
+ * Both are the offer rather than a reference: the home page and the price
+ * list are read from the top, and a menu above them is an invitation to jump
+ * past the part that does the selling. The empty string is the home page,
+ * which is what `page()` is given for it.
+ */
+const NO_TOC = new Set(['', 'מחירון-לידים']);
+
 const tocRows = (entries, offset) => entries
   .map((e, i) => `<li><a href="#${e.id}"><span class="toc-n">${String(offset + i + 1).padStart(2, '0')}</span><span class="toc-t">${e.text}</span></a></li>`)
   .join('\n      ');
@@ -496,8 +506,10 @@ export function enrich(html, { path = '', title = '', root = '' } = {}) {
     .map(m => ({ id: m[1], text: headingText(m[2]) }))
     .filter(e => e.text);
   /* Six is where a page stops being read straight through and starts being
-     searched. Below that a list of contents is furniture. */
-  const wantsToc = entries.length >= 6;
+     searched — except where the page is the offer itself. The home page and
+     the price list are meant to be walked in order, and a menu at the top of
+     either invites the reader to skip the part that sells. */
+  const wantsToc = entries.length >= 6 && !NO_TOC.has(path);
   if (!plan.length && !wantsToc) return html;
 
   /* Every <h2> in the region, in reading order. They are the only places a
