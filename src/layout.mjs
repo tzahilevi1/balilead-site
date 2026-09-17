@@ -1464,12 +1464,19 @@ document.addEventListener('click', function(e){
 
 export const siteJs = () => js + '\n' + widgetsJs + '\n' + shortsJs;
 
+/* מדיניות ה-referrer יושבת כאן ולא ככותרת HTTP, כי GitHub Pages אינו
+   מאפשר כותרות. בלעדיה כל מעבר לוואטסאפ, לפייסבוק, ליוטיוב או לפונטים של
+   גוגל נושא איתו את הכתובת המלאה של העמוד שממנו המבקר הגיע — כולל פרמטרי
+   הקמפיין שבה. strict-origin-when-cross-origin משאיר לצד שלישי את הדומיין
+   בלבד, ובתוך האתר משאיר את הכתובת המלאה כדי שהמדידה הפנימית לא תיפגע.
+   ההסבר נשאר כאן ולא בתבנית: הערת HTML הייתה נשלחת ל-169 עמודים. */
 export function shell({ root, title, desc, canonical, active, body, ldjson, extraLd = [], ogImage, robots }) {
   return `<!DOCTYPE html>
 <html dir="rtl" lang="he">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>${escText(title)}</title>
 <meta name="description" content="${escAttr(desc)}">
 ${robots ? `<meta name="robots" content="${escAttr(robots)}">` : ''}
