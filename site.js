@@ -15,14 +15,20 @@
         .filter(Boolean).join(' | ');
       sessionStorage.setItem('bl_utm', utm);
     }
-    /* IP נשלף מראש פעם בסשן — כדי שהשליחה בזמן submit תהיה מיידית */
-    if(LEADS_URL && !sessionStorage.getItem('bl_ip')){
-      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
-        .then(function(j){ if(j && j.ip) sessionStorage.setItem('bl_ip', j.ip); }).catch(function(){});
-    }
+    /* כתובת ה-IP אינה נאספת יותר. היא מידע אישי, היא נשלחה עם כל ליד
+       לצד שם וטלפון, ולא נעשה בה שימוש בשום דוח או החלטה — כלומר נשמרה
+       חשיפה בלי תמורה. מי ששולח את הבקשה ממילא רואה את ה-IP ברמת הרשת;
+       ההבדל הוא שעכשיו הוא לא נשמר ולא עובר הלאה. */
   } catch(e){}
+  /* מתי נטען העמוד. טופס שנשלח פחות משנייה וחצי אחרי הטעינה לא מולא
+     בידי אדם: הטופס דורש שם, טלפון ובחירת תחום. הסף נמוך בכוונה — עדיף
+     להחמיץ בוט איטי מאשר להפיל פנייה אמיתית של מישהו שמילא מהר. */
+  var BL_LOADED = Date.now();
+  var MIN_DWELL = 1500;
+
   window.blSendLead = function(data){
     if(!LEADS_URL) return;
+    if(Date.now() - BL_LOADED < MIN_DWELL) return;
     try {
       data.secret = 'bl2026';
       data.page = location.href;
@@ -32,7 +38,6 @@
       data.utm = sessionStorage.getItem('bl_utm') || '';
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
-      data.ip = sessionStorage.getItem('bl_ip') || '';
       /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */
       fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
       /* אותו ליד גם ל-GA4. בלי האירוע הזה אנליטיקס סופר ביקורים בלבד,
@@ -223,6 +228,9 @@
       var phone = form.phone.value.replace(/[^0-9+]/g,'');
       var topic = form.topic.value;
       if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
+      /* שדה הדלי: מוסתר מבני אדם וקורא לבוטים למלא אותו. יוצאים בשקט
+         ובלי הודעת שגיאה — בוט שמקבל שגיאה מנסה שוב אחרת. */
+      if(form.company_url && form.company_url.value){ return; }
       err.classList.remove('show');
       window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic, consent: 'כן' });
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';

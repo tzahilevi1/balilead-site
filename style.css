@@ -88,6 +88,12 @@ section{position:relative}
 .contact-lines a:hover{color:var(--gold2)}
 .contact-lines svg{width:18px;height:18px;color:var(--gold);flex:0 0 auto}
 .form{display:flex;flex-direction:column;gap:16px}
+/* שדה הדלי נגד בוטים. לא display:none — בוטים רבים מדלגים על שדה מוסתר
+   ואז המלכודת ריקה תמיד. הדפוס כאן הוא visually-hidden: השדה קיים,
+   ממוקד-לא, וממדיו פיקסל אחד. במפורש לא left:-9999px — ב-RTL זה דוחף
+   מחוץ לעמוד ומייצר גלישה אופקית, תקלה שכבר עלתה לנו בהדר.
+   הסלקטור מקנן בתוך .form כדי לנצח בספציפיות כלל שדה כללי. */
+.form .bl-hp,.pop-form .bl-hp{position:absolute;width:1px;height:1px;padding:0;margin:-1px;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 .field label{display:block;font-weight:700;font-size:14.5px;margin-bottom:7px;color:var(--ink)}
 .field input,.field select{width:100%;border-radius:14px;border:1px solid var(--line-strong);
   background:rgba(244,238,227,.05);color:var(--ink);font-family:'Assistant';font-size:16px;font-weight:500;

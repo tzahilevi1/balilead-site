@@ -648,6 +648,12 @@ section{position:relative}
 .contact-lines a:hover{color:var(--gold2)}
 .contact-lines svg{width:18px;height:18px;color:var(--gold);flex:0 0 auto}
 .form{display:flex;flex-direction:column;gap:16px}
+/* שדה הדלי נגד בוטים. לא display:none — בוטים רבים מדלגים על שדה מוסתר
+   ואז המלכודת ריקה תמיד. הדפוס כאן הוא visually-hidden: השדה קיים,
+   ממוקד-לא, וממדיו פיקסל אחד. במפורש לא left:-9999px — ב-RTL זה דוחף
+   מחוץ לעמוד ומייצר גלישה אופקית, תקלה שכבר עלתה לנו בהדר.
+   הסלקטור מקנן בתוך .form כדי לנצח בספציפיות כלל שדה כללי. */
+.form .bl-hp,.pop-form .bl-hp{position:absolute;width:1px;height:1px;padding:0;margin:-1px;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 .field label{display:block;font-weight:700;font-size:14.5px;margin-bottom:7px;color:var(--ink)}
 .field input,.field select{width:100%;border-radius:14px;border:1px solid var(--line-strong);
   background:rgba(244,238,227,.05);color:var(--ink);font-family:'Assistant';font-size:16px;font-weight:500;
@@ -1146,6 +1152,7 @@ export function ctaSection(root, { title, sub, topic } = {}) {
               ${topics.map(t => `<option${t === topic ? ' selected' : ''}>${t}</option>`).join('\n              ')}
             </select>
           </div>
+          <div class="bl-hp" aria-hidden="true"><label for="f-company-url">אל תמלאו שדה זה</label><input id="f-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off"></div>
           <label class="consent"><input type="checkbox" name="consent" checked required><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic">${IC.send}</span>
@@ -1177,14 +1184,20 @@ export const js = `
         .filter(Boolean).join(' | ');
       sessionStorage.setItem('bl_utm', utm);
     }
-    /* IP נשלף מראש פעם בסשן — כדי שהשליחה בזמן submit תהיה מיידית */
-    if(LEADS_URL && !sessionStorage.getItem('bl_ip')){
-      fetch('https://api.ipify.org?format=json').then(function(r){ return r.json(); })
-        .then(function(j){ if(j && j.ip) sessionStorage.setItem('bl_ip', j.ip); }).catch(function(){});
-    }
+    /* כתובת ה-IP אינה נאספת יותר. היא מידע אישי, היא נשלחה עם כל ליד
+       לצד שם וטלפון, ולא נעשה בה שימוש בשום דוח או החלטה — כלומר נשמרה
+       חשיפה בלי תמורה. מי ששולח את הבקשה ממילא רואה את ה-IP ברמת הרשת;
+       ההבדל הוא שעכשיו הוא לא נשמר ולא עובר הלאה. */
   } catch(e){}
+  /* מתי נטען העמוד. טופס שנשלח פחות משנייה וחצי אחרי הטעינה לא מולא
+     בידי אדם: הטופס דורש שם, טלפון ובחירת תחום. הסף נמוך בכוונה — עדיף
+     להחמיץ בוט איטי מאשר להפיל פנייה אמיתית של מישהו שמילא מהר. */
+  var BL_LOADED = Date.now();
+  var MIN_DWELL = 1500;
+
   window.blSendLead = function(data){
     if(!LEADS_URL) return;
+    if(Date.now() - BL_LOADED < MIN_DWELL) return;
     try {
       data.secret = 'bl2026';
       data.page = location.href;
@@ -1194,7 +1207,6 @@ export const js = `
       data.utm = sessionStorage.getItem('bl_utm') || '';
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
-      data.ip = sessionStorage.getItem('bl_ip') || '';
       /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */
       fetch(LEADS_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: new URLSearchParams(data) }).catch(function(){});
       /* אותו ליד גם ל-GA4. בלי האירוע הזה אנליטיקס סופר ביקורים בלבד,
@@ -1385,6 +1397,9 @@ export const js = `
       var phone = form.phone.value.replace(/[^0-9+]/g,'');
       var topic = form.topic.value;
       if(!name || phone.length < 9 || !topic || (form.consent && !form.consent.checked)){ err.classList.add('show'); return; }
+      /* שדה הדלי: מוסתר מבני אדם וקורא לבוטים למלא אותו. יוצאים בשקט
+         ובלי הודעת שגיאה — בוט שמקבל שגיאה מנסה שוב אחרת. */
+      if(form.company_url && form.company_url.value){ return; }
       err.classList.remove('show');
       window.blSendLead({ type: 'טופס ראשי', name: name, phone: form.phone.value.trim(), topic: topic, consent: 'כן' });
       var msg = 'היי, אני ' + name + ' (' + form.phone.value.trim() + '). אשמח לקבל פרטים על לידים בתחום ' + topic + '.';
