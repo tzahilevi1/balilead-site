@@ -875,8 +875,51 @@ function page(path, opts) {
     const m = body.match(/class="p-hero-media">\s*<img src="(?:\.\.\/)*assets\/([^"]+)"/);
     if (m) ogImage = GH + 'assets/' + m[1];
   }
-  write(path, shell({ root, canonical: canon(path), ...opts, ogImage, body }));
+  /* The questions-and-answers markup is derived from the finished page, not
+     from a second copy of the data.
+
+     Thirty-two pages showed a questions block to the reader and told Google
+     nothing about it, because the accordion is built by several different
+     generators and only two of them also passed the items to `faqLd`. Adding
+     the call to each generator would have worked until the next one was
+     written; reading the rendered accordion cannot fall behind it.
+
+     It also removes the failure that matters more. Structured data that claims
+     questions the page does not display is a spam signal, and the usual cause
+     is exactly a second data path drifting from the visible one. Here the
+     markup cannot say anything the reader does not see, because it is made
+     from what the reader sees. */
+  const marked = JSON.stringify(opts.extraLd || []).includes('"FAQPage"');
+  const faqPairs = marked ? [] : faqFromRendered(body);
+  const withLd = faqPairs.length >= 2
+    ? { ...opts, extraLd: [...(opts.extraLd || []), faqLd(faqPairs)] }
+    : opts;
+
+  write(path, shell({ root, canonical: canon(path), ...withLd, ogImage, body }));
 }
+
+/** Question/answer pairs as they appear in the built accordion, or none. */
+function faqFromRendered(html) {
+  const pairs = [];
+  /* Scoped to the accordion container: a <details> elsewhere on the page is
+     someone's collapsible section, not a question. */
+  for (const box of html.match(/<div class="faq[ "][\s\S]*?<\/div>\s*(?=<\/div>|<\/section>)/g) || []) {
+    for (const m of box.matchAll(/<summary>([\s\S]*?)<\/summary>\s*<div class="fa">([\s\S]*?)<\/div>/g)) {
+      const q = plainText(m[1].replace(/<span class="pl">[\s\S]*?<\/span>/g, ''));
+      const a = plainText(m[2]);
+      if (q && a && q.length < 300) pairs.push([q, a]);
+    }
+  }
+  return pairs;
+}
+
+const plainText = h => String(h)
+  .replace(/<\/(p|li|div|h[1-6])>/gi, ' ')
+  .replace(/<[^>]+>/g, '')
+  .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&')
+  .replace(/&quot;/gi, '"').replace(/&#39;/gi, "'")
+  .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+  .replace(/\s+/g, ' ').trim();
 
 /* ---------- reusable blocks ---------- */
 const checkCard = (ic, h, p) => `
