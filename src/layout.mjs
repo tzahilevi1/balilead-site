@@ -477,6 +477,33 @@ section{position:relative}
 .pg h4{font-family:'Secular One';font-size:17px;color:var(--gold2);margin-bottom:16px;padding-bottom:12px;
   border-bottom:1px solid rgba(217,164,91,.22)}
 .pg-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;font-size:15px}
+/* The price list is a table now. Same look, plus the column headings the
+   list never had — and markup a snippet extractor can actually read. */
+/* Visible to a screen reader, not to the eye. Deliberately not
+   left:-9999px: in RTL that pushes content off the page and creates a
+   horizontal scrollbar, which has bitten this site before. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+/* Comparison tables inside article content. Scrolls in its own box so a
+   wide table never makes the page itself scroll sideways. */
+/* max-width keeps the box inside its column: without it the wrapper grows to
+   the table's min-width and pushes the page itself sideways — 12px of
+   horizontal scroll at 390px, the RTL overflow this site has paid for before.
+   The table scrolls inside the box; the page never does. */
+.tbl-wrap{overflow-x:auto;max-width:100%;margin:22px 0;border:1px solid var(--line);border-radius:var(--r-inner);-webkit-overflow-scrolling:touch}
+.data-tbl{width:100%;border-collapse:collapse;font-size:15px;min-width:300px}
+.data-tbl th,.data-tbl td{padding:12px 14px;text-align:right;border-bottom:1px solid rgba(244,238,227,.07)}
+.data-tbl thead th{font-family:'Secular One';font-size:13px;color:var(--gold2);background:rgba(244,238,227,.04);white-space:nowrap}
+.data-tbl tbody th{font-weight:600;color:var(--ink)}
+.data-tbl tbody td{color:var(--muted);font-variant-numeric:tabular-nums}
+.data-tbl tbody tr:last-child th,.data-tbl tbody tr:last-child td{border-bottom:none}
+.pg-table{width:100%;border-collapse:collapse;font-size:15px}
+.pg-table th{font-size:12px;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:0 0 10px;border-bottom:1px solid var(--line)}
+.pg-table th:first-child{text-align:right}
+.pg-table th:last-child{text-align:left}
+.pg-table td{padding:8px 0;border-bottom:1px solid rgba(244,238,227,.06)}
+.pg-table td:first-child{color:var(--muted);text-align:right}
+.pg-table td:last-child{font-weight:700;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;text-align:left}
+.pg-table tbody tr:last-child td{border-bottom:none}
 .pg-row .n{color:var(--muted)}
 .pg-row .p{font-weight:700;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
 .price-note{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:15px;margin-top:26px}

@@ -609,6 +609,35 @@ ${faqAccordion(faq.items)}
     return items.length ? faqBlock(items) : '';
   },
 
+  /* A comparison table.
+   
+     Every competitor measured on these queries uses them and this site had
+     none — and the difference is not decorative. A <table> with a header row
+     is what the extractor behind featured snippets and AI answers reads as
+     structured data; the same figures in stacked divs are prose to it.
+     Rows carry their own cells, so a table is never wider than its data. */
+  table: sec => {
+    const rows = (sec.rows || []).filter(r => Array.isArray(r) && r.length);
+    const cols = (sec.columns || []).filter(Boolean);
+    if (!rows.length || !cols.length) return '';
+    return `
+<section class="sec" style="padding-top:0">
+  <div class="container">
+    ${sec.heading ? `<div class="sec-head reveal"><h2>${sec.heading}</h2></div>` : ''}
+    ${sec.intro ? `<p class="lead reveal">${sec.intro}</p>` : ''}
+    <div class="tbl-wrap reveal">
+      <table class="data-tbl">
+        ${sec.caption ? `<caption class="sr-only">${sec.caption}</caption>` : ''}
+        <thead><tr>${cols.map(c => `<th scope="col">${c}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(r => `<tr>${r.map((c, i) =>
+          i === 0 ? `<th scope="row">${c}</th>` : `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>
+    ${sec.note ? `<p class="price-note reveal">${IC.info} ${sec.note}</p>` : ''}
+  </div>
+</section>`;
+  },
+
   /* One sentence that deserves to stop the eye. */
   callout: sec => sec.text ? `
 <section class="sec-tight" style="padding-top:0">
@@ -2052,7 +2081,20 @@ digitalPage('פרסום-בטאבולה-ואאוטבריין', {
    מחירון 2026
 ================================================================= */
 const PRICES = PRICE_GROUPS;
-const priceRows = arr => arr.map(([n, p]) => `<div class="pg-row"><span class="n">${n}</span><span class="p">${p}</span></div>`).join('');
+/* A real table, not rows of divs that look like one.
+   
+   Every competitor measured on these queries — twelve of them, across 111
+   search results — uses comparison tables; this site had none. The distinction
+   is not visual: a <table> with a header row is what the extractor that builds
+   featured snippets and AI answers can read as structured data, and stacked
+   divs are just text to it. The figures are the same figures the page already
+   published in prose, so nothing new is disclosed; only the shape changes.
+   The column headings are new, and the list was missing them. */
+const priceTable = (caption, arr) => `<table class="pg-table">
+        <caption class="sr-only">${caption} — טווחי מחיר לליד</caption>
+        <thead><tr><th scope="col">תחום</th><th scope="col">מחיר לליד</th></tr></thead>
+        <tbody>${arr.map(([n, p]) => `<tr><td>${n}</td><td>${p}</td></tr>`).join('')}</tbody>
+      </table>`;
 
 page('מחירון-לידים', {
   title: 'מחירון לידים מעודכן 2026 - שקיפות מלאה | BaliLead',
@@ -2071,9 +2113,9 @@ ${pageHero(root, {
 <section class="sec-tight">
   <div class="container">
     <div class="price-groups">
-      <div class="pg reveal"><div class="pg-in"><h4>פיננסים וביטוח</h4>${priceRows(PRICES.fin)}</div></div>
-      <div class="pg reveal" style="--d:.1s"><div class="pg-in"><h4>משפט ורפואה</h4>${priceRows(PRICES.med)}</div></div>
-      <div class="pg reveal" style="--d:.2s"><div class="pg-in"><h4>עסקים ושירותים</h4>${priceRows(PRICES.biz)}</div></div>
+      <div class="pg reveal"><div class="pg-in"><h4>פיננסים וביטוח</h4>${priceTable('פיננסים וביטוח', PRICES.fin)}</div></div>
+      <div class="pg reveal" style="--d:.1s"><div class="pg-in"><h4>משפט ורפואה</h4>${priceTable('משפט ורפואה', PRICES.med)}</div></div>
+      <div class="pg reveal" style="--d:.2s"><div class="pg-in"><h4>עסקים ושירותים</h4>${priceTable('עסקים ושירותים', PRICES.biz)}</div></div>
     </div>
     <p class="price-note reveal" style="--d:.1s">${IC.info} המחיר הסופי תלוי בפילוח, באזור ובכמות. מתלבטים? מתחילים בפיילוט ניסיון ורואים תוצאות לפני שמתחייבים.</p>
   </div>
