@@ -26,6 +26,35 @@
   var BL_LOADED = Date.now();
   var MIN_DWELL = 1500;
 
+  /*CANON-CHANNEL v1 — fleet 6-way channel classifier: PPC/Social/GEO/SEO/Referral/Direct*/
+  var __AI_RE = /(chatgpt|openai|chat\.com|perplexity|claude|anthropic|gemini|bard|copilot|bing\.com\/chat|you\.com|phind|poe\.com|deepseek|grok|meta\.ai|mistral)/i;
+  var __PAID_KEYS = ['gclid','gbraid','wbraid','dclid','msclkid'];
+  var __SOCIAL_KEYS = ['fbclid','ttclid','twclid','li_fat_id'];
+  var __SEARCH_RE = /google\.|bing\.|duckduckgo|yahoo\.|ecosia|yandex|\.baidu\./i;
+  var __SOCIAL_RE = /facebook\.|fb\.com|instagram\.|tiktok\.|twitter\.|\/\/t\.co|x\.com|linkedin\.|lnkd\.in|pinterest\.|reddit\.|snapchat\./i;
+  function classify(p){
+    p = p || {};
+    var med=(p.utm_medium||'').toLowerCase(),src=(p.utm_source||'').toLowerCase(),ref=(p.referrer||'').toLowerCase(),ms=med+' '+src,i;
+    for(i=0;i<__PAID_KEYS.length;i++){if(p[__PAID_KEYS[i]])return 'PPC';}
+    if(/cpc|ppc|paid|sem|display/.test(med))return 'PPC';
+    for(i=0;i<__SOCIAL_KEYS.length;i++){if(p[__SOCIAL_KEYS[i]])return 'Social';}
+    if(/facebook|instagram|tiktok|twitter|linkedin|\bfb\b|\big\b|social/.test(ms)||__SOCIAL_RE.test(ref))return 'Social';
+    if(__AI_RE.test(ref)||__AI_RE.test(src)||med==='ai')return 'GEO';
+    if(__SEARCH_RE.test(ref)||med==='organic'||med==='seo')return 'SEO';
+    if(ref)return 'Referral';
+    return 'Direct';
+  }
+  function blAttr(){
+    var a = { referrer: '' };
+    try {
+      var entry = sessionStorage.getItem('bl_entry') || location.href;
+      new URLSearchParams(entry.split('?')[1] || '').forEach(function(v,k){ a[k]=v; });
+      var ref = sessionStorage.getItem('bl_ref') || document.referrer || '';
+      if (ref && ref !== 'כניסה ישירה') a.referrer = ref;
+    } catch(e){}
+    return a;
+  }
+
   window.blSendLead = function(data){
     if(!LEADS_URL) return;
     if(Date.now() - BL_LOADED < MIN_DWELL) return;
@@ -36,6 +65,7 @@
       data.entry = sessionStorage.getItem('bl_entry') || location.href;
       data.referrer = sessionStorage.getItem('bl_ref') || document.referrer || 'כניסה ישירה';
       data.utm = sessionStorage.getItem('bl_utm') || '';
+      data.channel = classify(blAttr());
       data.ua = navigator.userAgent;
       data.mobile = window.matchMedia('(max-width: 860px)').matches ? 'מובייל' : 'דסקטופ';
       /* keepalive: הבקשה שורדת גם מעבר מיידי לוואטסאפ */

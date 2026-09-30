@@ -8,11 +8,17 @@
  * seconds. Clicking "I have fixed the issues" while a checker still holds the
  * old negative answer spends a review cycle on a fix that is already in place.
  *
+ * curl is spawned without a shell, so its arguments are not translated:
+ * '/dev/null' is a Unix path that Windows curl tries to create a file at, and
+ * the failure surfaces as a connection that never happened. os.devNull is the
+ * per-platform name and is what makes the check measure the network.
+ *
  * So the all-clear is the plain path: the system resolver, then a real HTTPS
  * request over IPv6 with no --resolve override.
  */
 import { promises as dns } from 'node:dns';
 import { execFileSync } from 'node:child_process';
+import { devNull } from 'node:os';
 
 const HOST = 'balilead.co.il';
 const deadline = Date.now() + 45 * 60_000;
@@ -24,7 +30,7 @@ while (Date.now() < deadline) {
   if (addrs) {
     let code = '000';
     try {
-      code = execFileSync('curl', ['-6', '-s', '-o', '/dev/null', '--max-time', '25',
+      code = execFileSync('curl', ['-6', '-s', '-o', devNull, '--max-time', '25',
         '-w', '%{http_code}', `https://${HOST}/`], { encoding: 'utf8' }).trim();
     } catch { /* curl exits non-zero on a failed connection */ }
     if (code === '200') {
