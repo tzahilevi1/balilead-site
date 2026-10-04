@@ -195,7 +195,7 @@ export const widgetsHtml = root => `
       <input id="popPhone" type="tel" inputmode="tel" placeholder="הטלפון שלכם" aria-label="טלפון">
       <button class="btn btn-gold" type="submit" style="padding:12px 22px">שלחו לי פרטים</button>
     </form>
-    <label class="consent"><input type="checkbox" checked><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
+    <label class="consent"><input type="checkbox"><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
   </div></div>
 </div>
 <div class="toast" id="toast">
