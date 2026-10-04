@@ -1180,7 +1180,7 @@ export function ctaSection(root, { title, sub, topic } = {}) {
             </select>
           </div>
           <div class="bl-hp" aria-hidden="true"><label for="f-company-url">אל תמלאו שדה זה</label><input id="f-company-url" name="company_url" type="text" tabindex="-1" autocomplete="off"></div>
-          <label class="consent"><input type="checkbox" name="consent" checked required><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
+          <label class="consent"><input type="checkbox" name="consent" required><span>הנני מאשר/ת את <a href="${root}מדיניות-פרטיות/" target="_blank">מדיניות הפרטיות</a> ותקנון האתר</span></label>
           <button class="btn btn-gold" type="submit">
             <span class="btn-ic">${IC.send}</span>
             שולחים ומתחילים
